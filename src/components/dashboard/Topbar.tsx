@@ -1,26 +1,31 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useSyncExternalStore } from "react"
 import { Bell, Menu, Search, User as UserIcon, Sun, Moon } from "lucide-react"
 
-export default function Topbar({ user }: { user?: { name?: string | null; role?: string } }) {
-  const [mounted, setMounted] = useState(false)
-  const [theme, setTheme] = useState<"light" | "dark">("light")
+function getInitialTheme(): "light" | "dark" {
+  if (typeof window === "undefined") return "light"
+  const stored = localStorage.getItem("theme")
+  if (stored === "dark" || stored === "light") return stored
+  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
+}
 
+// useSyncExternalStore subscribe noop — hanya dipakai untuk deteksi client vs server
+const subscribe = () => () => {}
+
+export default function Topbar({ user }: { user?: { name?: string | null; role?: string } }) {
+  // mounted = true hanya di sisi klien (menghindari hydration mismatch)
+  const mounted = useSyncExternalStore(subscribe, () => true, () => false)
+  const [theme, setTheme] = useState<"light" | "dark">(getInitialTheme)
+
+  // Sync DOM class whenever theme changes
   useEffect(() => {
-    const stored = localStorage.getItem("theme")
-    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches
-    const active = stored === "dark" || stored === "light"
-      ? (stored as "light" | "dark")
-      : prefersDark ? "dark" : "light"
-    setTheme(active)
-    if (active === "dark") {
+    if (theme === "dark") {
       document.documentElement.classList.add("dark")
     } else {
       document.documentElement.classList.remove("dark")
     }
-    setMounted(true)
-  }, [])
+  }, [theme])
 
   const toggleTheme = () => {
     const nextTheme = theme === "dark" ? "light" : "dark"
