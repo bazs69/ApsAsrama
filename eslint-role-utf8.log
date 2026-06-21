@@ -1,0 +1,15 @@
+﻿
+D:\ApsAsrama\src\components\dashboard\role-user\RoleUserClient.tsx
+    8:90   error    Unexpected any. Specify a different type       @typescript-eslint/no-explicit-any
+    8:113  error    Unexpected any. Specify a different type       @typescript-eslint/no-explicit-any
+    9:17   warning  'setRoles' is assigned a value but never used  @typescript-eslint/no-unused-vars
+   11:50   error    Unexpected any. Specify a different type       @typescript-eslint/no-explicit-any
+   18:32   error    Unexpected any. Specify a different type       @typescript-eslint/no-explicit-any
+   65:32   error    Unexpected any. Specify a different type       @typescript-eslint/no-explicit-any
+   68:53   error    Unexpected any. Specify a different type       @typescript-eslint/no-explicit-any
+   83:15   warning  'newRole' is assigned a value but never used   @typescript-eslint/no-unused-vars
+   91:19   error    Unexpected any. Specify a different type       @typescript-eslint/no-explicit-any
+  102:19   error    Unexpected any. Specify a different type       @typescript-eslint/no-explicit-any
+
+✖ 10 problems (8 errors, 2 warnings)
+

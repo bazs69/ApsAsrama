@@ -1,0 +1,21 @@
+﻿
+D:\ApsAsrama\src\components\dashboard\referensi\wilayah\WilayahClient.tsx
+    5:39  warning  'TabsContent' is defined but never used   @typescript-eslint/no-unused-vars
+   19:4   error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   82:32  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  117:19  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  131:19  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  215:76  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  218:77  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  221:77  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  224:72  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  268:35  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  406:78  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  409:79  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  412:79  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  415:74  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  455:58  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  456:19  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+✖ 16 problems (15 errors, 1 warning)
+

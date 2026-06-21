@@ -1,0 +1,19 @@
+﻿
+D:\ApsAsrama\src\components\dashboard\laporan\LaporanClient.tsx
+    3:20  warning  'useEffect' is defined but never used                @typescript-eslint/no-unused-vars
+   12:3   warning  'Download' is defined but never used                 @typescript-eslint/no-unused-vars
+   46:4   error    Unexpected any. Specify a different type             @typescript-eslint/no-explicit-any
+  107:23  error    Unexpected any. Specify a different type             @typescript-eslint/no-explicit-any
+  108:9   error    'fileName' is never reassigned. Use 'const' instead  prefer-const
+  112:40  error    Unexpected any. Specify a different type             @typescript-eslint/no-explicit-any
+  122:45  error    Unexpected any. Specify a different type             @typescript-eslint/no-explicit-any
+  132:44  error    Unexpected any. Specify a different type             @typescript-eslint/no-explicit-any
+  248:39  error    Unexpected any. Specify a different type             @typescript-eslint/no-explicit-any
+  249:33  error    Unexpected any. Specify a different type             @typescript-eslint/no-explicit-any
+  253:29  error    Unexpected any. Specify a different type             @typescript-eslint/no-explicit-any
+  259:36  error    Unexpected any. Specify a different type             @typescript-eslint/no-explicit-any
+  309:40  error    Unexpected any. Specify a different type             @typescript-eslint/no-explicit-any
+
+✖ 13 problems (11 errors, 2 warnings)
+  1 error and 0 warnings potentially fixable with the `--fix` option.
+
