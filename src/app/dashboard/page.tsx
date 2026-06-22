@@ -5,7 +5,8 @@ import DashboardKepalaSatkerClient from "@/components/dashboard/kepala-satker/Da
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 
-export const dynamic = "force-dynamic"
+// Cache selama 30 detik, refresh otomatis di background (ISR)
+export const revalidate = 30
 
 export default async function DashboardPage() {
   const session = await getServerSession(authOptions)
