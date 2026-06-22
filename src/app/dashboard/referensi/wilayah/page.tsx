@@ -26,12 +26,7 @@ export default async function WilayahPage({ searchParams }: { searchParams: Prom
   const page = resolvedSearchParams.page ? parseInt(resolvedSearchParams.page as string) : 1
   const parentId = (resolvedSearchParams.parentId as string) || ""
 
-  let data: Record<string, unknown>[] = []
-  let total = 0
-  let totalPages = 0
-  
-  // Dashboard Metrics
-  const [countCountries, countProvinces, countRegencies, countDistricts, countVillages] = await Promise.all([
+  const metricsPromise = Promise.all([
     prisma.country.count(),
     prisma.province.count(),
     prisma.regency.count(),
@@ -39,38 +34,50 @@ export default async function WilayahPage({ searchParams }: { searchParams: Prom
     prisma.village.count()
   ])
 
-  // Dropdowns
-  const countriesDropdown = await prisma.country.findMany({ orderBy: { name: 'asc' } })
-  const provincesDropdown = await prisma.province.findMany({ orderBy: { name: 'asc' } })
-  const regenciesDropdown = await prisma.regency.findMany({ orderBy: { name: 'asc' } })
-  const districtsDropdown = await prisma.district.findMany({ orderBy: { name: 'asc' } })
+  const emptyDropdown = Promise.resolve([])
+  const countriesPromise = activeTab === "provinsi"
+    ? prisma.country.findMany({ orderBy: { name: 'asc' }, select: { id: true, code: true, name: true } })
+    : emptyDropdown
+  const provincesPromise = activeTab === "kabupaten"
+    ? prisma.province.findMany({ orderBy: { name: 'asc' }, select: { id: true, code: true, name: true } })
+    : emptyDropdown
+  const regenciesPromise = activeTab === "kecamatan"
+    ? prisma.regency.findMany({ orderBy: { name: 'asc' }, select: { id: true, code: true, name: true } })
+    : emptyDropdown
+  const districtsPromise = activeTab === "desa"
+    ? prisma.district.findMany({ orderBy: { name: 'asc' }, select: { id: true, code: true, name: true } })
+    : emptyDropdown
 
+  let dataPromise
   if (activeTab === "negara") {
-    const res = await getCountries(search, page)
-    data = res.data
-    total = res.total
-    totalPages = res.totalPages
+    dataPromise = getCountries(search, page)
   } else if (activeTab === "provinsi") {
-    const res = await getProvinces(search, page, parentId)
-    data = res.data
-    total = res.total
-    totalPages = res.totalPages
+    dataPromise = getProvinces(search, page, parentId)
   } else if (activeTab === "kabupaten") {
-    const res = await getRegencies(search, page, parentId)
-    data = res.data
-    total = res.total
-    totalPages = res.totalPages
+    dataPromise = getRegencies(search, page, parentId)
   } else if (activeTab === "kecamatan") {
-    const res = await getDistricts(search, page, parentId)
-    data = res.data
-    total = res.total
-    totalPages = res.totalPages
+    dataPromise = getDistricts(search, page, parentId)
   } else if (activeTab === "desa") {
-    const res = await getVillages(search, page, parentId)
-    data = res.data
-    total = res.total
-    totalPages = res.totalPages
+    dataPromise = getVillages(search, page, parentId)
+  } else {
+    dataPromise = Promise.resolve({ data: [], total: 0, totalPages: 0 })
   }
+
+  const [
+    [countCountries, countProvinces, countRegencies, countDistricts, countVillages],
+    countriesDropdown,
+    provincesDropdown,
+    regenciesDropdown,
+    districtsDropdown,
+    { data, total, totalPages }
+  ] = await Promise.all([
+    metricsPromise,
+    countriesPromise,
+    provincesPromise,
+    regenciesPromise,
+    districtsPromise,
+    dataPromise
+  ])
 
   return (
     <WilayahClient

@@ -25,6 +25,24 @@ export async function getResidents() {
   }
 }
 
+export async function getResidentOptions() {
+  try {
+    return await prisma.resident.findMany({
+      where: { status: ResidentStatus.ACTIVE },
+      orderBy: { name: "asc" },
+      select: {
+        id: true,
+        name: true,
+        nim: true,
+        status: true,
+      },
+    })
+  } catch (error) {
+    console.error("Failed to fetch resident options:", error)
+    return []
+  }
+}
+
 export async function createResident(formData: {
   name: string
   nim: string
