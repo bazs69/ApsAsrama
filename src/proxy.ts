@@ -21,15 +21,16 @@ const ROUTE_PERMISSIONS: Record<string, string> = {
   "/dashboard/referensi/wilayah": "wilayah.view",
 }
 
-export default withAuth(
-  function middleware(req) {
+// Renamed from "middleware" to "proxy" (Next.js 16 convention)
+export const proxy = withAuth(
+  function proxy(req) {
     const token = req.nextauth.token
     const pathname = req.nextUrl.pathname
 
     if (!token) return NextResponse.redirect(new URL("/login", req.url))
 
     const userPermissions = (token.permissions as string[]) || []
-    
+
     // Check if the current pathname requires a specific permission
     for (const [route, reqPerm] of Object.entries(ROUTE_PERMISSIONS)) {
       if (pathname.startsWith(route)) {
@@ -38,7 +39,7 @@ export default withAuth(
         }
       }
     }
-    
+
     // Dashboard base route needs dashboard.view
     if (pathname === "/dashboard" && !userPermissions.includes("dashboard.view")) {
       return NextResponse.rewrite(new URL("/dashboard/forbidden", req.url))

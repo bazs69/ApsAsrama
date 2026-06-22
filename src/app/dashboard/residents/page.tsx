@@ -8,14 +8,25 @@ import { authOptions } from "@/lib/auth"
 export const dynamic = "force-dynamic"
 
 export default async function ResidentsPage() {
-  const residents = await getResidents()
-  const areaHierarchy = await getAreaHierarchy()
-  const fakultasOptions = await getFakultas()
-  const prodiOptions = await getProdi()
-  const angkatanOptions = await getAngkatan()
-  const session = await getServerSession(authOptions)
+  // Jalankan semua query secara paralel, bukan serial
+  const [
+    residents,
+    areaHierarchy,
+    fakultasOptions,
+    prodiOptions,
+    angkatanOptions,
+    session
+  ] = await Promise.all([
+    getResidents(),
+    getAreaHierarchy(),
+    getFakultas(),
+    getProdi(),
+    getAngkatan(),
+    getServerSession(authOptions)
+  ])
+
   const permissions = session?.user?.permissions || []
-  
+
   return <ResidentsClient 
     initialResidents={residents} 
     areaHierarchy={areaHierarchy}
