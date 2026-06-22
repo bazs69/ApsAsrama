@@ -1,7 +1,7 @@
 import { getAreaHierarchy } from "@/app/actions/area"
 import AreaClient from "@/components/dashboard/AreaClient"
 
-export const dynamic = "force-dynamic"
+export const revalidate = 30
 
 export default async function AreaPage() {
   const hierarchy = await getAreaHierarchy()

@@ -2,11 +2,13 @@ import { getKegiatans } from "@/app/actions/absensiKegiatan"
 import { getKbms } from "@/app/actions/kbm"
 import AbsensiKegiatanClient from "@/components/dashboard/AbsensiKegiatanClient"
 
-export const dynamic = "force-dynamic"
+export const revalidate = 30
 
 export default async function AbsensiKegiatanPage() {
-  const kegiatans = await getKegiatans()
-  const kbms = await getKbms()
+  const [kegiatans, kbms] = await Promise.all([
+    getKegiatans(),
+    getKbms()
+  ])
 
   return <AbsensiKegiatanClient initialKegiatans={kegiatans} kbmOptions={kbms} />
 }

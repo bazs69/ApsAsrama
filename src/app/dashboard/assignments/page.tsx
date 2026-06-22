@@ -4,12 +4,14 @@ import AssignmentListClient from "@/components/dashboard/AssignmentListClient"
 import { ResidentStatus } from "@prisma/client"
 import { ComponentProps } from "react"
 
-export const dynamic = "force-dynamic"
+export const revalidate = 30
 
 export default async function AssignmentsPage() {
-  const assignments = await getAssignments()
-  const satkers = await getSatkers()
-  const residents = await getResidents()
+  const [assignments, satkers, residents] = await Promise.all([
+    getAssignments(),
+    getSatkers(),
+    getResidents()
+  ])
 
   // Format dates for safe serialization between Server and Client Components
   const serializedAssignments = (assignments as { startDate: Date, endDate: Date | null, [key: string]: unknown }[]).map((a) => ({

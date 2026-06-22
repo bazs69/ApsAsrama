@@ -1,7 +1,7 @@
 import MasterDataClient from "@/components/dashboard/MasterDataClient"
 import { getKbms, createKbm, updateKbm, deleteKbm } from "@/app/actions/kbm"
 
-export const dynamic = "force-dynamic"
+export const revalidate = 30
 
 export default async function KbmPage() {
   const kbms = await getKbms()

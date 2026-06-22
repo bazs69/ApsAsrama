@@ -1,7 +1,7 @@
 import { getApels } from "@/app/actions/absensiApel"
 import AbsensiApelClient from "@/components/dashboard/AbsensiApelClient"
 
-export const dynamic = "force-dynamic"
+export const revalidate = 30
 
 export default async function AbsensiApelPage() {
   const apels = await getApels()
