@@ -8,7 +8,7 @@ export default function LaporanMonitoring({ data, onOpenDetail }: {
     id: string
     residentId: string
     namaSantri: string
-    nim: string
+    nim: string | null
     satker: string
     status: string
     catatan: string
@@ -21,7 +21,7 @@ export default function LaporanMonitoring({ data, onOpenDetail }: {
   const filteredData = data?.filter(item => 
     item.namaSantri.toLowerCase().includes(search.toLowerCase()) ||
     item.satker.toLowerCase().includes(search.toLowerCase()) ||
-    item.nim.toLowerCase().includes(search.toLowerCase())
+    (item.nim || "").toLowerCase().includes(search.toLowerCase())
   )
 
   const getStatusBadge = (status: string) => {
@@ -84,7 +84,7 @@ export default function LaporanMonitoring({ data, onOpenDetail }: {
                     <div className="font-semibold text-zinc-900 dark:text-white text-left">
                       {row.namaSantri}
                     </div>
-                    <div className="text-xs text-zinc-500">{row.nim}</div>
+                    <div className="text-xs text-zinc-500">{row.nim || "-"}</div>
                   </td>
                   <td className="px-5 py-4 text-zinc-600 dark:text-zinc-400">{row.satker}</td>
                   <td className="px-5 py-4">

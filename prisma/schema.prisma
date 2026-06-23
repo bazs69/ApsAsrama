@@ -45,7 +45,7 @@ model Resident {
   id        String   @id @default(uuid())
   name      String
   photo     String?  // Foto santri
-  nim       String   @unique // Nomor Induk Mahasiswa
+  nim       String?  @unique // Nomor Induk Mahasiswa (opsional)
   niup      String?  @unique // Nomor Induk Unik Pesantren (opsional)
   angkatan  String?  // Tahun angkatan, misal: "2021"
   prodi     String?  // Program studi, misal: "Teknik Informatika"

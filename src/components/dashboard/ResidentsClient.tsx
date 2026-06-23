@@ -20,7 +20,7 @@ interface Room {
 interface Resident {
   id: string
   name: string
-  nim: string
+  nim: string | null
   niup: string | null
   angkatan: string | null
   nik?: string | null
@@ -50,6 +50,54 @@ interface Resident {
 
 type DaerahNode = { id: string, name: string, rooms: Room[] }
 type WilayahNode = { id: string, name: string, daerahs: DaerahNode[] }
+
+const importHeaders = [
+  "Nama Lengkap (Wajib ada)",
+  "NIM (opsional)",
+  "NIUP (opsional)",
+  "NIK (opsional)",
+  "Jenis Kelamin (Wajib ada)",
+  "Tempat Lahir (Wajib ada)",
+  "Tanggal Lahir (YYYY-MM-DD) (Wajib ada)",
+  "Nomor Telepon (opsional)",
+  "Fakultas (opsional)",
+  "Program Studi (Wajib ada)",
+  "Angkatan (Wajib ada)",
+  "Wilayah (opsional)",
+  "Daerah (opsional)",
+  "Kamar (opsional)",
+  "Alamat Lengkap (opsional)",
+  "Kota Asal (opsional)",
+  "Kode Pos (opsional)",
+]
+
+function readExcelCell(row: Record<string, string | number | undefined>, keys: string[]) {
+  for (const key of keys) {
+    const value = row[key]
+    if (value !== undefined && value !== null && String(value).trim() !== "") {
+      return String(value).trim()
+    }
+  }
+  return ""
+}
+
+function hasRequiredImportData(row: {
+  name: string | number
+  gender?: string | number | null
+  tempatLahir?: string | number | null
+  tanggalLahir?: string | number | Date | null
+  prodi?: string | number | null
+  angkatan?: string | number | null
+}) {
+  return Boolean(
+    String(row.name || "").trim() &&
+    String(row.gender || "").trim() &&
+    String(row.tempatLahir || "").trim() &&
+    row.tanggalLahir &&
+    String(row.prodi || "").trim() &&
+    String(row.angkatan || "").trim()
+  )
+}
 
 export default function ResidentsClient({
   initialResidents,
@@ -189,7 +237,7 @@ export default function ResidentsClient({
   const filteredResidents = residents.filter(res => {
     const matchSearch = 
       res.name.toLowerCase().includes(search.toLowerCase()) ||
-      res.nim.includes(search) ||
+      (res.nim && res.nim.includes(search)) ||
       (res.niup && res.niup.includes(search))
 
     const matchWilayah = filterWilayah ? res.wilayah === filterWilayah : true
@@ -219,7 +267,7 @@ export default function ResidentsClient({
     const headers = ["No", "NIM", "NIUP", "Nama Lengkap", "Wilayah", "Kamar", "Prodi", "Angkatan", "Nomor Telepon", "Status"]
     const rows = residents.map((res, idx) => [
       String(idx + 1),
-      res.nim,
+      res.nim || "-",
       res.niup || "-",
       res.name,
       res.wilayah || "-",
@@ -244,9 +292,9 @@ export default function ResidentsClient({
 
   const downloadTemplate = () => {
     const ws = XLSX.utils.aoa_to_sheet([
-      ["Nama Lengkap", "NIM", "NIUP", "NIK", "Jenis Kelamin", "Tempat Lahir", "Tanggal Lahir (YYYY-MM-DD)", "Nomor Telepon", "Fakultas", "Program Studi", "Angkatan", "Wilayah", "Daerah", "Kamar", "Alamat Lengkap", "Kota Asal", "Kode Pos"],
-      ["Ahmad Santoso", "210401180001", "NP-2026-0001", "3578000000000001", "LAKI_LAKI", "Surabaya", "2000-01-01", "08123456789", "Ilmu Komputer", "Teknik Informatika", "2021", "Al-Ghazali", "Blok A", "A1", "Jl. Mawar No.1", "Surabaya", "60111"],
-      ["Budi Cahyono", "210401180002", "NP-2026-0002", "3578000000000002", "LAKI_LAKI", "Malang", "2001-02-02", "08987654321", "Ilmu Komputer", "Sistem Informasi", "2022", "Al-Farabi", "Blok B", "A2", "Jl. Melati No.2", "Malang", "65112"]
+      importHeaders,
+      ["Ahmad Santoso", "", "NP-2026-0001", "3578000000000001", "LAKI_LAKI", "Surabaya", "2000-01-01", "08123456789", "Ilmu Komputer", "Teknik Informatika", "2021", "Al-Ghazali", "Blok A", "A1", "Jl. Mawar No.1", "Surabaya", "60111"],
+      ["Siti Aminah", "", "", "3578000000000002", "PEREMPUAN", "Malang", "2001-02-02", "", "", "Sistem Informasi", "2022", "", "", "", "Jl. Melati No.2", "Malang", "65112"]
     ])
     const wb = XLSX.utils.book_new()
     XLSX.utils.book_append_sheet(wb, ws, "Template Import")
@@ -270,27 +318,27 @@ export default function ResidentsClient({
         const data = XLSX.utils.sheet_to_json<Record<string, string | number | undefined>>(ws)
 
         const formattedData = data.map((row) => ({
-          name: row["Nama Lengkap"] || row["Nama"] || row["name"] || "",
-          nim: row["NIM"] || row["nim"] || String(row["Nim"] || ""),
-          niup: row["NIUP"] || row["niup"] || String(row["Niup"] || "") || null,
-          nik: row["NIK"] || row["nik"] || String(row["Nik"] || "") || null,
-          gender: row["Jenis Kelamin"] || row["Gender"] || row["gender"] || null,
-          tempatLahir: row["Tempat Lahir"] || row["tempatLahir"] || null,
-          tanggalLahir: row["Tanggal Lahir (YYYY-MM-DD)"] || row["Tanggal Lahir"] || row["tanggalLahir"] || null,
-          phone: row["Nomor Telepon"] || row["phone"] || row["No Telp"] || "",
-          fakultas: row["Fakultas"] || row["fakultas"] || "",
-          prodi: row["Program Studi"] || row["Prodi"] || row["prodi"] || "",
-          angkatan: row["Angkatan"] ? String(row["Angkatan"]) : "",
-          wilayah: row["Wilayah"] || row["wilayah"] || "",
-          daerah: row["Daerah"] || row["daerah"] || "",
-          roomNumber: row["Kamar"] || row["room"] || "",
-          alamatLengkap: row["Alamat Lengkap"] || row["Alamat"] || row["alamatLengkap"] || undefined,
-          kotaAsal: row["Kota Asal"] || row["kotaAsal"] || undefined,
-          kodePos: row["Kode Pos"] || row["KodePos"] || row["kodePos"] ? String(row["Kode Pos"] || row["KodePos"] || row["kodePos"]) : undefined
-        })).filter(r => r.name && r.nim)
+          name: readExcelCell(row, ["Nama Lengkap (Wajib ada)", "Nama Lengkap", "Nama", "name"]),
+          nim: readExcelCell(row, ["NIM (opsional)", "NIM", "nim", "Nim"]),
+          niup: readExcelCell(row, ["NIUP (opsional)", "NIUP", "niup", "Niup"]) || null,
+          nik: readExcelCell(row, ["NIK (opsional)", "NIK", "nik", "Nik"]) || null,
+          gender: readExcelCell(row, ["Jenis Kelamin (Wajib ada)", "Jenis Kelamin", "Gender", "gender"]) || null,
+          tempatLahir: readExcelCell(row, ["Tempat Lahir (Wajib ada)", "Tempat Lahir", "tempatLahir"]) || null,
+          tanggalLahir: readExcelCell(row, ["Tanggal Lahir (YYYY-MM-DD) (Wajib ada)", "Tanggal Lahir (YYYY-MM-DD)", "Tanggal Lahir", "tanggalLahir"]) || null,
+          phone: readExcelCell(row, ["Nomor Telepon (opsional)", "Nomor Telepon", "phone", "No Telp"]),
+          fakultas: readExcelCell(row, ["Fakultas (opsional)", "Fakultas", "fakultas"]),
+          prodi: readExcelCell(row, ["Program Studi (Wajib ada)", "Program Studi", "Prodi", "prodi"]),
+          angkatan: readExcelCell(row, ["Angkatan (Wajib ada)", "Angkatan", "angkatan"]),
+          wilayah: readExcelCell(row, ["Wilayah (opsional)", "Wilayah", "wilayah"]),
+          daerah: readExcelCell(row, ["Daerah (opsional)", "Daerah", "daerah"]),
+          roomNumber: readExcelCell(row, ["Kamar (opsional)", "Kamar", "room"]),
+          alamatLengkap: readExcelCell(row, ["Alamat Lengkap (opsional)", "Alamat Lengkap", "Alamat", "alamatLengkap"]) || undefined,
+          kotaAsal: readExcelCell(row, ["Kota Asal (opsional)", "Kota Asal", "kotaAsal"]) || undefined,
+          kodePos: readExcelCell(row, ["Kode Pos (opsional)", "Kode Pos", "KodePos", "kodePos"]) || undefined
+        })).filter(hasRequiredImportData)
 
         if (formattedData.length === 0) {
-          setError("Format file Excel tidak valid atau kosong. Pastikan kolom Nama Lengkap dan NIM terisi.")
+          setError("Format file Excel tidak valid atau kosong. Pastikan kolom wajib terisi: Nama Lengkap, Jenis Kelamin, Tempat Lahir, Tanggal Lahir, Program Studi, dan Angkatan.")
           setImporting(false)
           return
         }
@@ -300,7 +348,7 @@ export default function ResidentsClient({
           if (res.error) {
             setError(res.error)
           } else {
-            alert(`Berhasil impor ${res.successCount} santri. ${res.skippedCount} santri dilewati (NIM duplikat). Halaman akan dimuat ulang.`)
+            alert(`Berhasil impor ${res.successCount} santri. ${res.skippedCount} santri dilewati karena data wajib kosong atau NIM/NIUP duplikat. Halaman akan dimuat ulang.`)
             window.location.reload()
           }
           setImporting(false)
@@ -361,7 +409,7 @@ export default function ResidentsClient({
               ${residents.map((res, index) => `
                 <tr>
                   <td>${index + 1}</td>
-                  <td>${res.nim}</td>
+                  <td>${res.nim || "-"}</td>
                   <td>${res.niup || "-"}</td>
                   <td style="font-weight: 600;">${res.name}</td>
                   <td>${res.wilayah || "-"}</td>
@@ -650,7 +698,7 @@ export default function ResidentsClient({
                       </td>
                     )}
                     <td className="py-4 px-4 text-zinc-500 dark:text-zinc-400 text-xs">{index + 1}</td>
-                    <td className="py-4 px-4 font-mono text-xs text-zinc-500 dark:text-zinc-400">{res.nim}</td>
+                    <td className="py-4 px-4 font-mono text-xs text-zinc-500 dark:text-zinc-400">{res.nim || "-"}</td>
                     <td className="py-4 px-4">
                       <div className="flex items-center gap-3">
                         <div className="w-8 h-8 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center overflow-hidden shrink-0 border border-zinc-200 dark:border-zinc-700">

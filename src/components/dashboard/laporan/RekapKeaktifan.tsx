@@ -7,7 +7,7 @@ export default function RekapKeaktifan({ data, onOpenDetail }: {
   data: {
     id: string
     namaSantri: string
-    nim: string
+    nim: string | null
     satker: string
     rataRata: string
     score: number
@@ -147,7 +147,7 @@ export default function RekapKeaktifan({ data, onOpenDetail }: {
                       <div className="font-semibold text-zinc-900 dark:text-white text-left">
                         {row.namaSantri}
                       </div>
-                      <div className="text-xs text-zinc-500">{row.nim}</div>
+                      <div className="text-xs text-zinc-500">{row.nim || "-"}</div>
                     </td>
                     <td className="px-5 py-4 text-zinc-600 dark:text-zinc-400">{row.satker}</td>
                     <td className="px-5 py-4 text-zinc-600 dark:text-zinc-400">{row.totalMonitoring} kali</td>

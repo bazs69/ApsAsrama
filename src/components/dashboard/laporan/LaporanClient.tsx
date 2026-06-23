@@ -41,7 +41,7 @@ export interface DashboardData {
 
 export interface RekapData {
   namaSantri: string;
-  nim: string;
+  nim: string | null;
   satker: string;
   rataRata: number;
   status: string;
@@ -58,7 +58,7 @@ export interface MonitoringData {
 export interface PenugasanData {
   tanggalMulai: string;
   namaSantri: string;
-  nim: string;
+  nim: string | null;
   satker: string;
   status: string;
 }
@@ -167,7 +167,7 @@ export default function LaporanClient({
       dataToExport = rekapData.map((d, i) => ({
         "No": i + 1,
         "Nama Santri": d.namaSantri,
-        "NIS/NIM": d.nim,
+        "NIS/NIM": d.nim || "-",
         "Satker": d.satker,
         "Rata-Rata Keaktifan": d.rataRata,
         "Status": d.status
@@ -188,7 +188,7 @@ export default function LaporanClient({
         "No": i + 1,
         "Tanggal Mulai": new Date(d.tanggalMulai).toLocaleDateString('id-ID'),
         "Nama Santri": d.namaSantri,
-        "NIS/NIM": d.nim,
+        "NIS/NIM": d.nim || "-",
         "Satker": d.satker,
         "Status": d.status
       }))

@@ -8,7 +8,7 @@ import { Plus, Search, Edit2, Trash2, X, AlertCircle, Loader2, DoorOpen, Users, 
 interface Resident {
   id: string
   name: string
-  nim: string
+  nim: string | null
 }
 
 interface Room {
@@ -417,7 +417,7 @@ export default function RoomsClient({ initialRooms }: { initialRooms: Room[] }) 
                     <div key={res.id} className="bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200 dark:border-zinc-800 rounded-xl p-4 flex items-center justify-between transition-colors hover:border-zinc-300 dark:hover:border-zinc-700">
                       <div>
                         <p className="font-bold text-zinc-800 dark:text-zinc-200">{res.name}</p>
-                        <p className="text-zinc-500 dark:text-zinc-400 text-xs mt-1 font-mono">NIM: {res.nim}</p>
+                        <p className="text-zinc-500 dark:text-zinc-400 text-xs mt-1 font-mono">NIM: {res.nim || "-"}</p>
                       </div>
                     </div>
                   ))}

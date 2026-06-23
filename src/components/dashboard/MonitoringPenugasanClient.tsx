@@ -29,8 +29,8 @@ export default function MonitoringPenugasanClient({ user, satkerList, initialDat
     tahun?: number
     satkerIdFilter?: string
     statusFilter?: string
-    monitoringData?: Record<string, string | number>[]
-    rekapData?: Record<string, string | number>[]
+    monitoringData?: Record<string, string | number | null | undefined>[]
+    rekapData?: Record<string, string | number | boolean | null | undefined>[]
     dashboardStats?: {
       totalSantriKIP: number
       totalSatker: number
@@ -99,7 +99,7 @@ export default function MonitoringPenugasanClient({ user, satkerList, initialDat
   const totalMonitorings = monitoringData.length
   let sangatAktif = 0, aktif = 0, cukupAktif = 0, kurangAktif = 0
 
-  monitoringData.forEach((m: Record<string, string | number>) => {
+  monitoringData.forEach((m: Record<string, string | number | null | undefined>) => {
     if (m.status === "Sangat Aktif") sangatAktif++
     else if (m.status === "Aktif") aktif++
     else if (m.status === "Cukup Aktif") cukupAktif++
@@ -319,12 +319,12 @@ export default function MonitoringPenugasanClient({ user, satkerList, initialDat
                       <td colSpan={8} className="py-8 text-center text-slate-500">Tidak ada data.</td>
                     </tr>
                   ) : (
-                    monitoringData.map((row: Record<string, string | number | undefined>) => (
+                    monitoringData.map((row: Record<string, string | number | null | undefined>) => (
                       <tr key={row.id} className="hover:bg-slate-50/50">
                         <td className="py-3 px-5 text-center text-slate-600 font-medium">{row.no}</td>
                         <td className="py-3 px-5">
                           <div className="font-semibold text-slate-800">{row.name}</div>
-                          <div className="text-xs text-slate-500">{row.nim}</div>
+                          <div className="text-xs text-slate-500">{row.nim || "-"}</div>
                         </td>
                         <td className="py-3 px-5 text-slate-600">{row.satker}</td>
                         <td className="py-3 px-5 text-slate-600">{row.kepala}</td>
@@ -400,7 +400,7 @@ export default function MonitoringPenugasanClient({ user, satkerList, initialDat
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
-                  {rekapData.map((row: Record<string, string | number | boolean | undefined>) => (
+                  {rekapData.map((row: Record<string, string | number | boolean | null | undefined>) => (
                     <tr key={String(row.no)} className="hover:bg-slate-50/50">
                       <td className="py-3 px-4 text-center text-slate-500 font-medium">{row.no}</td>
                       <td className="py-3 px-4 font-semibold text-slate-700">{row.satker}</td>

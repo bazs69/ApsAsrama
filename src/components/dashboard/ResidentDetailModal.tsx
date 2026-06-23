@@ -11,7 +11,7 @@ import { transferResidentRoom, getResidentRoomHistory, getAvailableRooms } from 
 interface Resident {
   id: string
   name: string
-  nim: string
+  nim: string | null
   niup: string | null
   angkatan: string | null
   nik?: string | null
@@ -191,11 +191,14 @@ function RoomTransferModal({
 
 // ─── Print / PDF ─────────────────────────────────────────────────────────────
 function printResidentCard(resident: Resident) {
+  const identityValue = resident.niup || resident.nim || resident.id
+  const nimLabel = resident.nim || "-"
+
   const photoHtml = resident.photo
     ? `<img src="${resident.photo}" alt="Foto" style="width:100px;height:100px;object-fit:cover;border-radius:12px;border:2px solid #e5e7eb;" />`
     : `<div style="width:100px;height:100px;border-radius:12px;border:2px solid #e5e7eb;display:flex;align-items:center;justify-content:center;background:#f3f4f6;font-size:40px;">👤</div>`
 
-  const qrSrc = `https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(resident.niup || resident.nim)}&color=1e293b`
+  const qrSrc = `https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(identityValue)}&color=1e293b`
 
   const statusLabel = { ACTIVE: "Aktif", INACTIVE: "Keluar", CUTI: "Cuti", ALUMNI: "Alumni" }[resident.status] ?? resident.status
 
@@ -235,7 +238,7 @@ function printResidentCard(resident: Resident) {
       ${photoHtml}
       <div class="header-info">
         <h1>${resident.name}</h1>
-        <div class="meta">NIM: ${resident.nim} &nbsp;|&nbsp; NIUP: ${resident.niup || "-"}</div>
+        <div class="meta">NIM: ${nimLabel} &nbsp;|&nbsp; NIUP: ${resident.niup || "-"}</div>
         <div class="meta">Angkatan ${resident.angkatan || "-"} &nbsp;•&nbsp; ${resident.prodi || "-"}</div>
         <div class="status-badge">${statusLabel}</div>
       </div>
@@ -282,7 +285,7 @@ function printResidentCard(resident: Resident) {
       const element = document.querySelector('.card');
       const opt = {
         margin:       10,
-        filename:     'Data_Santri_${resident.nim}.pdf',
+        filename:     'Data_Santri_${identityValue}.pdf',
         image:        { type: 'jpeg', quality: 0.98 },
         html2canvas:  { scale: 2 },
         jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
@@ -357,6 +360,7 @@ export default function ResidentDetailModal({
 
   if (!isOpen || !resident) return null
   const r = localResident || resident
+  const identityValue = r.niup || r.nim || r.id
 
   const tabs = ["Biodata", "Riwayat", "Penugasan", "Domisili", "Pendidikan"]
   if (hasAuditView) tabs.push("Audit Log")
@@ -433,10 +437,12 @@ export default function ResidentDetailModal({
               <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-xs sm:text-sm text-zinc-600 dark:text-zinc-400">
                 <div className="flex items-center gap-1 sm:gap-2 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 px-2 py-1 sm:px-3 sm:py-1.5 rounded-lg shadow-sm">
                   <span className="font-semibold text-zinc-500">NIM:</span>
-                  <span className="font-mono font-bold text-zinc-800 dark:text-zinc-200">{r.nim}</span>
-                  <button onClick={() => handleCopy(r.nim, "nim")} className="ml-1 text-zinc-400 hover:text-blue-500">
-                    {copiedNim ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
-                  </button>
+                  <span className="font-mono font-bold text-zinc-800 dark:text-zinc-200">{r.nim || "-"}</span>
+                  {r.nim && (
+                    <button onClick={() => handleCopy(r.nim!, "nim")} className="ml-1 text-zinc-400 hover:text-blue-500">
+                      {copiedNim ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
+                    </button>
+                  )}
                 </div>
                 {r.niup && (
                   <div className="flex items-center gap-1 sm:gap-2 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 px-2 py-1 sm:px-3 sm:py-1.5 rounded-lg shadow-sm">
@@ -509,7 +515,7 @@ export default function ResidentDetailModal({
                 <div className="flex justify-center items-center">
                   <div className="w-36 h-36 p-2 bg-white border border-zinc-200 rounded-xl shadow-sm">
                     <Image
-                      src={`https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(r.niup || r.nim)}&color=1e293b`}
+                      src={`https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(identityValue)}&color=1e293b`}
                       alt="QR Code" width={160} height={160} unoptimized className="w-full h-full object-contain"
                     />
                     <p className="text-center text-[10px] text-zinc-400 mt-1">QR Identitas</p>

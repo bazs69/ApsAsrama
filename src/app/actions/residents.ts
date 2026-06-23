@@ -6,6 +6,50 @@ import { ResidentStatus, RoomStatus, Prisma } from "@prisma/client"
 import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/lib/auth"
 
+function cleanText(value: unknown) {
+  return String(value ?? "").trim()
+}
+
+function normalizeGender(value: unknown) {
+  const normalized = cleanText(value).toLowerCase().replace(/[\s_-]/g, "")
+  if (["l", "lk", "lakilaki", "pria"].includes(normalized)) return "LAKI_LAKI"
+  if (["p", "pr", "perempuan", "wanita"].includes(normalized)) return "PEREMPUAN"
+  return cleanText(value)
+}
+
+function validateRequiredResidentData(formData: {
+  name?: string
+  gender?: string
+  tempatLahir?: string
+  tanggalLahir?: string | Date
+  prodi?: string
+  angkatan?: string
+}) {
+  const missing = [
+    !cleanText(formData.name) && "Nama Lengkap",
+    !cleanText(formData.gender) && "Jenis Kelamin",
+    !cleanText(formData.tempatLahir) && "Tempat Lahir",
+    !formData.tanggalLahir && "Tanggal Lahir",
+    !cleanText(formData.prodi) && "Program Studi",
+    !cleanText(formData.angkatan) && "Angkatan",
+  ].filter(Boolean)
+
+  if (missing.length > 0) {
+    return `Data wajib belum lengkap: ${missing.join(", ")}.`
+  }
+
+  if (formData.tanggalLahir && Number.isNaN(new Date(formData.tanggalLahir).getTime())) {
+    return "Tanggal Lahir harus memakai format tanggal yang valid, contoh 2000-01-31."
+  }
+
+  const gender = normalizeGender(formData.gender)
+  if (gender !== "LAKI_LAKI" && gender !== "PEREMPUAN") {
+    return "Jenis Kelamin harus diisi LAKI_LAKI/Laki-Laki atau PEREMPUAN/Perempuan."
+  }
+
+  return null
+}
+
 export async function getResidents() {
   try {
     return await prisma.resident.findMany({
@@ -45,7 +89,7 @@ export async function getResidentOptions() {
 
 export async function createResident(formData: {
   name: string
-  nim: string
+  nim?: string
   niup?: string
   angkatan?: string
   prodi?: string
@@ -75,19 +119,25 @@ export async function createResident(formData: {
   angkatanId?: string
 }) {
   try {
+    const validationError = validateRequiredResidentData(formData)
+    if (validationError) return { error: validationError }
+
+    const nim = cleanText(formData.nim)
+    const niup = cleanText(formData.niup)
+
     // Check if NIM is unique
-    const existing = await prisma.resident.findUnique({
-      where: { nim: formData.nim }
-    })
+    const existing = nim
+      ? await prisma.resident.findUnique({ where: { nim } })
+      : null
 
     if (existing) {
       return { error: "Resident with this NIM is already registered." }
     }
 
     // Check NIUP uniqueness if provided
-    if (formData.niup) {
+    if (niup) {
       const existingNiup = await prisma.resident.findUnique({
-        where: { niup: formData.niup }
+        where: { niup }
       })
       if (existingNiup) {
         return { error: "Resident with this NIUP is already registered." }
@@ -116,17 +166,17 @@ export async function createResident(formData: {
 
     const resident = await prisma.resident.create({
       data: {
-        name: formData.name,
+        name: cleanText(formData.name),
         photo: formData.photo || null,
-        nim: formData.nim,
-        niup: formData.niup || null,
-        angkatan: formData.angkatan || null,
-        prodi: formData.prodi || null,
-        wilayah: formData.wilayah || null,
-        daerah: formData.daerah || null,
-        kotaAsal: formData.kotaAsal || null,
-        fakultas: formData.fakultas || null,
-        phone: formData.phone || null,
+        nim: nim || null,
+        niup: niup || null,
+        angkatan: cleanText(formData.angkatan) || null,
+        prodi: cleanText(formData.prodi) || null,
+        wilayah: cleanText(formData.wilayah) || null,
+        daerah: cleanText(formData.daerah) || null,
+        kotaAsal: cleanText(formData.kotaAsal) || null,
+        fakultas: cleanText(formData.fakultas) || null,
+        phone: cleanText(formData.phone) || null,
         roomId: formData.roomId || null,
         status: formData.status,
         asalCountryId: formData.asalCountryId || null,
@@ -134,12 +184,12 @@ export async function createResident(formData: {
         asalRegencyId: formData.asalRegencyId || null,
         asalDistrictId: formData.asalDistrictId || null,
         asalVillageId: formData.asalVillageId || null,
-        tempatLahir: formData.tempatLahir || null,
+        tempatLahir: cleanText(formData.tempatLahir) || null,
         tanggalLahir: formData.tanggalLahir ? new Date(formData.tanggalLahir) : null,
-        gender: formData.gender || null,
-        nik: formData.nik || null,
-        alamatLengkap: formData.alamatLengkap || null,
-        kodePos: formData.kodePos || null,
+        gender: normalizeGender(formData.gender) || null,
+        nik: cleanText(formData.nik) || null,
+        alamatLengkap: cleanText(formData.alamatLengkap) || null,
+        kodePos: cleanText(formData.kodePos) || null,
         fakultasId: formData.fakultasId || null,
         prodiId: formData.prodiId || null,
         angkatanId: formData.angkatanId || null
@@ -174,7 +224,7 @@ export async function updateResident(
   id: string,
   formData: {
     name: string
-    nim: string
+    nim?: string
     niup?: string
     angkatan?: string
     prodi?: string
@@ -203,22 +253,35 @@ export async function updateResident(
   }
 ) {
   try {
-    const existing = await prisma.resident.findFirst({
-      where: {
-        nim: formData.nim,
-        NOT: { id }
-      }
+    const oldResident = await prisma.resident.findUnique({
+      where: { id }
     })
+
+    if (!oldResident) {
+      return { error: "Resident not found." }
+    }
+
+    const nim = cleanText(formData.nim)
+    const niup = cleanText(formData.niup)
+
+    const existing = nim
+      ? await prisma.resident.findFirst({
+          where: {
+            nim,
+            NOT: { id }
+          }
+        })
+      : null
 
     if (existing) {
       return { error: "Resident with this NIM is already registered." }
     }
 
     // Check NIUP uniqueness if provided (exclude self)
-    if (formData.niup) {
+    if (niup) {
       const existingNiup = await prisma.resident.findFirst({
         where: {
-          niup: formData.niup,
+          niup,
           NOT: { id }
         }
       })
@@ -227,11 +290,7 @@ export async function updateResident(
       }
     }
 
-    const oldResident = await prisma.resident.findUnique({
-      where: { id }
-    })
-
-    const oldRoomId = oldResident?.roomId
+    const oldRoomId = oldResident.roomId
 
     // Check room capacity if room changed
     if (formData.roomId && formData.roomId !== oldRoomId) {
@@ -256,17 +315,17 @@ export async function updateResident(
     const resident = await prisma.resident.update({
       where: { id },
       data: {
-        name: formData.name,
+        name: cleanText(formData.name),
         photo: formData.photo || null,
-        nim: formData.nim,
-        niup: formData.niup || null,
-        angkatan: formData.angkatan || null,
-        prodi: formData.prodi || null,
-        wilayah: formData.wilayah || null,
-        daerah: formData.daerah || null,
-        kotaAsal: formData.kotaAsal || null,
-        fakultas: formData.fakultas || null,
-        phone: formData.phone || null,
+        nim: nim || null,
+        niup: niup || null,
+        angkatan: cleanText(formData.angkatan) || null,
+        prodi: cleanText(formData.prodi) || null,
+        wilayah: cleanText(formData.wilayah) || null,
+        daerah: cleanText(formData.daerah) || null,
+        kotaAsal: cleanText(formData.kotaAsal) || null,
+        fakultas: cleanText(formData.fakultas) || null,
+        phone: cleanText(formData.phone) || null,
         roomId: formData.roomId || null,
         status: formData.status,
         asalCountryId: formData.asalCountryId || null,
@@ -274,12 +333,12 @@ export async function updateResident(
         asalRegencyId: formData.asalRegencyId || null,
         asalDistrictId: formData.asalDistrictId || null,
         asalVillageId: formData.asalVillageId || null,
-        tempatLahir: formData.tempatLahir || null,
+        tempatLahir: cleanText(formData.tempatLahir) || null,
         tanggalLahir: formData.tanggalLahir ? new Date(formData.tanggalLahir) : null,
-        gender: formData.gender || null,
-        nik: formData.nik || null,
-        alamatLengkap: formData.alamatLengkap || null,
-        kodePos: formData.kodePos || null,
+        gender: normalizeGender(formData.gender) || null,
+        nik: cleanText(formData.nik) || null,
+        alamatLengkap: cleanText(formData.alamatLengkap) || null,
+        kodePos: cleanText(formData.kodePos) || null,
         fakultasId: formData.fakultasId || null,
         prodiId: formData.prodiId || null,
         angkatanId: formData.angkatanId || null
@@ -394,7 +453,7 @@ export async function deleteResident(id: string) {
 
 export async function bulkCreateResidents(data: {
   name: string
-  nim: string
+  nim?: string
   niup?: string
   phone?: string
   angkatan?: string
@@ -423,14 +482,21 @@ export async function bulkCreateResidents(data: {
     rooms.forEach(r => roomMap.set(r.number, r))
 
     for (const row of data) {
-      if (!row.name || !row.nim) continue
+      const validationError = validateRequiredResidentData(row)
+      if (validationError) {
+        skippedCount++
+        continue
+      }
 
-      // Check duplicate NIM
-      const existing = await prisma.resident.findUnique({
-        where: { nim: String(row.nim) }
-      })
+      const nim = cleanText(row.nim)
+      const niup = cleanText(row.niup)
 
-      if (existing) {
+      const [existingNim, existingNiup] = await Promise.all([
+        nim ? prisma.resident.findUnique({ where: { nim } }) : Promise.resolve(null),
+        niup ? prisma.resident.findUnique({ where: { niup } }) : Promise.resolve(null),
+      ])
+
+      if (existingNim || existingNiup) {
         skippedCount++
         continue
       }
@@ -455,22 +521,22 @@ export async function bulkCreateResidents(data: {
 
       await prisma.resident.create({
         data: {
-          name: String(row.name),
-          nim: String(row.nim),
-          niup: row.niup ? String(row.niup) : null,
-          phone: row.phone ? String(row.phone) : null,
-          angkatan: row.angkatan ? String(row.angkatan) : null,
-          prodi: row.prodi ? String(row.prodi) : null,
-          wilayah: row.wilayah ? String(row.wilayah) : null,
-          daerah: row.daerah ? String(row.daerah) : null,
-          kotaAsal: row.kotaAsal ? String(row.kotaAsal) : null,
-          fakultas: row.fakultas ? String(row.fakultas) : null,
-          tempatLahir: row.tempatLahir ? String(row.tempatLahir) : null,
+          name: cleanText(row.name),
+          nim: nim || null,
+          niup: niup || null,
+          phone: cleanText(row.phone) || null,
+          angkatan: cleanText(row.angkatan) || null,
+          prodi: cleanText(row.prodi) || null,
+          wilayah: cleanText(row.wilayah) || null,
+          daerah: cleanText(row.daerah) || null,
+          kotaAsal: cleanText(row.kotaAsal) || null,
+          fakultas: cleanText(row.fakultas) || null,
+          tempatLahir: cleanText(row.tempatLahir) || null,
           tanggalLahir: row.tanggalLahir ? new Date(row.tanggalLahir) : null,
-          gender: row.gender ? String(row.gender) : null,
-          nik: row.nik ? String(row.nik) : null,
-          alamatLengkap: row.alamatLengkap ? String(row.alamatLengkap) : null,
-          kodePos: row.kodePos ? String(row.kodePos) : null,
+          gender: normalizeGender(row.gender) || null,
+          nik: cleanText(row.nik) || null,
+          alamatLengkap: cleanText(row.alamatLengkap) || null,
+          kodePos: cleanText(row.kodePos) || null,
           roomId: roomId,
           status: ResidentStatus.ACTIVE
         }

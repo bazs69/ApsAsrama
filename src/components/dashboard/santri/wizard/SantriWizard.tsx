@@ -162,12 +162,26 @@ export default function SantriWizard({
 
   const handleValidation = () => {
     if (currentStep === 1) {
-      if (!formData.name || !formData.nim) {
-        toast.error("Nama dan NIM wajib diisi!")
+      if (!formData.name || !formData.gender || !formData.tempatLahir || !formData.tanggalLahir) {
+        toast.error("Nama Lengkap, Jenis Kelamin, Tempat Lahir, dan Tanggal Lahir wajib diisi!")
+        return false
+      }
+    }
+    if (currentStep === 3) {
+      if (!formData.prodi || !formData.angkatan) {
+        toast.error("Program Studi dan Angkatan wajib diisi!")
         return false
       }
     }
     return true
+  }
+
+  const validateAllRequiredFields = () => {
+    if (!formData.name || !formData.gender || !formData.tempatLahir || !formData.tanggalLahir || !formData.prodi || !formData.angkatan) {
+      return "Data wajib belum lengkap: Nama Lengkap, Jenis Kelamin, Tempat Lahir, Tanggal Lahir, Program Studi, dan Angkatan."
+    }
+
+    return ""
   }
 
   const goNext = () => {
@@ -184,6 +198,12 @@ export default function SantriWizard({
 
   const handleSubmit = async () => {
     if (!handleValidation()) return;
+    const requiredError = validateAllRequiredFields()
+    if (requiredError) {
+      setError(requiredError)
+      toast.error(requiredError)
+      return
+    }
     setError("")
     setSuccess(false)
 
@@ -408,8 +428,8 @@ function Step1Biodata({ formData, setFormData, setPhotoFile }: Step1Props) {
             <input type="text" required value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="w-full bg-slate-50 border border-slate-200 rounded-lg py-2.5 px-4 text-sm focus:ring-2 focus:ring-blue-500" placeholder="Ahmad Fulan" />
           </div>
           <div>
-            <label className="text-xs font-bold text-slate-500 uppercase block mb-1.5">NIM <span className="text-red-500">*</span></label>
-            <input type="text" required value={formData.nim} onChange={e => setFormData({...formData, nim: e.target.value})} className="w-full bg-slate-50 border border-slate-200 rounded-lg py-2.5 px-4 text-sm focus:ring-2 focus:ring-blue-500" placeholder="Nomor Induk Mahasiswa" />
+            <label className="text-xs font-bold text-slate-500 uppercase block mb-1.5">NIM</label>
+            <input type="text" value={formData.nim} onChange={e => setFormData({...formData, nim: e.target.value})} className="w-full bg-slate-50 border border-slate-200 rounded-lg py-2.5 px-4 text-sm focus:ring-2 focus:ring-blue-500" placeholder="Opsional" />
           </div>
           <div>
             <label className="text-xs font-bold text-slate-500 uppercase block mb-1.5">NIUP</label>
@@ -424,20 +444,20 @@ function Step1Biodata({ formData, setFormData, setPhotoFile }: Step1Props) {
             <input type="tel" value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} className="w-full bg-slate-50 border border-slate-200 rounded-lg py-2.5 px-4 text-sm focus:ring-2 focus:ring-blue-500" placeholder="081234..." />
           </div>
           <div>
-            <label className="text-xs font-bold text-slate-500 uppercase block mb-1.5">Jenis Kelamin</label>
-            <select value={formData.gender} onChange={e => setFormData({...formData, gender: e.target.value})} className="w-full bg-slate-50 border border-slate-200 rounded-lg py-2.5 px-4 text-sm focus:ring-2 focus:ring-blue-500">
+            <label className="text-xs font-bold text-slate-500 uppercase block mb-1.5">Jenis Kelamin <span className="text-red-500">*</span></label>
+            <select required value={formData.gender} onChange={e => setFormData({...formData, gender: e.target.value})} className="w-full bg-slate-50 border border-slate-200 rounded-lg py-2.5 px-4 text-sm focus:ring-2 focus:ring-blue-500">
               <option value="">Pilih...</option>
               <option value="LAKI_LAKI">Laki-Laki</option>
               <option value="PEREMPUAN">Perempuan</option>
             </select>
           </div>
           <div>
-            <label className="text-xs font-bold text-slate-500 uppercase block mb-1.5">Tempat Lahir</label>
-            <input type="text" value={formData.tempatLahir} onChange={e => setFormData({...formData, tempatLahir: e.target.value})} className="w-full bg-slate-50 border border-slate-200 rounded-lg py-2.5 px-4 text-sm focus:ring-2 focus:ring-blue-500" placeholder="Kota Kelahiran" />
+            <label className="text-xs font-bold text-slate-500 uppercase block mb-1.5">Tempat Lahir <span className="text-red-500">*</span></label>
+            <input type="text" required value={formData.tempatLahir} onChange={e => setFormData({...formData, tempatLahir: e.target.value})} className="w-full bg-slate-50 border border-slate-200 rounded-lg py-2.5 px-4 text-sm focus:ring-2 focus:ring-blue-500" placeholder="Kota Kelahiran" />
           </div>
           <div>
-            <label className="text-xs font-bold text-slate-500 uppercase block mb-1.5">Tanggal Lahir</label>
-            <input type="date" value={formData.tanggalLahir} onChange={e => setFormData({...formData, tanggalLahir: e.target.value})} className="w-full bg-slate-50 border border-slate-200 rounded-lg py-2.5 px-4 text-sm focus:ring-2 focus:ring-blue-500" />
+            <label className="text-xs font-bold text-slate-500 uppercase block mb-1.5">Tanggal Lahir <span className="text-red-500">*</span></label>
+            <input type="date" required value={formData.tanggalLahir} onChange={e => setFormData({...formData, tanggalLahir: e.target.value})} className="w-full bg-slate-50 border border-slate-200 rounded-lg py-2.5 px-4 text-sm focus:ring-2 focus:ring-blue-500" />
           </div>
         </div>
       </div>
@@ -563,7 +583,7 @@ interface Step3Props {
 }
 
 function Step3Pendidikan({ formData, setFormData, fakultasOptions, prodiOptions, angkatanOptions }: Step3Props) {
-  const availableProdi = prodiOptions.filter(p => p.fakultasId === formData.fakultasId)
+  const availableProdi = formData.fakultasId ? prodiOptions.filter(p => p.fakultasId === formData.fakultasId) : prodiOptions
   const availableAngkatan = angkatanOptions.filter(a => a.prodiId === formData.prodiId)
 
   return (
@@ -582,18 +602,19 @@ function Step3Pendidikan({ formData, setFormData, fakultasOptions, prodiOptions,
           </select>
         </div>
         <div>
-          <label className="text-xs font-bold text-slate-500 uppercase block mb-1.5">Program Studi</label>
-          <select disabled={!formData.fakultasId} value={formData.prodiId} onChange={e => {
+          <label className="text-xs font-bold text-slate-500 uppercase block mb-1.5">Program Studi <span className="text-red-500">*</span></label>
+          <select required value={formData.prodiId} onChange={e => {
             const p = prodiOptions.find(x => x.id === e.target.value);
-            setFormData({...formData, prodiId: e.target.value, prodi: p?.name || "", angkatanId: "", angkatan: ""})
-          }} className="w-full bg-slate-50 border border-slate-200 rounded-lg py-2.5 px-4 text-sm focus:ring-2 focus:ring-blue-500 disabled:opacity-50">
+            const f = fakultasOptions.find(x => x.id === p?.fakultasId)
+            setFormData({...formData, prodiId: e.target.value, prodi: p?.name || "", fakultasId: formData.fakultasId || p?.fakultasId || "", fakultas: formData.fakultas || f?.name || "", angkatanId: "", angkatan: ""})
+          }} className="w-full bg-slate-50 border border-slate-200 rounded-lg py-2.5 px-4 text-sm focus:ring-2 focus:ring-blue-500">
             <option value="">Pilih Prodi...</option>
             {availableProdi.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
           </select>
         </div>
         <div>
-          <label className="text-xs font-bold text-slate-500 uppercase block mb-1.5">Angkatan</label>
-          <select disabled={!formData.prodiId} value={formData.angkatanId} onChange={e => {
+          <label className="text-xs font-bold text-slate-500 uppercase block mb-1.5">Angkatan <span className="text-red-500">*</span></label>
+          <select required disabled={!formData.prodiId} value={formData.angkatanId} onChange={e => {
             const a = angkatanOptions.find(x => x.id === e.target.value);
             setFormData({...formData, angkatanId: e.target.value, angkatan: a?.name || ""})
           }} className="w-full bg-slate-50 border border-slate-200 rounded-lg py-2.5 px-4 text-sm focus:ring-2 focus:ring-blue-500 disabled:opacity-50">

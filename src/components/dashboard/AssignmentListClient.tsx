@@ -24,7 +24,7 @@ import {
 interface Resident {
   id: string
   name: string
-  nim: string
+  nim: string | null
   status: string
 }
 
@@ -47,7 +47,7 @@ interface Assignment {
   resident: {
     id: string
     name: string
-    nim: string
+    nim: string | null
   }
   satker: {
     id: string
@@ -91,7 +91,7 @@ export default function AssignmentListClient({
   const filteredAssignments = assignments.filter(
     (a) =>
       a.resident.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      a.resident.nim.includes(searchQuery) ||
+      (a.resident.nim || "").includes(searchQuery) ||
       a.satker.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       a.position.toLowerCase().includes(searchQuery.toLowerCase())
   )
@@ -297,7 +297,7 @@ export default function AssignmentListClient({
                   <tr key={a.id} className="hover:bg-zinc-50/50 dark:hover:bg-zinc-900/20 transition-all">
                     <td className="py-4 px-6">
                       <div className="font-bold text-zinc-900 dark:text-white">{a.resident.name}</div>
-                      <div className="font-mono text-xs text-zinc-500 dark:text-zinc-450 mt-0.5">{a.resident.nim}</div>
+                      <div className="font-mono text-xs text-zinc-500 dark:text-zinc-450 mt-0.5">{a.resident.nim || "-"}</div>
                     </td>
                     <td className="py-4 px-6">
                       <div className="font-semibold text-zinc-900 dark:text-white flex items-center space-x-1.5">
@@ -412,7 +412,7 @@ export default function AssignmentListClient({
                 </label>
                 {editingAssignment ? (
                   <div className="w-full bg-zinc-100 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800 rounded-xl py-3 px-4 text-zinc-500 dark:text-zinc-400 font-semibold">
-                    {editingAssignment.resident.name} ({editingAssignment.resident.nim})
+                    {editingAssignment.resident.name} ({editingAssignment.resident.nim || "-"})
                   </div>
                 ) : (
                   <select
@@ -423,7 +423,7 @@ export default function AssignmentListClient({
                     <option value="">-- Pilih Santri --</option>
                     {residents.map((r) => (
                       <option key={r.id} value={r.id}>
-                        {r.name} ({r.nim})
+                        {r.name} ({r.nim || "-"})
                       </option>
                     ))}
                   </select>

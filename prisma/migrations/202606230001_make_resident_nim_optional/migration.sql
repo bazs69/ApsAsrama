@@ -1,0 +1,1 @@
+ALTER TABLE "Resident" ALTER COLUMN "nim" DROP NOT NULL;

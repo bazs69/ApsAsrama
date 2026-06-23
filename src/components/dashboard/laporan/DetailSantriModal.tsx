@@ -8,7 +8,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 type DetailSantriData = {
   profil: {
     nama: string
-    nim: string
+    nim: string | null
     daerah: string
     status: string
     wilayah: string
@@ -144,7 +144,7 @@ export default function DetailSantriModal({
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <p className="text-xs text-zinc-500 font-medium mb-1">NIS/NIM</p>
-                        <p className="font-semibold text-zinc-900 dark:text-white">{data.profil.nim}</p>
+                        <p className="font-semibold text-zinc-900 dark:text-white">{data.profil.nim || "-"}</p>
                       </div>
                       <div className="bg-zinc-50 dark:bg-zinc-800/50 p-3 rounded-lg border border-zinc-100 dark:border-zinc-700/50">
                         <p className="text-xs text-zinc-500 dark:text-zinc-400 mb-1">Daerah</p>

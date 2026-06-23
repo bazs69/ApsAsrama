@@ -8,7 +8,7 @@ interface AssignmentData {
   id: string
   resident: {
     name: string
-    nim: string
+    nim: string | null
   }
   monitorings: {
     statusMonitoring: string
@@ -76,7 +76,7 @@ export default function MonitoringKepalaSatkerClient({
 
   const filteredAssignments = satker.assignments.filter(a => 
     a.resident.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    a.resident.nim.toLowerCase().includes(searchTerm.toLowerCase())
+    (a.resident.nim || "").toLowerCase().includes(searchTerm.toLowerCase())
   )
 
   const handleSave = async (statusLaporan: "DRAFT" | "SUBMITTED") => {
@@ -212,7 +212,7 @@ export default function MonitoringKepalaSatkerClient({
                     {assignment.resident.name}
                   </td>
                   <td className="px-4 py-3 text-zinc-500 dark:text-zinc-400 print:text-black">
-                    {assignment.resident.nim}
+                    {assignment.resident.nim || "-"}
                   </td>
                   <td className="px-4 py-3">
                     <select
