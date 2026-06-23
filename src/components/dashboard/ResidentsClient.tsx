@@ -56,13 +56,13 @@ const importHeaders = [
   "NIM (opsional)",
   "NIUP (opsional)",
   "NIK (opsional)",
-  "Jenis Kelamin (Wajib ada)",
-  "Tempat Lahir (Wajib ada)",
-  "Tanggal Lahir (YYYY-MM-DD) (Wajib ada)",
+  "Jenis Kelamin (opsional)",
+  "Tempat Lahir (opsional)",
+  "Tanggal Lahir (YYYY-MM-DD) (opsional)",
   "Nomor Telepon (opsional)",
   "Fakultas (opsional)",
-  "Program Studi (Wajib ada)",
-  "Angkatan (Wajib ada)",
+  "Program Studi (opsional)",
+  "Angkatan (opsional)",
   "Wilayah (opsional)",
   "Daerah (opsional)",
   "Kamar (opsional)",
@@ -72,8 +72,13 @@ const importHeaders = [
 ]
 
 function readExcelCell(row: Record<string, string | number | undefined>, keys: string[]) {
+  const normalizedEntries = Object.entries(row).map(([key, value]) => [
+    key.toLowerCase().replace(/[^a-z0-9]/g, ""),
+    value
+  ] as const)
+
   for (const key of keys) {
-    const value = row[key]
+    const value = row[key] ?? normalizedEntries.find(([normalizedKey]) => normalizedKey === key.toLowerCase().replace(/[^a-z0-9]/g, ""))?.[1]
     if (value !== undefined && value !== null && String(value).trim() !== "") {
       return String(value).trim()
     }
@@ -83,20 +88,8 @@ function readExcelCell(row: Record<string, string | number | undefined>, keys: s
 
 function hasRequiredImportData(row: {
   name: string | number
-  gender?: string | number | null
-  tempatLahir?: string | number | null
-  tanggalLahir?: string | number | Date | null
-  prodi?: string | number | null
-  angkatan?: string | number | null
 }) {
-  return Boolean(
-    String(row.name || "").trim() &&
-    String(row.gender || "").trim() &&
-    String(row.tempatLahir || "").trim() &&
-    row.tanggalLahir &&
-    String(row.prodi || "").trim() &&
-    String(row.angkatan || "").trim()
-  )
+  return Boolean(String(row.name || "").trim())
 }
 
 export default function ResidentsClient({
@@ -322,13 +315,13 @@ export default function ResidentsClient({
           nim: readExcelCell(row, ["NIM (opsional)", "NIM", "nim", "Nim"]),
           niup: readExcelCell(row, ["NIUP (opsional)", "NIUP", "niup", "Niup"]) || null,
           nik: readExcelCell(row, ["NIK (opsional)", "NIK", "nik", "Nik"]) || null,
-          gender: readExcelCell(row, ["Jenis Kelamin (Wajib ada)", "Jenis Kelamin", "Gender", "gender"]) || null,
-          tempatLahir: readExcelCell(row, ["Tempat Lahir (Wajib ada)", "Tempat Lahir", "tempatLahir"]) || null,
-          tanggalLahir: readExcelCell(row, ["Tanggal Lahir (YYYY-MM-DD) (Wajib ada)", "Tanggal Lahir (YYYY-MM-DD)", "Tanggal Lahir", "tanggalLahir"]) || null,
+          gender: readExcelCell(row, ["Jenis Kelamin (opsional)", "Jenis Kelamin (Wajib ada)", "Jenis Kelamin", "Gender", "gender"]) || null,
+          tempatLahir: readExcelCell(row, ["Tempat Lahir (opsional)", "Tempat Lahir (Wajib ada)", "Tempat Lahir", "tempatLahir"]) || null,
+          tanggalLahir: readExcelCell(row, ["Tanggal Lahir (YYYY-MM-DD) (opsional)", "Tanggal Lahir (YYYY-MM-DD) (Wajib ada)", "Tanggal Lahir (YYYY-MM-DD)", "Tanggal Lahir", "tanggalLahir"]) || null,
           phone: readExcelCell(row, ["Nomor Telepon (opsional)", "Nomor Telepon", "phone", "No Telp"]),
           fakultas: readExcelCell(row, ["Fakultas (opsional)", "Fakultas", "fakultas"]),
-          prodi: readExcelCell(row, ["Program Studi (Wajib ada)", "Program Studi", "Prodi", "prodi"]),
-          angkatan: readExcelCell(row, ["Angkatan (Wajib ada)", "Angkatan", "angkatan"]),
+          prodi: readExcelCell(row, ["Program Studi (opsional)", "Program Studi (Wajib ada)", "Program Studi", "Prodi", "prodi"]),
+          angkatan: readExcelCell(row, ["Angkatan (opsional)", "Angkatan (Wajib ada)", "Angkatan", "angkatan"]),
           wilayah: readExcelCell(row, ["Wilayah (opsional)", "Wilayah", "wilayah"]),
           daerah: readExcelCell(row, ["Daerah (opsional)", "Daerah", "daerah"]),
           roomNumber: readExcelCell(row, ["Kamar (opsional)", "Kamar", "room"]),
@@ -338,7 +331,7 @@ export default function ResidentsClient({
         })).filter(hasRequiredImportData)
 
         if (formattedData.length === 0) {
-          setError("Format file Excel tidak valid atau kosong. Pastikan kolom wajib terisi: Nama Lengkap, Jenis Kelamin, Tempat Lahir, Tanggal Lahir, Program Studi, dan Angkatan.")
+          setError("Format file Excel tidak valid atau kosong. Pastikan minimal kolom Nama Lengkap terisi.")
           setImporting(false)
           return
         }
@@ -347,8 +340,10 @@ export default function ResidentsClient({
           const res = await bulkCreateResidents(formattedData as Parameters<typeof bulkCreateResidents>[0])
           if (res.error) {
             setError(res.error)
+          } else if (res.successCount === 0) {
+            setError(`Tidak ada santri yang berhasil diimpor. ${res.skippedCount} baris dilewati karena NIM/NIUP duplikat atau data tidak valid.`)
           } else {
-            alert(`Berhasil impor ${res.successCount} santri. ${res.skippedCount} santri dilewati karena data wajib kosong atau NIM/NIUP duplikat. Halaman akan dimuat ulang.`)
+            alert(`Berhasil impor ${res.successCount} santri. ${res.skippedCount} baris dilewati karena NIM/NIUP duplikat atau data tidak valid. Halaman akan dimuat ulang.`)
             window.location.reload()
           }
           setImporting(false)

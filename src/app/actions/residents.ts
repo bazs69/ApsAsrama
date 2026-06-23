@@ -50,6 +50,29 @@ function validateRequiredResidentData(formData: {
   return null
 }
 
+function validateImportResidentData(formData: {
+  name?: string
+  tanggalLahir?: string | Date
+  gender?: string | null
+}) {
+  if (!cleanText(formData.name)) {
+    return "Nama Lengkap wajib diisi."
+  }
+
+  if (formData.tanggalLahir && Number.isNaN(new Date(formData.tanggalLahir).getTime())) {
+    return "Tanggal Lahir harus memakai format tanggal yang valid, contoh 2000-01-31."
+  }
+
+  if (cleanText(formData.gender)) {
+    const gender = normalizeGender(formData.gender)
+    if (gender !== "LAKI_LAKI" && gender !== "PEREMPUAN") {
+      return "Jenis Kelamin harus diisi LAKI_LAKI/Laki-Laki atau PEREMPUAN/Perempuan."
+    }
+  }
+
+  return null
+}
+
 export async function getResidents() {
   try {
     return await prisma.resident.findMany({
@@ -482,7 +505,7 @@ export async function bulkCreateResidents(data: {
     rooms.forEach(r => roomMap.set(r.number, r))
 
     for (const row of data) {
-      const validationError = validateRequiredResidentData(row)
+      const validationError = validateImportResidentData(row)
       if (validationError) {
         skippedCount++
         continue
