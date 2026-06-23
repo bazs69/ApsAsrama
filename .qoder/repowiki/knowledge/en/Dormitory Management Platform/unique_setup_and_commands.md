@@ -1,0 +1,2 @@
+- `npm run postinstall` automatically triggers `prisma generate` to sync the Prisma client with the schema.
+- Development and production workflows are standardized via `npm run dev`, `npm run build`, and `npm run start`.

@@ -1,0 +1,13 @@
+schema_version: 1
+module_path: dependency_management
+title: Dependency Management
+scope: []
+source_files:
+    - package.json
+    - package-lock.json
+    - prisma.config.ts
+    - prisma/schema.prisma
+    - next.config.ts
+    - eslint.config.mjs
+depends_on: []
+related_to: []

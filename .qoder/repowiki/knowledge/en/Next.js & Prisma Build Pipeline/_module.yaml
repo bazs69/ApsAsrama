@@ -1,0 +1,15 @@
+schema_version: 1
+module_path: build_system
+title: Next.js & Prisma Build Pipeline
+scope: []
+source_files:
+    - package.json
+    - next.config.ts
+    - tsconfig.json
+    - prisma.config.ts
+    - prisma/schema.prisma
+    - prisma/seed.ts
+    - eslint.config.mjs
+    - postcss.config.mjs
+depends_on: []
+related_to: []

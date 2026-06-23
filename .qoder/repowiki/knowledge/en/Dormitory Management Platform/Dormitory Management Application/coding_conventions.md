@@ -1,0 +1,4 @@
+- Server Actions return standardized result objects containing either a `success` flag with data or an `error` string for consistent client-side handling.
+- Input sanitization is performed via a `cleanText` helper that trims and normalizes string values before database persistence.
+- Database queries in Server Actions are wrapped in try-catch blocks to provide graceful error handling and prevent unhandled promise rejections.
+- Client-side components interacting with server state use React hooks (e.g., `useState`, `usePathname`) to manage local UI state like dropdown toggles and active route highlighting.

@@ -1,0 +1,1 @@
+Orchestrates a Next.js application and Prisma database to provide a unified dormitory management system with RBAC, attendance tracking, and resident lifecycle management.

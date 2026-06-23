@@ -1,0 +1,13 @@
+schema_version: 1
+module_path: configuration_system
+title: Next.js Environment Variable Configuration System
+scope: []
+source_files:
+    - .env.example
+    - next.config.ts
+    - prisma.config.ts
+    - prisma/schema.prisma
+    - src/lib/prisma.ts
+    - src/lib/auth.ts
+depends_on: []
+related_to: []

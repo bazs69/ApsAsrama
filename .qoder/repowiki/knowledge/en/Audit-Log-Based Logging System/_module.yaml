@@ -1,0 +1,13 @@
+schema_version: 1
+module_path: logging_system
+title: Audit-Log-Based Logging System
+scope: []
+source_files:
+    - prisma/schema.prisma
+    - src/app/actions/audit.ts
+    - src/app/actions/wilayah.ts
+    - src/app/actions/residents.ts
+    - src/components/dashboard/audit-log/AuditLogClient.tsx
+    - src/components/dashboard/ResidentDetailModal.tsx
+depends_on: []
+related_to: []

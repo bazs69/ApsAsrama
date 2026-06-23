@@ -1,0 +1,5 @@
+- Centralized schema definition in `prisma/schema.prisma` using Prisma ORM with a PostgreSQL datasource.
+- Implements a comprehensive domain model including Residents, Rooms, Academic structures (Fakultas/Prodi/Angkatan), Attendance (Muallim/Kegiatan/Apel), and Administrative regions (Country to Village).
+- Enforces Role-Based Access Control (RBAC) via `User`, `Role`, `Permission`, and `RolePermission` models.
+- Includes a TypeScript-based seed script (`seed.ts`) that initializes default permissions, system roles (SUPER_ADMIN, PEMBINA, etc.), and a default admin user with bcrypt-hashed passwords.
+- Manages schema evolution through SQL migrations, as seen in the `migrations/` directory.

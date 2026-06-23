@@ -1,0 +1,16 @@
+schema_version: 1
+module_path: frontend_style
+title: Tailwind CSS v4 with Glassmorphism Design System
+scope: []
+source_files:
+    - src/app/globals.css
+    - postcss.config.mjs
+    - public/theme.js
+    - src/lib/utils.ts
+    - src/components/ui/tabs.tsx
+    - src/app/layout.tsx
+    - src/components/dashboard/Sidebar.tsx
+    - src/app/login/page.tsx
+    - package.json
+depends_on: []
+related_to: []

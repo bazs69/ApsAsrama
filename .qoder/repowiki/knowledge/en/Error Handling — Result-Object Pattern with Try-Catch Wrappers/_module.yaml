@@ -1,0 +1,17 @@
+schema_version: 1
+module_path: error_handling
+title: Error Handling — Result-Object Pattern with Try-Catch Wrappers
+scope: []
+source_files:
+    - src/app/actions/residents.ts
+    - src/app/actions/rooms.ts
+    - src/app/actions/absensiApel.ts
+    - src/app/actions/roomTransfer.ts
+    - src/app/actions/laporan.ts
+    - src/app/actions/audit.ts
+    - src/app/api/upload/route.ts
+    - src/app/api/health/route.ts
+    - src/lib/prisma.ts
+    - src/lib/auth.ts
+depends_on: []
+related_to: []

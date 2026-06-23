@@ -1,0 +1,1 @@
+A Next.js-based web application for managing dormitory operations, including resident tracking, attendance monitoring, and administrative reporting.

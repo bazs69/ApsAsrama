@@ -1,0 +1,5 @@
+- Adopts the Next.js App Router architecture, separating concerns into `app/` (routes, layouts, server actions), `components/` (UI logic), and `lib/` (shared utilities).
+- Implements a Server-First data strategy using Next.js Server Actions (`src/app/actions/*.ts`) for all CRUD operations, minimizing client-side JavaScript bundles.
+- Enforces role-based access control (RBAC) at the layout level (`src/app/dashboard/layout.tsx`) and within navigation components (`Sidebar.tsx`) using session-based permissions.
+- Utilizes a singleton Prisma client (`src/lib/prisma.ts`) with a PostgreSQL adapter to manage database connections efficiently in serverless environments.
+- Integrates NextAuth.js for credential-based authentication, storing user roles and permissions in JWT sessions for stateless authorization checks.
