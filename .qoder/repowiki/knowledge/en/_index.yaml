@@ -3,7 +3,7 @@ schema_version: 1
 locale: en-US
 branch: main
 nodes_managed: true
-exported_at: "2026-06-23T16:45:40Z"
+exported_at: "2026-06-24T12:08:05Z"
 modules:
     "":
         dir_name: Dormitory Management Platform
@@ -188,8 +188,8 @@ modules:
         depends_on: []
         related_to: []
     app:
-        dir_name: Dormitory Management Application
-        title: Dormitory Management Application
+        dir_name: Dormitory Management System (SPThree Connect)
+        title: Dormitory Management System (SPThree Connect)
         scope:
             - src/
         source_files: []
@@ -228,8 +228,8 @@ modules:
         depends_on: []
         related_to: []
     database:
-        dir_name: Prisma Database Schema & Seeding
-        title: Prisma Database Schema & Seeding
+        dir_name: Dormitory Management Database Schema
+        title: Dormitory Management Database Schema
         scope:
             - prisma/
         source_files: []

@@ -1,0 +1,1 @@
+Defines the PostgreSQL schema for a dormitory management system using Prisma ORM, including resident tracking, room allocation, attendance, and RBAC.

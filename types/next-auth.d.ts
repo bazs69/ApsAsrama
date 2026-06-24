@@ -16,3 +16,13 @@ declare module "next-auth" {
     satkerId?: string | null
   }
 }
+
+declare module "next-auth/jwt" {
+  interface JWT {
+    role: string
+    permissions: string[]
+    id: string
+    satkerId?: string | null
+    lastPermissionSync?: number
+  }
+}

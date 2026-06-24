@@ -1,0 +1,1 @@
+Prisma ORM with PostgreSQL; seed script uses `bcrypt` for password hashing.

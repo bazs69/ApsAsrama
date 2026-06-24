@@ -6,9 +6,15 @@ import { hash, compare } from "bcrypt"
 import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/lib/auth"
 import { Prisma } from "@prisma/client"
+import { validatePassword } from "@/lib/security/passwordPolicy"
+import { hasPermission } from "@/lib/permissions"
 
 export async function getUsers() {
   try {
+    if (!(await hasPermission("pengaturan.view"))) {
+      throw new Error("Forbidden")
+    }
+
     return await prisma.user.findMany({
       select: { id: true, name: true, email: true, role: { select: { id: true, name: true } }, createdAt: true, satkerId: true, photo: true },
       orderBy: { createdAt: "asc" },
@@ -26,8 +32,15 @@ export async function createUser(formData: {
   satkerId?: string | null
 }) {
   try {
+    if (!(await hasPermission("pengaturan.create"))) {
+      return { error: "Forbidden" }
+    }
+
     const existing = await prisma.user.findUnique({ where: { email: formData.email } })
     if (existing) return { error: "Email sudah terdaftar." }
+
+    const pwResult = validatePassword(formData.password)
+    if (!pwResult.valid) return { error: pwResult.errors.join(". ") + "." }
 
     const hashedPassword = await hash(formData.password, 10)
 
@@ -54,6 +67,10 @@ export async function updateUser(
   formData: { name: string; roleId: string; satkerId?: string | null }
 ) {
   try {
+    if (!(await hasPermission("pengaturan.update"))) {
+      return { error: "Forbidden" }
+    }
+
     await prisma.user.update({
       where: { id },
       data: { name: formData.name, roleId: formData.roleId, satkerId: formData.satkerId || null },
@@ -68,6 +85,10 @@ export async function updateUser(
 
 export async function deleteUser(id: string) {
   try {
+    if (!(await hasPermission("pengaturan.delete"))) {
+      return { error: "Forbidden" }
+    }
+
     const session = await getServerSession(authOptions)
     if (session?.user?.id === id) return { error: "Tidak dapat menghapus akun Anda sendiri." }
 
@@ -85,6 +106,11 @@ export async function updateProfile(
   formData: { name: string; currentPassword?: string; newPassword?: string; photo?: string | null }
 ) {
   try {
+    // Verify caller is updating their own profile
+    const session = await getServerSession(authOptions)
+    if (!session?.user?.id) return { error: "Unauthorized" }
+    if (session.user.id !== id) return { error: "Forbidden" }
+
     const user = await prisma.user.findUnique({ where: { id } })
     if (!user) return { error: "Pengguna tidak ditemukan." }
 
@@ -97,7 +123,8 @@ export async function updateProfile(
       const isValid = await compare(formData.currentPassword, user.password)
       if (!isValid) return { error: "Password lama salah." }
 
-      if (formData.newPassword.length < 6) return { error: "Password baru minimal 6 karakter." }
+      const pwResult = validatePassword(formData.newPassword)
+      if (!pwResult.valid) return { error: pwResult.errors.join(". ") + "." }
 
       updateData.password = await hash(formData.newPassword, 10)
     }

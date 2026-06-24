@@ -1,1 +1,0 @@
-Defines the PostgreSQL schema for a dormitory management system and provides initial RBAC seed data.

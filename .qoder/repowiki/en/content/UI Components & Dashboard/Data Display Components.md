@@ -5,6 +5,7 @@
 - [ResidentsTable.tsx](file://src/components/dashboard/residents/ResidentsTable.tsx)
 - [ResidentsStats.tsx](file://src/components/dashboard/residents/ResidentsStats.tsx)
 - [ResidentsToolbar.tsx](file://src/components/dashboard/residents/ResidentsToolbar.tsx)
+- [ResidentsSearchBar.tsx](file://src/components/dashboard/residents/ResidentsSearchBar.tsx)
 - [ResidentDetailModal.tsx](file://src/components/dashboard/ResidentDetailModal.tsx)
 - [types.ts](file://src/components/dashboard/residents/types.ts)
 - [useResidentFilter.ts](file://src/components/dashboard/residents/useResidentFilter.ts)
@@ -13,6 +14,13 @@
 - [ResidentsFilter.tsx](file://src/components/dashboard/residents/ResidentsFilter.tsx)
 - [AssignmentsClient.tsx](file://src/components/dashboard/AssignmentsClient.tsx)
 </cite>
+
+## Update Summary
+**Changes Made**
+- Updated project structure to reflect the new dedicated residents dashboard component organization
+- Added ResidentsSearchBar component to the documentation
+- Enhanced component dependency analysis with the new search bar integration
+- Updated architecture overview to include the search bar workflow
 
 ## Table of Contents
 1. [Introduction](#introduction)
@@ -26,22 +34,24 @@
 9. [Conclusion](#conclusion)
 
 ## Introduction
-This document explains the data display components used across the application’s dashboard, focusing on:
+This document explains the data display components used across the application's dashboard, focusing on:
 - Table components with selection, sorting, and pagination
 - Statistics cards for quick insights
 - Toolbar controls for bulk actions and data import/export/print
 - Modal systems for viewing details, managing room transfers, and printing
+- Search and filtering interfaces for enhanced data discovery
 
 It covers data binding patterns, filtering and search mechanisms, pagination implementation, responsive behavior, component props and events, integration with server actions, performance optimization for large datasets, accessibility considerations, and customization options.
 
 ## Project Structure
-The data display components are primarily located under the residents dashboard module and complemented by related assignment management UI.
+The data display components are now organized under a dedicated residents dashboard module with improved separation of concerns and modular architecture.
 
 ```mermaid
 graph TB
-subgraph "Residents Dashboard"
+subgraph "Residents Dashboard Module"
 RS["ResidentsStats.tsx"]
 RTB["ResidentsToolbar.tsx"]
+RSB["ResidentsSearchBar.tsx"]
 RFT["ResidentsFilter.tsx"]
 RSC["useResidentSearch.ts"]
 RFC["useResidentFilter.ts"]
@@ -55,6 +65,7 @@ AC["AssignmentsClient.tsx"]
 end
 RS --> RDT
 RTB --> RDT
+RSB --> RFC
 RFT --> RFC
 RSC --> RFC
 RFC --> RDT
@@ -68,6 +79,7 @@ TYP --> RDM
 **Diagram sources**
 - [ResidentsStats.tsx:1-57](file://src/components/dashboard/residents/ResidentsStats.tsx#L1-L57)
 - [ResidentsToolbar.tsx:1-102](file://src/components/dashboard/residents/ResidentsToolbar.tsx#L1-L102)
+- [ResidentsSearchBar.tsx:1-60](file://src/components/dashboard/residents/ResidentsSearchBar.tsx#L1-L60)
 - [ResidentsFilter.tsx:1-72](file://src/components/dashboard/residents/ResidentsFilter.tsx#L1-L72)
 - [useResidentSearch.ts:1-11](file://src/components/dashboard/residents/useResidentSearch.ts#L1-L11)
 - [useResidentFilter.ts:1-73](file://src/components/dashboard/residents/useResidentFilter.ts#L1-L73)
@@ -81,6 +93,7 @@ TYP --> RDM
 - [ResidentsTable.tsx:1-112](file://src/components/dashboard/residents/ResidentsTable.tsx#L1-L112)
 - [ResidentsStats.tsx:1-57](file://src/components/dashboard/residents/ResidentsStats.tsx#L1-L57)
 - [ResidentsToolbar.tsx:1-102](file://src/components/dashboard/residents/ResidentsToolbar.tsx#L1-L102)
+- [ResidentsSearchBar.tsx:1-60](file://src/components/dashboard/residents/ResidentsSearchBar.tsx#L1-L60)
 - [ResidentDetailModal.tsx:1-759](file://src/components/dashboard/ResidentDetailModal.tsx#L1-L759)
 - [types.ts:1-46](file://src/components/dashboard/residents/types.ts#L1-L46)
 - [useResidentFilter.ts:1-73](file://src/components/dashboard/residents/useResidentFilter.ts#L1-L73)
@@ -93,6 +106,7 @@ TYP --> RDM
 - ResidentsTable: Renders a responsive table of residents with optional selection, row click to view details, and visual indicators for room and status.
 - ResidentsStats: Displays summary cards for total, active, and inactive residents.
 - ResidentsToolbar: Provides import/export/print actions, selection mode toggle, and bulk actions (move room, delete).
+- ResidentsSearchBar: Integrated search interface with filter toggle and results counter.
 - ResidentDetailModal: Comprehensive modal with tabs for profile, history, assignments, address, education, and audit logs; supports room transfer and printing.
 - ResidentsFilter + useResidentFilter: Filter UI and hook for region, program study, cohort, and room filters with dynamic option lists.
 - useResidentSearch: Hook to manage global search term.
@@ -103,6 +117,7 @@ TYP --> RDM
 - [ResidentsTable.tsx:5-112](file://src/components/dashboard/residents/ResidentsTable.tsx#L5-L112)
 - [ResidentsStats.tsx:3-57](file://src/components/dashboard/residents/ResidentsStats.tsx#L3-L57)
 - [ResidentsToolbar.tsx:3-102](file://src/components/dashboard/residents/ResidentsToolbar.tsx#L3-L102)
+- [ResidentsSearchBar.tsx:3-60](file://src/components/dashboard/residents/ResidentsSearchBar.tsx#L3-L60)
 - [ResidentDetailModal.tsx:35-759](file://src/components/dashboard/ResidentDetailModal.tsx#L35-L759)
 - [ResidentsFilter.tsx:1-72](file://src/components/dashboard/residents/ResidentsFilter.tsx#L1-L72)
 - [useResidentFilter.ts:9-73](file://src/components/dashboard/residents/useResidentFilter.ts#L9-L73)
@@ -111,17 +126,23 @@ TYP --> RDM
 - [AssignmentsClient.tsx:66-866](file://src/components/dashboard/AssignmentsClient.tsx#L66-L866)
 
 ## Architecture Overview
-The residents data display follows a composition pattern:
+The residents data display follows a composition pattern with enhanced search capabilities:
 - State hooks (search, filters, pagination) live in the parent client component.
 - UI components receive computed props (filtered/paginated data, handlers).
 - Server actions are invoked via modal and toolbar handlers to perform mutations and refresh local state.
+- The search bar provides real-time filtering integration with the filter hook.
 
 ```mermaid
 sequenceDiagram
 participant User as "User"
+participant SearchBar as "ResidentsSearchBar"
+participant FilterHook as "useResidentFilter"
 participant Toolbar as "ResidentsToolbar"
 participant Modal as "ResidentDetailModal"
 participant Actions as "Server Actions"
+User->>SearchBar : Type search query
+SearchBar->>FilterHook : Update search state
+FilterHook-->>SearchBar : Return filtered results
 User->>Toolbar : Click "Print" or "Export"
 Toolbar->>Actions : Invoke export/print action
 Actions-->>Toolbar : Result
@@ -137,6 +158,8 @@ Modal-->>User : Toast + UI update
 ```
 
 **Diagram sources**
+- [ResidentsSearchBar.tsx:13-60](file://src/components/dashboard/residents/ResidentsSearchBar.tsx#L13-L60)
+- [useResidentFilter.ts:9-73](file://src/components/dashboard/residents/useResidentFilter.ts#L9-L73)
 - [ResidentsToolbar.tsx:17-102](file://src/components/dashboard/residents/ResidentsToolbar.tsx#L17-L102)
 - [ResidentDetailModal.tsx:307-759](file://src/components/dashboard/ResidentDetailModal.tsx#L307-L759)
 
@@ -213,6 +236,28 @@ EmptyMsg --> End
 **Section sources**
 - [ResidentsToolbar.tsx:3-102](file://src/components/dashboard/residents/ResidentsToolbar.tsx#L3-L102)
 
+### ResidentsSearchBar
+- Purpose: Integrated search interface with filter toggle functionality and results counter.
+- Props:
+  - search: current search term
+  - onSearchChange: handler for search input changes
+  - showFilter: filter panel visibility state
+  - onToggleFilter: handler to toggle filter panel
+  - filteredCount: number of filtered results
+  - hasActiveFilters: indicates if any filters are currently applied
+  - onResetFilters: handler to reset all filters
+- Features:
+  - Real-time search with Lucide Search icon
+  - Filter toggle button with active state styling
+  - Results counter showing filtered count
+  - Reset filters button when active filters exist
+- Integration:
+  - Works seamlessly with useResidentFilter hook
+  - Updates filtered count dynamically
+
+**Section sources**
+- [ResidentsSearchBar.tsx:3-60](file://src/components/dashboard/residents/ResidentsSearchBar.tsx#L3-L60)
+
 ### ResidentDetailModal
 - Purpose: Comprehensive detail view with tabs, audit logs, room history, and actions.
 - Props:
@@ -260,6 +305,7 @@ Modal-->>User : Toast + UI refresh
   - Applies multi-criteria filter: search term across name/NIM/NIUP and selected filters.
   - Exposes toggles/reset for filter panel and returns filtered results.
 - ResidentsFilter: UI for selecting filters with dynamic options.
+- ResidentsSearchBar: Integrated search interface with filter toggle and results counter.
 
 ```mermaid
 flowchart TD
@@ -273,11 +319,13 @@ ApplyOther --> Output["Return filteredResidents"]
 - [useResidentFilter.ts:9-73](file://src/components/dashboard/residents/useResidentFilter.ts#L9-L73)
 - [useResidentSearch.ts:3-11](file://src/components/dashboard/residents/useResidentSearch.ts#L3-L11)
 - [ResidentsFilter.tsx:16-72](file://src/components/dashboard/residents/ResidentsFilter.tsx#L16-L72)
+- [ResidentsSearchBar.tsx:13-60](file://src/components/dashboard/residents/ResidentsSearchBar.tsx#L13-L60)
 
 **Section sources**
 - [useResidentFilter.ts:9-73](file://src/components/dashboard/residents/useResidentFilter.ts#L9-L73)
 - [useResidentSearch.ts:3-11](file://src/components/dashboard/residents/useResidentSearch.ts#L3-L11)
 - [ResidentsFilter.tsx:1-72](file://src/components/dashboard/residents/ResidentsFilter.tsx#L1-L72)
+- [ResidentsSearchBar.tsx:1-60](file://src/components/dashboard/residents/ResidentsSearchBar.tsx#L1-L60)
 
 ### Pagination
 - useResidentPagination:
@@ -304,6 +352,7 @@ ApplyOther --> Output["Return filteredResidents"]
 - Component coupling:
   - ResidentsTable depends on props from higher-order hooks (filters/search/pagination).
   - ResidentDetailModal composes RoomTransferModal and integrates server actions.
+  - ResidentsSearchBar integrates with useResidentFilter for unified filtering.
 - Data flow:
   - Hooks compute derived state; components render presentational UI.
   - Server actions mutate data and return results consumed by modals.
@@ -322,6 +371,7 @@ RDM --> AC["Server Actions"]
 RF["ResidentsFilter.tsx"] --> UF
 RS["ResidentsStats.tsx"] --> RT
 RTB["ResidentsToolbar.tsx"] --> AC
+RSB["ResidentsSearchBar.tsx"] --> UF
 ```
 
 **Diagram sources**
@@ -333,6 +383,7 @@ RTB["ResidentsToolbar.tsx"] --> AC
 - [ResidentsFilter.tsx:16-72](file://src/components/dashboard/residents/ResidentsFilter.tsx#L16-L72)
 - [ResidentsStats.tsx:9-57](file://src/components/dashboard/residents/ResidentsStats.tsx#L9-L57)
 - [ResidentsToolbar.tsx:17-102](file://src/components/dashboard/residents/ResidentsToolbar.tsx#L17-L102)
+- [ResidentsSearchBar.tsx:13-60](file://src/components/dashboard/residents/ResidentsSearchBar.tsx#L13-L60)
 
 **Section sources**
 - [ResidentsTable.tsx:14-112](file://src/components/dashboard/residents/ResidentsTable.tsx#L14-L112)
@@ -342,6 +393,7 @@ RTB["ResidentsToolbar.tsx"] --> AC
 - [useResidentPagination.ts:9-48](file://src/components/dashboard/residents/useResidentPagination.ts#L9-L48)
 - [ResidentsToolbar.tsx:17-102](file://src/components/dashboard/residents/ResidentsToolbar.tsx#L17-L102)
 - [ResidentsStats.tsx:9-57](file://src/components/dashboard/residents/ResidentsStats.tsx#L9-L57)
+- [ResidentsSearchBar.tsx:13-60](file://src/components/dashboard/residents/ResidentsSearchBar.tsx#L13-L60)
 
 ## Performance Considerations
 - Virtualization:
@@ -368,11 +420,14 @@ RTB["ResidentsToolbar.tsx"] --> AC
   - Inspect server action response and toast messages; ensure required fields are provided.
 - Print/PDF issues:
   - Confirm external libraries are loaded and modal content is rendered before invoking print/download.
+- Search not filtering:
+  - Verify search state is properly passed to useResidentFilter hook and that the hook is being called with current residents data.
 
 **Section sources**
 - [ResidentsTable.tsx:14-112](file://src/components/dashboard/residents/ResidentsTable.tsx#L14-L112)
 - [ResidentDetailModal.tsx:307-759](file://src/components/dashboard/ResidentDetailModal.tsx#L307-L759)
 - [ResidentsToolbar.tsx:17-102](file://src/components/dashboard/residents/ResidentsToolbar.tsx#L17-L102)
+- [ResidentsSearchBar.tsx:13-60](file://src/components/dashboard/residents/ResidentsSearchBar.tsx#L13-L60)
 
 ## Conclusion
-The data display components implement a clean separation of concerns: hooks manage state and derived data, while presentational components render tables, stats, and modals. Filtering, search, and pagination are modular and reusable. The modal system integrates tightly with server actions to support room transfers and reporting. With targeted performance enhancements (debouncing, virtualization, server-side pagination), these components scale effectively for larger datasets while maintaining usability and accessibility.
+The data display components implement a clean separation of concerns with the new dedicated residents dashboard structure: hooks manage state and derived data, while presentational components render tables, stats, and modals. The addition of ResidentsSearchBar enhances the search experience with integrated filtering. Filtering, search, and pagination are modular and reusable. The modal system integrates tightly with server actions to support room transfers and reporting. With targeted performance enhancements (debouncing, virtualization, server-side pagination), these components scale effectively for larger datasets while maintaining usability and accessibility.

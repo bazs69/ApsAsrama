@@ -1,5 +1,6 @@
 import prisma from "../src/lib/prisma"
 import { hash } from "bcrypt"
+import { validatePassword } from "../src/lib/security/passwordPolicy"
 
 const DEFAULT_PERMISSIONS = [
   { module: "Dashboard", action: "View", code: "dashboard.view" },
@@ -133,7 +134,19 @@ async function main() {
   }
   console.log("Seeded other roles.")
 
-  const hashedPassword = await hash("admin123", 10)
+  // Admin password: REQUIRED — fail-fast if not set
+  const adminPassword = process.env.ADMIN_PASSWORD
+  if (!adminPassword) {
+    throw new Error("ADMIN_PASSWORD environment variable is required for seeding.")
+  }
+
+  // Validate password meets policy requirements
+  const pwResult = validatePassword(adminPassword)
+  if (!pwResult.valid) {
+    throw new Error(`Admin password does not meet requirements: ${pwResult.errors.join(". ")}`)
+  }
+
+  const hashedPassword = await hash(adminPassword, 10)
 
   // 4. Seed Admin User
   const existingAdmin = await prisma.user.findUnique({

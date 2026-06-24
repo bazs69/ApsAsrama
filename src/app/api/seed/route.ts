@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import prisma from "@/lib/prisma"
 import { hash } from "bcrypt"
+import { validatePassword } from "@/lib/security/passwordPolicy"
 
 const DEFAULT_PERMISSIONS = [
   { module: "Dashboard", action: "View", code: "dashboard.view" },
@@ -74,6 +75,14 @@ const DEFAULT_PERMISSIONS = [
 ]
 
 export async function GET() {
+  // SECURITY: Restrict seed endpoint to development environment only
+  if (process.env.NODE_ENV !== "development") {
+    return NextResponse.json(
+      { message: "Seed endpoint is only available in development environment." },
+      { status: 403 }
+    )
+  }
+
   try {
     // 1. Seed Permissions
     const permissionIds: string[] = []
@@ -129,7 +138,25 @@ export async function GET() {
       })
     }
 
-    const hashedPassword = await hash("admin123", 10)
+    // Admin password: REQUIRED — fail-fast if not set
+    const adminPassword = process.env.ADMIN_PASSWORD
+    if (!adminPassword) {
+      return NextResponse.json(
+        { message: "ADMIN_PASSWORD environment variable is required for seeding." },
+        { status: 500 }
+      )
+    }
+
+    // Validate password meets policy requirements
+    const pwResult = validatePassword(adminPassword)
+    if (!pwResult.valid) {
+      return NextResponse.json(
+        { message: `Admin password does not meet requirements: ${pwResult.errors.join(". ")}` },
+        { status: 400 }
+      )
+    }
+
+    const hashedPassword = await hash(adminPassword, 10)
 
     // 4. Seed Admin User
     const existingAdmin = await prisma.user.findUnique({

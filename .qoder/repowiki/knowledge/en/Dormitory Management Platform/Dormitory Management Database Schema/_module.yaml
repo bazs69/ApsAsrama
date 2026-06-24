@@ -1,6 +1,6 @@
 schema_version: 1
 module_path: database
-title: Prisma Database Schema & Seeding
+title: Dormitory Management Database Schema
 scope:
     - prisma/
 source_files: []

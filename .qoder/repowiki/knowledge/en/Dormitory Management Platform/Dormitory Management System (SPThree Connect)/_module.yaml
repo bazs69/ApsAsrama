@@ -1,6 +1,6 @@
 schema_version: 1
 module_path: app
-title: Dormitory Management Application
+title: Dormitory Management System (SPThree Connect)
 scope:
     - src/
 source_files: []
