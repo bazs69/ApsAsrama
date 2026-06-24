@@ -1,6 +1,5 @@
 generator client {
-  provider = "prisma-client-js"
-  previewFeatures = ["driverAdapters"]
+  provider        = "prisma-client-js"
 }
 
 datasource db {
@@ -8,20 +7,20 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  name      String
-  photo     String?  // Foto profil
-  username  String?  @unique
-  email     String   @unique
-  password  String
-  roleId    String?
-  role      Role?    @relation(fields: [roleId], references: [id])
-  isActive  Boolean  @default(true)
-  satkerId  String?
-  satker    Satker?  @relation(fields: [satkerId], references: [id])
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id            String          @id @default(uuid())
+  name          String
+  photo         String?
+  username      String?         @unique
+  email         String          @unique
+  password      String
+  roleId        String?
+  isActive      Boolean         @default(true)
+  satkerId      String?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
   exportHistory ExportHistory[]
+  role          Role?           @relation(fields: [roleId], references: [id])
+  satker        Satker?         @relation(fields: [satkerId], references: [id])
 }
 
 model Room {
@@ -30,11 +29,11 @@ model Room {
   capacity  Int
   floor     Int
   status    RoomStatus @default(AVAILABLE)
-  residents Resident[]
   daerahId  String?
-  daerah    Daerah?    @relation(fields: [daerahId], references: [id])
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
+  residents Resident[]
+  daerah    Daerah?    @relation(fields: [daerahId], references: [id])
 
   @@unique([daerahId, number])
   @@index([status])
@@ -42,58 +41,49 @@ model Room {
 }
 
 model Resident {
-  id        String   @id @default(uuid())
-  name      String
-  photo     String?  // Foto santri
-  nim       String?  @unique // Nomor Induk Mahasiswa (opsional)
-  niup      String?  @unique // Nomor Induk Unik Pesantren (opsional)
-  angkatan  String?  // Tahun angkatan, misal: "2021"
-  prodi     String?  // Program studi, misal: "Teknik Informatika"
-  wilayah   String?  // Wilayah asal
-  daerah    String?  // Daerah asal
-  kotaAsal  String?  // Kota Asal
-  fakultas  String?  // Fakultas
-  phone     String?
-  
-  // New Biodata fields
-  tempatLahir   String?
-  tanggalLahir  DateTime?
-  gender        String?
-  nik           String?
-
-  // New Domisili fields
-  alamatLengkap String?
-  kodePos       String?
-
-  // New Pendidikan relations
-  fakultasId    String?
-  fakultasRef   Fakultas? @relation(fields: [fakultasId], references: [id])
-  prodiId       String?
-  prodiRef      Prodi?    @relation(fields: [prodiId], references: [id])
-  angkatanId    String?
-  angkatanRef   Angkatan? @relation(fields: [angkatanId], references: [id])
-
-  roomId    String?
-  room      Room?    @relation(fields: [roomId], references: [id])
-  
-  asalCountryId  String?
-  asalCountry    Country? @relation(fields: [asalCountryId], references: [id])
-  asalProvinceId String?
-  asalProvince   Province? @relation(fields: [asalProvinceId], references: [id])
-  asalRegencyId  String?
-  asalRegency    Regency? @relation(fields: [asalRegencyId], references: [id])
-  asalDistrictId String?
-  asalDistrict   District? @relation(fields: [asalDistrictId], references: [id])
-  asalVillageId  String?
-  asalVillage    Village? @relation(fields: [asalVillageId], references: [id])
-  
-  status    ResidentStatus @default(ACTIVE)
-  assignments Assignment[]
-  absensiKegiatan AbsensiKegiatan[]
+  id              String                @id @default(uuid())
+  name            String
+  photo           String?
+  nim             String?               @unique
+  niup            String?               @unique
+  angkatan        String?
+  prodi           String?
+  wilayah         String?
+  daerah          String?
+  kotaAsal        String?
+  fakultas        String?
+  phone           String?
+  tempatLahir     String?
+  tanggalLahir    DateTime?
+  gender          String?
+  nik             String?
+  alamatLengkap   String?
+  kodePos         String?
+  fakultasId      String?
+  prodiId         String?
+  angkatanId      String?
+  roomId          String?
+  asalCountryId   String?
+  asalProvinceId  String?
+  asalRegencyId   String?
+  asalDistrictId  String?
+  asalVillageId   String?
+  status          ResidentStatus        @default(ACTIVE)
+  createdAt       DateTime              @default(now())
+  updatedAt       DateTime              @updatedAt
   absensiApel     AbsensiApel[]
+  absensiKegiatan AbsensiKegiatan[]
+  assignments     Assignment[]
+  angkatanRef     Angkatan?             @relation(fields: [angkatanId], references: [id])
+  asalCountry     Country?              @relation(fields: [asalCountryId], references: [id])
+  asalDistrict    District?             @relation(fields: [asalDistrictId], references: [id])
+  asalProvince    Province?             @relation(fields: [asalProvinceId], references: [id])
+  asalRegency     Regency?              @relation(fields: [asalRegencyId], references: [id])
+  asalVillage     Village?              @relation(fields: [asalVillageId], references: [id])
+  fakultasRef     Fakultas?             @relation(fields: [fakultasId], references: [id])
+  prodiRef        Prodi?                @relation(fields: [prodiId], references: [id])
+  room            Room?                 @relation(fields: [roomId], references: [id])
   roomHistory     ResidentRoomHistory[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 
   @@index([roomId])
   @@index([status])
@@ -101,29 +91,29 @@ model Resident {
 }
 
 model Satker {
-  id          String       @id @default(uuid())
-  name        String       @unique
-  picName     String       // Penanggung jawab satker
-  picPhone    String?      // Kontak PJ satker
-  users       User[]
-  assignments Assignment[]
+  id             String                 @id @default(uuid())
+  name           String                 @unique
+  picName        String
+  picPhone       String?
+  createdAt      DateTime               @default(now())
+  updatedAt      DateTime               @updatedAt
+  assignments    Assignment[]
   laporanBulanan LaporanBulananSatker[]
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
+  users          User[]
 }
 
 model Assignment {
-  id          String     @id @default(uuid())
+  id          String                @id @default(uuid())
   residentId  String
-  resident    Resident   @relation(fields: [residentId], references: [id], onDelete: Cascade)
   satkerId    String
-  satker      Satker     @relation(fields: [satkerId], references: [id], onDelete: Cascade)
-  position    String     @default("Anggota") // Ketua, Sekretaris, Anggota, dll.
-  status      String     @default("ACTIVE")  // ACTIVE, COMPLETED
-  startDate   DateTime   @default(now())
+  position    String                @default("Anggota")
+  status      String                @default("ACTIVE")
+  startDate   DateTime              @default(now())
   endDate     DateTime?
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
+  createdAt   DateTime              @default(now())
+  updatedAt   DateTime              @updatedAt
+  resident    Resident              @relation(fields: [residentId], references: [id], onDelete: Cascade)
+  satker      Satker                @relation(fields: [satkerId], references: [id], onDelete: Cascade)
   monitorings MonitoringPenugasan[]
 
   @@unique([residentId, satkerId])
@@ -133,15 +123,15 @@ model Assignment {
 model MonitoringPenugasan {
   id                String     @id @default(uuid())
   assignmentId      String     @map("penugasan_id")
-  assignment        Assignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
   tanggalMonitoring DateTime   @map("tanggal_monitoring")
   statusMonitoring  String     @map("status_monitoring")
-  catatanMonitoring String?    @map("catatan_monitoring") @db.Text
-  catatanPembimbing String?    @map("catatan_pembimbing") @db.Text
-  dokumentasi       String?    @db.Text
+  catatanMonitoring String?    @map("catatan_monitoring")
+  catatanPembimbing String?    @map("catatan_pembimbing")
+  dokumentasi       String?
   createdBy         String?    @map("created_by")
   createdAt         DateTime   @default(now()) @map("created_at")
   updatedAt         DateTime   @updatedAt @map("updated_at")
+  assignment        Assignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
 
   @@index([assignmentId])
   @@index([tanggalMonitoring])
@@ -149,15 +139,15 @@ model MonitoringPenugasan {
 }
 
 model LaporanBulananSatker {
-  id             String   @id @default(cuid())
-  satkerId       String
-  bulan          Int
-  tahun          Int
-  kesimpulan     String?  @db.Text
-  status         String   @default("DRAFT") // DRAFT, SUBMITTED
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-  satker         Satker   @relation(fields: [satkerId], references: [id])
+  id         String   @id @default(cuid())
+  satkerId   String
+  bulan      Int
+  tahun      Int
+  kesimpulan String?
+  status     String   @default("DRAFT")
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  satker     Satker   @relation(fields: [satkerId], references: [id])
 
   @@unique([satkerId, bulan, tahun])
 }
@@ -166,30 +156,288 @@ model Role {
   id          String           @id @default(uuid())
   name        String           @unique
   isSystem    Boolean          @default(false)
-  permissions RolePermission[]
-  users       User[]
   createdAt   DateTime         @default(now())
   updatedAt   DateTime         @updatedAt
+  permissions RolePermission[]
+  users       User[]
 }
 
 model Permission {
   id          String           @id @default(uuid())
-  module      String           // e.g. "Data Santri", "Dashboard"
-  action      String           // e.g. "View", "Create", "Update", "Delete"
-  code        String           @unique // e.g. "santri.view"
+  module      String
+  action      String
+  code        String           @unique
   description String?
-  roles       RolePermission[]
   createdAt   DateTime         @default(now())
   updatedAt   DateTime         @updatedAt
+  roles       RolePermission[]
 }
 
 model RolePermission {
   roleId       String
   permissionId String
-  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
   permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
 
   @@id([roleId, permissionId])
+}
+
+model Muallim {
+  id        String           @id @default(uuid())
+  name      String
+  kbm       String
+  status    MuallimStatus    @default(ACTIVE)
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+  absensi   AbsensiMuallim[]
+}
+
+model AbsensiMuallim {
+  id         String        @id @default(uuid())
+  hari       String
+  tanggal    DateTime
+  muallimId  String
+  status     AbsensiStatus @default(HADIR)
+  keterangan String?
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+  muallim    Muallim       @relation(fields: [muallimId], references: [id])
+
+  @@index([muallimId])
+  @@index([tanggal])
+}
+
+model Kegiatan {
+  id         String            @id @default(uuid())
+  nama       String
+  tanggal    DateTime
+  keterangan String?
+  createdAt  DateTime          @default(now())
+  updatedAt  DateTime          @updatedAt
+  absensi    AbsensiKegiatan[]
+
+  @@index([tanggal])
+}
+
+model AbsensiKegiatan {
+  id         String          @id @default(uuid())
+  kegiatanId String
+  residentId String
+  status     KehadiranStatus @default(HADIR)
+  keterangan String?
+  createdAt  DateTime        @default(now())
+  updatedAt  DateTime        @updatedAt
+  kegiatan   Kegiatan        @relation(fields: [kegiatanId], references: [id], onDelete: Cascade)
+  resident   Resident        @relation(fields: [residentId], references: [id], onDelete: Cascade)
+
+  @@unique([kegiatanId, residentId])
+  @@index([residentId])
+}
+
+model Apel {
+  id         String        @id @default(uuid())
+  tanggal    DateTime
+  keterangan String?
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+  absensi    AbsensiApel[]
+
+  @@index([tanggal])
+}
+
+model AbsensiApel {
+  id         String        @id @default(uuid())
+  apelId     String
+  residentId String
+  status     KehadiranApel @default(HADIR)
+  keterangan String?
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+  apel       Apel          @relation(fields: [apelId], references: [id], onDelete: Cascade)
+  resident   Resident      @relation(fields: [residentId], references: [id], onDelete: Cascade)
+
+  @@unique([apelId, residentId])
+  @@index([residentId])
+}
+
+model Wilayah {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  daerahs   Daerah[]
+}
+
+model Daerah {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  wilayahId String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  wilayah   Wilayah? @relation(fields: [wilayahId], references: [id])
+  rooms     Room[]
+}
+
+model Fakultas {
+  id        String     @id @default(uuid())
+  name      String     @unique
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  prodis    Prodi[]
+  residents Resident[]
+}
+
+model Prodi {
+  id         String     @id @default(uuid())
+  name       String
+  fakultasId String
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  angkatans  Angkatan[]
+  fakultas   Fakultas   @relation(fields: [fakultasId], references: [id], onDelete: Cascade)
+  residents  Resident[]
+
+  @@unique([name, fakultasId])
+}
+
+model Angkatan {
+  id        String     @id @default(uuid())
+  name      String
+  prodiId   String
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  prodi     Prodi      @relation(fields: [prodiId], references: [id], onDelete: Cascade)
+  residents Resident[]
+
+  @@unique([name, prodiId])
+}
+
+model Kbm {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ExportHistory {
+  id         String   @id @default(uuid())
+  fileName   String
+  reportType String
+  userId     String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model Country {
+  id        String     @id @default(uuid())
+  code      String     @unique
+  name      String     @unique
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  provinces Province[]
+  residents Resident[]
+
+  @@index([name])
+}
+
+model Province {
+  id        String     @id @default(uuid())
+  code      String     @unique
+  name      String
+  countryId String
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  country   Country    @relation(fields: [countryId], references: [id], onDelete: Cascade)
+  regencies Regency[]
+  residents Resident[]
+
+  @@unique([name, countryId])
+  @@index([name])
+  @@index([countryId])
+}
+
+model Regency {
+  id         String     @id @default(uuid())
+  code       String     @unique
+  name       String
+  provinceId String
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  districts  District[]
+  province   Province   @relation(fields: [provinceId], references: [id], onDelete: Cascade)
+  residents  Resident[]
+
+  @@unique([name, provinceId])
+  @@index([name])
+  @@index([provinceId])
+}
+
+model District {
+  id        String     @id @default(uuid())
+  code      String     @unique
+  name      String
+  regencyId String
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  regency   Regency    @relation(fields: [regencyId], references: [id], onDelete: Cascade)
+  residents Resident[]
+  villages  Village[]
+
+  @@unique([name, regencyId])
+  @@index([name])
+  @@index([regencyId])
+}
+
+model Village {
+  id         String     @id @default(uuid())
+  code       String     @unique
+  name       String
+  districtId String
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  residents  Resident[]
+  district   District   @relation(fields: [districtId], references: [id], onDelete: Cascade)
+
+  @@unique([name, districtId])
+  @@index([name])
+  @@index([districtId])
+}
+
+model AuditLog {
+  id          String   @id @default(uuid())
+  action      String
+  entityType  String
+  entityId    String?
+  oldValue    Json?
+  newValue    Json?
+  performedBy String?
+  createdAt   DateTime @default(now())
+
+  @@index([entityType, entityId])
+}
+
+model ResidentRoomHistory {
+  id           String   @id @default(uuid())
+  residentId   String
+  fromRoomId   String?
+  fromRoom     String?
+  toRoomId     String?
+  toRoom       String?
+  fromWilayah  String?
+  fromDaerah   String?
+  toWilayah    String?
+  toDaerah     String?
+  alasan       String?
+  transferedBy String?
+  createdAt    DateTime @default(now())
+  resident     Resident @relation(fields: [residentId], references: [id], onDelete: Cascade)
+
+  @@index([residentId])
+  @@index([createdAt])
 }
 
 enum RoomStatus {
@@ -203,67 +451,15 @@ enum ResidentStatus {
   INACTIVE
 }
 
-model Muallim {
-  id        String        @id @default(uuid())
-  name      String
-  kbm       String        // Kegiatan Belajar Mengajar
-  status    MuallimStatus @default(ACTIVE)
-  absensi   AbsensiMuallim[]
-  createdAt DateTime      @default(now())
-  updatedAt DateTime      @updatedAt
-}
-
 enum MuallimStatus {
   ACTIVE
   INACTIVE
-}
-
-model AbsensiMuallim {
-  id          String        @id @default(uuid())
-  hari        String
-  tanggal     DateTime
-  muallimId   String
-  muallim     Muallim       @relation(fields: [muallimId], references: [id])
-  status      AbsensiStatus @default(HADIR)
-  keterangan  String?
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-
-  @@index([muallimId])
-  @@index([tanggal])
 }
 
 enum AbsensiStatus {
   HADIR
   IZIN
   DIWAKILKAN
-}
-
-model Kegiatan {
-  id          String   @id @default(uuid())
-  nama        String   // Misal: "Kajian Subuh", "Kerja Bakti"
-  tanggal     DateTime
-  keterangan  String?
-  absensi     AbsensiKegiatan[]
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  @@index([tanggal])
-}
-
-model AbsensiKegiatan {
-  id          String   @id @default(uuid())
-  kegiatanId  String
-  kegiatan    Kegiatan @relation(fields: [kegiatanId], references: [id], onDelete: Cascade)
-  residentId  String
-  resident    Resident @relation(fields: [residentId], references: [id], onDelete: Cascade)
-  status      KehadiranStatus @default(HADIR)
-  keterangan  String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  @@unique([kegiatanId, residentId])
-  @@index([residentId])
 }
 
 enum KehadiranStatus {
@@ -273,214 +469,8 @@ enum KehadiranStatus {
   ALPA
 }
 
-model Apel {
-  id          String   @id @default(uuid())
-  tanggal     DateTime
-  keterangan  String?
-  absensi     AbsensiApel[]
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  @@index([tanggal])
-}
-
-model AbsensiApel {
-  id          String   @id @default(uuid())
-  apelId      String
-  apel        Apel     @relation(fields: [apelId], references: [id], onDelete: Cascade)
-  residentId  String
-  resident    Resident @relation(fields: [residentId], references: [id], onDelete: Cascade)
-  status      KehadiranApel @default(HADIR)
-  keterangan  String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  @@unique([apelId, residentId])
-  @@index([residentId])
-}
-
 enum KehadiranApel {
   HADIR
   ALPA
   IZIN
-}
-
-model Wilayah {
-  id        String   @id @default(uuid())
-  name      String   @unique
-  daerahs   Daerah[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model Daerah {
-  id        String   @id @default(uuid())
-  name      String   @unique
-  wilayahId String?
-  wilayah   Wilayah? @relation(fields: [wilayahId], references: [id])
-  rooms     Room[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model Fakultas {
-  id        String     @id @default(uuid())
-  name      String     @unique
-  prodis    Prodi[]
-  residents Resident[]
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-}
-
-model Prodi {
-  id          String     @id @default(uuid())
-  name        String
-  fakultasId  String
-  fakultas    Fakultas   @relation(fields: [fakultasId], references: [id], onDelete: Cascade)
-  angkatans   Angkatan[]
-  residents   Resident[]
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
-
-  @@unique([name, fakultasId])
-}
-
-model Angkatan {
-  id        String     @id @default(uuid())
-  name      String
-  prodiId   String
-  prodi     Prodi      @relation(fields: [prodiId], references: [id], onDelete: Cascade)
-  residents Resident[]
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-
-  @@unique([name, prodiId])
-}
-
-model Kbm {
-  id        String   @id @default(uuid())
-  name      String   @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model ExportHistory {
-  id          String   @id @default(uuid())
-  fileName    String
-  reportType  String
-  userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  @@index([userId])
-  @@index([createdAt])
-}
-
-model Country {
-  id        String     @id @default(uuid())
-  code      String     @unique
-  name      String     @unique
-  provinces Province[]
-  residents Resident[]
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-
-  @@index([name])
-}
-
-model Province {
-  id        String     @id @default(uuid())
-  code      String     @unique
-  name      String
-  countryId String
-  country   Country    @relation(fields: [countryId], references: [id], onDelete: Cascade)
-  regencies Regency[]
-  residents Resident[]
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-
-  @@unique([name, countryId])
-  @@index([name])
-  @@index([countryId])
-}
-
-model Regency {
-  id         String     @id @default(uuid())
-  code       String     @unique
-  name       String
-  provinceId String
-  province   Province   @relation(fields: [provinceId], references: [id], onDelete: Cascade)
-  districts  District[]
-  residents  Resident[]
-  createdAt  DateTime   @default(now())
-  updatedAt  DateTime   @updatedAt
-
-  @@unique([name, provinceId])
-  @@index([name])
-  @@index([provinceId])
-}
-
-model District {
-  id         String     @id @default(uuid())
-  code       String     @unique
-  name       String
-  regencyId  String
-  regency    Regency    @relation(fields: [regencyId], references: [id], onDelete: Cascade)
-  villages   Village[]
-  residents  Resident[]
-  createdAt  DateTime   @default(now())
-  updatedAt  DateTime   @updatedAt
-
-  @@unique([name, regencyId])
-  @@index([name])
-  @@index([regencyId])
-}
-
-model Village {
-  id         String     @id @default(uuid())
-  code       String     @unique
-  name       String
-  districtId String
-  district   District   @relation(fields: [districtId], references: [id], onDelete: Cascade)
-  residents  Resident[]
-  createdAt  DateTime   @default(now())
-  updatedAt  DateTime   @updatedAt
-
-  @@unique([name, districtId])
-  @@index([name])
-  @@index([districtId])
-}
-
-model AuditLog {
-  id          String   @id @default(uuid())
-  action      String   // CREATE, UPDATE, DELETE, IMPORT
-  entityType  String   // COUNTRY, PROVINCE, REGENCY, DISTRICT, VILLAGE, RESIDENT
-  entityId    String?
-  oldValue    Json?
-  newValue    Json?
-  performedBy String?
-  createdAt   DateTime @default(now())
-
-  @@index([entityType, entityId])
-}
-
-model ResidentRoomHistory {
-  id           String   @id @default(uuid())
-  residentId   String
-  resident     Resident @relation(fields: [residentId], references: [id], onDelete: Cascade)
-  fromRoomId   String?  // null = masuk pertama kali
-  fromRoom     String?  // nomor kamar asal (string copy)
-  toRoomId     String?
-  toRoom       String?  // nomor kamar tujuan (string copy)
-  fromWilayah  String?
-  fromDaerah   String?
-  toWilayah    String?
-  toDaerah     String?
-  alasan       String?  @db.Text
-  transferedBy String?  // email / nama operator
-  createdAt    DateTime @default(now())
-
-  @@index([residentId])
-  @@index([createdAt])
 }

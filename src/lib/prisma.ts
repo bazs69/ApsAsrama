@@ -1,5 +1,4 @@
 import { PrismaClient } from "@prisma/client"
-import { Pool } from "pg"
 import { PrismaPg } from "@prisma/adapter-pg"
 
 const prismaClientSingleton = () => {
@@ -7,13 +6,12 @@ const prismaClientSingleton = () => {
   if (!connectionString) {
     throw new Error("DATABASE_URL environment variable is not defined.")
   }
-  const pool = new Pool({
+  const adapter = new PrismaPg({
     connectionString,
     max: 1,            // 1 koneksi per serverless instance
     idleTimeoutMillis: 10000,
     connectionTimeoutMillis: 10000,
   })
-  const adapter = new PrismaPg(pool)
   return new PrismaClient({ adapter })
 }
 
