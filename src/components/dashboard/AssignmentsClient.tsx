@@ -8,6 +8,7 @@ import {
   createAssignment,
   updateAssignment,
   deleteAssignment,
+  transferAssignment,
 } from "@/app/actions/assignments"
 import {
   Plus,
@@ -24,7 +25,10 @@ import {
   Trash2,
   ShieldCheck,
   UserCheck,
-  ClipboardList
+  ClipboardList,
+  ArrowRightLeft,
+  ArrowRight,
+  CheckCircle,
 } from "lucide-react"
 
 interface Resident {
@@ -86,6 +90,15 @@ export default function AssignmentsClient({
   const [isAssignmentModalOpen, setIsAssignmentModalOpen] = useState(false)
   const [editingAssignment, setEditingAssignment] = useState<Assignment | null>(null)
 
+  // Transfer Modal state
+  const [isTransferModalOpen, setIsTransferModalOpen] = useState(false)
+  const [transferringAssignment, setTransferringAssignment] = useState<Assignment | null>(null)
+  const [transferSatkerId, setTransferSatkerId] = useState("")
+  const [transferReason, setTransferReason] = useState("")
+  const [transferError, setTransferError] = useState("")
+  const [transferSuccess, setTransferSuccess] = useState(false)
+  const [isTransferPending, startTransferTransition] = useTransition()
+
   // Satker Form Fields
   const [satkerName, setSatkerName] = useState("")
   const [satkerPicName, setSatkerPicName] = useState("")
@@ -93,6 +106,8 @@ export default function AssignmentsClient({
 
   // Assignment Form Fields
   const [assignResidentId, setAssignResidentId] = useState("")
+  const [assignResidentIds, setAssignResidentIds] = useState<string[]>([])
+  const [searchResident, setSearchResident] = useState("")
   const [assignSatkerId, setAssignSatkerId] = useState("")
   const [assignPosition, setAssignPosition] = useState("Anggota")
   const [assignStatus, setAssignStatus] = useState("ACTIVE")
@@ -209,6 +224,8 @@ export default function AssignmentsClient({
   const openAddAssignmentModal = () => {
     setEditingAssignment(null)
     setAssignResidentId("")
+    setAssignResidentIds([])
+    setSearchResident("")
     setAssignSatkerId("")
     setAssignPosition("Anggota")
     setAssignStatus("ACTIVE")
@@ -238,10 +255,18 @@ export default function AssignmentsClient({
     e.preventDefault()
     setError("")
 
-    if (!assignResidentId) {
-      setError("Silakan pilih santri.")
-      return
+    if (editingAssignment) {
+      if (!assignResidentId) {
+        setError("Santri tidak valid.")
+        return
+      }
+    } else {
+      if (assignResidentIds.length === 0) {
+        setError("Silakan pilih minimal 1 santri.")
+        return
+      }
     }
+
     if (!assignSatkerId) {
       setError("Silakan pilih satuan kerja.")
       return
@@ -249,60 +274,114 @@ export default function AssignmentsClient({
 
     startTransition(async () => {
       let res
-      const payload = {
-        residentId: assignResidentId,
-        satkerId: assignSatkerId,
-        position: assignPosition,
-        status: assignStatus,
-        startDate: assignStartDate,
-        endDate: assignEndDate || undefined,
-      }
 
       if (editingAssignment) {
+        const payload = {
+          residentId: assignResidentId,
+          satkerId: assignSatkerId,
+          position: assignPosition,
+          status: assignStatus,
+          startDate: assignStartDate,
+          endDate: assignEndDate || undefined,
+        }
         res = await updateAssignment(editingAssignment.id, payload)
       } else {
+        const payload = {
+          residentIds: assignResidentIds,
+          satkerId: assignSatkerId,
+          position: assignPosition,
+          status: assignStatus,
+          startDate: assignStartDate,
+          endDate: assignEndDate || undefined,
+        }
         res = await createAssignment(payload)
       }
 
       if (res.error) {
         setError(res.error)
       } else if (res.success && res.assignment) {
-        const selectedResident = residents.find((r) => r.id === assignResidentId)
-        const selectedSatker = satkers.find((s) => s.id === assignSatkerId)
-
-        const fullAssignment: Assignment = {
-          ...res.assignment,
-          resident: {
-            id: selectedResident?.id || "",
-            name: selectedResident?.name || "",
-            nim: selectedResident?.nim || "",
-          },
-          satker: {
-            id: selectedSatker?.id || "",
-            name: selectedSatker?.name || "",
-            picName: selectedSatker?.picName || "",
-            picPhone: selectedSatker?.picPhone || null,
-          },
-        }
-
+        setIsAssignmentModalOpen(false)
         if (editingAssignment) {
+          const selectedSatker = satkers.find((s) => s.id === assignSatkerId)
           setAssignments((prev) =>
             prev.map((a) =>
-              a.id === editingAssignment.id ? fullAssignment : a
-            )
-          )
-        } else {
-          setAssignments((prev) => [fullAssignment, ...prev])
-          // Increment assignment count inside local satker list
-          setSatkers((prev) =>
-            prev.map((s) =>
-              s.id === assignSatkerId
-                ? { ...s, assignments: [...s.assignments, { id: res.assignment.id }] }
-                : s
+              a.id === editingAssignment.id
+                ? {
+                    ...a,
+                    satkerId: assignSatkerId,
+                    position: assignPosition,
+                    status: assignStatus,
+                    startDate: assignStartDate,
+                    endDate: assignEndDate || null,
+                    satker: {
+                      id: selectedSatker?.id || "",
+                      name: selectedSatker?.name || "",
+                      picName: selectedSatker?.picName || "",
+                      picPhone: selectedSatker?.picPhone || null,
+                    },
+                  }
+                : a
             )
           )
         }
-        setIsAssignmentModalOpen(false)
+      }
+    })
+  }
+
+  // Handlers for Transfer
+  const openTransferModal = (a: Assignment) => {
+    setTransferringAssignment(a)
+    setTransferSatkerId("")
+    setTransferReason("")
+    setTransferError("")
+    setTransferSuccess(false)
+    setIsTransferModalOpen(true)
+  }
+
+  const handleTransfer = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!transferringAssignment) return
+    setTransferError("")
+
+    startTransferTransition(async () => {
+      const res = await transferAssignment({
+        assignmentId: transferringAssignment.id,
+        newSatkerId: transferSatkerId,
+        transferReason: transferReason,
+      })
+
+      if (res.error) {
+        setTransferError(res.error)
+      } else if (res.success && res.newAssignment) {
+        const newSatker = satkers.find((s) => s.id === transferSatkerId)
+        // Mark old assignment as TRANSFERRED in local state
+        setAssignments((prev) =>
+          prev.map((a) =>
+            a.id === transferringAssignment.id
+              ? { ...a, status: "TRANSFERRED", endDate: new Date() }
+              : a
+          )
+        )
+        // Insert new assignment into local state
+        const newEntry: Assignment = {
+          id: res.newAssignment.id,
+          residentId: transferringAssignment.residentId,
+          satkerId: transferSatkerId,
+          position: transferringAssignment.position,
+          status: "ACTIVE",
+          startDate: new Date(),
+          endDate: null,
+          resident: transferringAssignment.resident,
+          satker: {
+            id: newSatker?.id || transferSatkerId,
+            name: newSatker?.name || "",
+            picName: newSatker?.picName || "",
+            picPhone: newSatker?.picPhone || null,
+          },
+        }
+        setAssignments((prev) => [newEntry, ...prev])
+        setTransferSuccess(true)
+        setTimeout(() => setIsTransferModalOpen(false), 1500)
       }
     })
   }
@@ -547,12 +626,23 @@ export default function AssignmentsClient({
                         <span className={`px-2.5 py-1 rounded-full text-xs font-bold uppercase ${
                           a.status === "ACTIVE"
                             ? "bg-emerald-500/10 text-emerald-650 dark:text-emerald-450 border border-emerald-500/20"
+                            : a.status === "TRANSFERRED"
+                            ? "bg-amber-500/10 text-amber-600 dark:text-amber-450 border border-amber-500/20"
                             : "bg-zinc-100 dark:bg-zinc-800 text-zinc-500 border border-zinc-200 dark:border-zinc-700/50"
                         }`}>
-                          {a.status === "ACTIVE" ? "Aktif" : "Selesai"}
+                          {a.status === "ACTIVE" ? "Aktif" : a.status === "TRANSFERRED" ? "Dipindah" : "Selesai"}
                         </span>
                       </td>
                       <td className="py-4 px-6 text-right space-x-2">
+                        {a.status === "ACTIVE" && (
+                          <button
+                            onClick={() => openTransferModal(a)}
+                            className="p-1.5 text-zinc-450 hover:text-amber-600 dark:text-zinc-400 dark:hover:text-amber-400 hover:bg-amber-500/10 rounded-lg transition-colors inline-block cursor-pointer"
+                            title="Transfer ke Satker Lain"
+                          >
+                            <ArrowRightLeft className="w-4 h-4" />
+                          </button>
+                        )}
                         <button
                           onClick={() => openEditAssignmentModal(a)}
                           className="p-1.5 text-zinc-450 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-white hover:bg-zinc-200/60 dark:hover:bg-zinc-800 rounded-lg transition-colors inline-block cursor-pointer"
@@ -749,29 +839,16 @@ export default function AssignmentsClient({
             )}
 
             <form onSubmit={handleSaveAssignment} className="space-y-4">
-              <div>
-                <label className="text-xs font-bold text-zinc-550 dark:text-zinc-400 uppercase tracking-wider block mb-1">
-                  Pilih Santri
-                </label>
-                {editingAssignment ? (
-                  <div className="w-full bg-zinc-100 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800 rounded-xl py-3 px-4 text-zinc-500 dark:text-zinc-400 font-semibold">
+              {editingAssignment && (
+                <div>
+                  <label className="text-xs font-bold text-zinc-550 dark:text-zinc-400 uppercase tracking-wider block mb-1">
+                    Santri (Tidak Dapat Diubah)
+                  </label>
+                  <div className="w-full bg-zinc-100 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800 rounded-xl py-3 px-4 text-zinc-500 dark:text-zinc-400 font-semibold cursor-not-allowed">
                     {editingAssignment.resident.name} ({editingAssignment.resident.nim || "-"})
                   </div>
-                ) : (
-                  <select
-                    value={assignResidentId}
-                    onChange={(e) => setAssignResidentId(e.target.value)}
-                    className="w-full bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-250 dark:border-zinc-800 rounded-xl py-3 px-4 text-zinc-850 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500/50"
-                  >
-                    <option value="">-- Pilih Santri --</option>
-                    {residents.map((r) => (
-                      <option key={r.id} value={r.id}>
-                        {r.name} ({r.nim || "-"})
-                      </option>
-                    ))}
-                  </select>
-                )}
-              </div>
+                </div>
+              )}
 
               <div>
                 <label className="text-xs font-bold text-zinc-550 dark:text-zinc-400 uppercase tracking-wider block mb-1">
@@ -781,6 +858,7 @@ export default function AssignmentsClient({
                   value={assignSatkerId}
                   onChange={(e) => setAssignSatkerId(e.target.value)}
                   className="w-full bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-250 dark:border-zinc-800 rounded-xl py-3 px-4 text-zinc-850 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500/50"
+                  required
                 >
                   <option value="">-- Pilih Satker --</option>
                   {satkers.map((s) => (
@@ -845,10 +923,78 @@ export default function AssignmentsClient({
                 </select>
               </div>
 
+              {!editingAssignment && (
+                <div className="pt-2 border-t border-zinc-200 dark:border-zinc-800">
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="text-xs font-bold text-zinc-550 dark:text-zinc-400 uppercase tracking-wider">
+                      Cari Santri
+                    </label>
+                    {assignResidentIds.length > 0 && (
+                      <span className="bg-primary-500/10 text-primary-650 dark:text-primary-450 border border-primary-500/20 px-2 py-0.5 rounded-full text-xs font-bold">
+                        {assignResidentIds.length} santri dipilih
+                      </span>
+                    )}
+                  </div>
+                  <div className="relative mb-3">
+                    <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-zinc-450 dark:text-zinc-500" />
+                    <input
+                      type="text"
+                      placeholder="Cari berdasarkan nama..."
+                      value={searchResident}
+                      onChange={(e) => setSearchResident(e.target.value)}
+                      className="w-full bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-250 dark:border-zinc-800 rounded-xl py-2 pl-9 pr-4 text-zinc-850 dark:text-white placeholder-zinc-450 dark:placeholder-zinc-650 focus:outline-none focus:ring-2 focus:ring-primary-500/50 text-sm"
+                    />
+                  </div>
+                  
+                  <div className="max-h-48 overflow-y-auto space-y-1 pr-1 border border-zinc-200 dark:border-zinc-800 rounded-lg p-2 bg-zinc-50 dark:bg-zinc-900/30 custom-scrollbar">
+                    {residents
+                      .filter(r => r.name.toLowerCase().includes(searchResident.toLowerCase()))
+                      .map((r) => (
+                        <label 
+                          key={r.id} 
+                          className={`flex items-center space-x-3 p-2 rounded-lg cursor-pointer transition-colors ${
+                            assignResidentIds.includes(r.id) 
+                              ? "bg-primary-50 dark:bg-primary-500/10 border border-primary-200 dark:border-primary-500/20" 
+                              : "hover:bg-zinc-100 dark:hover:bg-zinc-800 border border-transparent"
+                          }`}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={assignResidentIds.includes(r.id)}
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                setAssignResidentIds(prev => [...prev, r.id])
+                              } else {
+                                setAssignResidentIds(prev => prev.filter(id => id !== r.id))
+                              }
+                            }}
+                            className="w-4 h-4 rounded border-zinc-300 text-primary-600 focus:ring-primary-500/50"
+                          />
+                          <div className="flex flex-col">
+                            <span className="text-sm font-semibold text-zinc-900 dark:text-white leading-tight">
+                              {r.name}
+                            </span>
+                            {r.nim && (
+                              <span className="text-xs text-zinc-500 font-mono">
+                                {r.nim}
+                              </span>
+                            )}
+                          </div>
+                        </label>
+                      ))}
+                    {residents.filter(r => r.name.toLowerCase().includes(searchResident.toLowerCase())).length === 0 && (
+                      <div className="text-center py-4 text-sm text-zinc-500">
+                        Santri tidak ditemukan.
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
               <button
                 type="submit"
-                disabled={isPending}
-                className="w-full bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-500 hover:to-primary-400 text-white rounded-xl py-3 font-semibold shadow-lg flex items-center justify-center space-x-2 transition-all disabled:opacity-50 cursor-pointer"
+                disabled={isPending || (!editingAssignment && assignResidentIds.length === 0) || !assignSatkerId}
+                className="w-full bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-500 hover:to-primary-400 text-white rounded-xl py-3 font-semibold shadow-lg flex items-center justify-center space-x-2 transition-all disabled:opacity-50 cursor-pointer mt-4"
               >
                 {isPending ? (
                   <Loader2 className="w-5 h-5 animate-spin" />
@@ -857,6 +1003,163 @@ export default function AssignmentsClient({
                 )}
               </button>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Transfer Assignment Modal */}
+      {isTransferModalOpen && transferringAssignment && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            onClick={() => !isTransferPending && setIsTransferModalOpen(false)}
+          />
+          <div className="w-full max-w-lg glass rounded-2xl border border-zinc-200 dark:border-zinc-800 overflow-hidden relative z-10 p-6 space-y-5">
+            {/* Header */}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <div className="p-2 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400">
+                  <ArrowRightLeft className="w-5 h-5" />
+                </div>
+                <h2 className="text-lg font-bold text-zinc-900 dark:text-white">Transfer Penugasan</h2>
+              </div>
+              <button
+                onClick={() => setIsTransferModalOpen(false)}
+                disabled={isTransferPending}
+                className="text-zinc-550 dark:text-zinc-400 hover:text-zinc-850 dark:hover:text-white p-1 cursor-pointer disabled:opacity-50"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Success state */}
+            {transferSuccess ? (
+              <div className="flex flex-col items-center justify-center py-8 space-y-3">
+                <div className="p-4 rounded-full bg-emerald-500/10 border border-emerald-500/20">
+                  <CheckCircle className="w-10 h-10 text-emerald-500" />
+                </div>
+                <p className="text-emerald-700 dark:text-emerald-400 font-bold text-base">Transfer Berhasil!</p>
+                <p className="text-zinc-500 text-sm text-center">
+                  Penugasan sedang diperbarui dan halaman akan segera disegarkan.
+                </p>
+              </div>
+            ) : (
+              <form onSubmit={handleTransfer} className="space-y-4">
+                {/* Error */}
+                {transferError && (
+                  <div className="p-3 bg-red-500/10 border border-red-500/20 text-red-650 dark:text-red-400 text-xs rounded-xl flex items-center space-x-2">
+                    <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                    <span>{transferError}</span>
+                  </div>
+                )}
+
+                {/* Santri Info (readonly) */}
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-xs font-bold text-zinc-550 dark:text-zinc-400 uppercase tracking-wider block mb-1">
+                      Santri
+                    </label>
+                    <div className="bg-zinc-100 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800 rounded-xl py-2.5 px-3 text-sm text-zinc-700 dark:text-zinc-300 font-semibold">
+                      {transferringAssignment.resident.name}
+                      {transferringAssignment.resident.nim && (
+                        <span className="block text-xs text-zinc-500 font-mono font-normal mt-0.5">
+                          {transferringAssignment.resident.nim}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <div>
+                    <label className="text-xs font-bold text-zinc-550 dark:text-zinc-400 uppercase tracking-wider block mb-1">
+                      Jabatan
+                    </label>
+                    <div className="bg-zinc-100 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800 rounded-xl py-2.5 px-3 text-sm text-zinc-700 dark:text-zinc-300 font-semibold">
+                      {transferringAssignment.position}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Satker asal → Satker tujuan */}
+                <div className="flex items-center gap-2">
+                  <div className="flex-1">
+                    <label className="text-xs font-bold text-zinc-550 dark:text-zinc-400 uppercase tracking-wider block mb-1">
+                      Satker Asal
+                    </label>
+                    <div className="bg-zinc-100 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800 rounded-xl py-2.5 px-3 text-sm text-zinc-700 dark:text-zinc-300 font-semibold flex items-center space-x-1.5">
+                      <Briefcase className="w-3.5 h-3.5 text-zinc-400 flex-shrink-0" />
+                      <span className="truncate">{transferringAssignment.satker.name}</span>
+                    </div>
+                  </div>
+                  <ArrowRight className="w-5 h-5 text-amber-500 flex-shrink-0 mt-5" />
+                  <div className="flex-1">
+                    <label className="text-xs font-bold text-zinc-550 dark:text-zinc-400 uppercase tracking-wider block mb-1">
+                      Satker Tujuan
+                    </label>
+                    <select
+                      value={transferSatkerId}
+                      onChange={(e) => setTransferSatkerId(e.target.value)}
+                      required
+                      className="w-full bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-250 dark:border-zinc-800 rounded-xl py-2.5 px-3 text-sm text-zinc-850 dark:text-white focus:outline-none focus:ring-2 focus:ring-amber-500/50"
+                    >
+                      <option value="">-- Pilih Satker --</option>
+                      {satkers
+                        .filter((s) => s.id !== transferringAssignment.satkerId)
+                        .map((s) => (
+                          <option key={s.id} value={s.id}>
+                            {s.name}
+                          </option>
+                        ))}
+                    </select>
+                  </div>
+                </div>
+
+                {/* Alasan transfer */}
+                <div>
+                  <label className="text-xs font-bold text-zinc-550 dark:text-zinc-400 uppercase tracking-wider block mb-1">
+                    Alasan Transfer <span className="font-normal normal-case text-zinc-400">(opsional)</span>
+                  </label>
+                  <textarea
+                    value={transferReason}
+                    onChange={(e) => setTransferReason(e.target.value)}
+                    rows={2}
+                    placeholder="Contoh: Perpindahan tugas, penyesuaian kebutuhan organisasi..."
+                    className="w-full bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-250 dark:border-zinc-800 rounded-xl py-2.5 px-3 text-sm text-zinc-850 dark:text-white placeholder-zinc-450 dark:placeholder-zinc-650 focus:outline-none focus:ring-2 focus:ring-amber-500/50 resize-none"
+                  />
+                </div>
+
+                {/* Ringkasan proses */}
+                <div className="p-3 bg-amber-500/8 dark:bg-amber-500/10 border border-amber-500/20 rounded-xl text-xs text-amber-700 dark:text-amber-400 space-y-1.5">
+                  <p className="font-bold flex items-center space-x-1.5">
+                    <AlertCircle className="w-3.5 h-3.5" />
+                    <span>Yang akan terjadi setelah Transfer:</span>
+                  </p>
+                  <ul className="space-y-1 pl-5 list-disc">
+                    <li>Assignment lama akan berubah menjadi <strong>TRANSFERRED</strong> dan histori tetap tersimpan.</li>
+                    <li>Assignment baru akan dibuat dengan status <strong>ACTIVE</strong> di Satker tujuan.</li>
+                    <li>Data Monitoring yang sudah ada tetap mengacu ke assignment lama.</li>
+                  </ul>
+                </div>
+
+                {/* Submit */}
+                <button
+                  type="submit"
+                  disabled={
+                    isTransferPending ||
+                    !transferSatkerId ||
+                    transferSatkerId === transferringAssignment.satkerId
+                  }
+                  className="w-full bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-white rounded-xl py-3 font-semibold shadow-lg shadow-amber-500/20 flex items-center justify-center space-x-2 transition-all disabled:opacity-50 cursor-pointer"
+                >
+                  {isTransferPending ? (
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                  ) : (
+                    <>
+                      <ArrowRightLeft className="w-4 h-4" />
+                      <span>Konfirmasi Transfer</span>
+                    </>
+                  )}
+                </button>
+              </form>
+            )}
           </div>
         </div>
       )}

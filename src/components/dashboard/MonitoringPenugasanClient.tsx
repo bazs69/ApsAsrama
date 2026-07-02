@@ -1,5 +1,7 @@
 "use client"
 
+import { PERMISSIONS } from "@/lib/security/permissions"
+
 import {
   Users,
   Building2,
@@ -41,7 +43,7 @@ export default function MonitoringPenugasanClient({ user, satkerList, initialDat
   }
 }) {
   // Show simplified view if user has a satkerId but no broad satker.view permission
-  const isKepalaSatker = !!user?.satkerId && !user?.permissions?.includes("satker.view")
+  const isKepalaSatker = !!user?.satkerId && !user?.permissions?.includes(PERMISSIONS.SATKER_VIEW)
   
   const router = useRouter()
   const pathname = usePathname()

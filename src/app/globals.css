@@ -3,15 +3,61 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --color-primary-50: #eff6ff;
-  --color-primary-100: #dbeafe;
-  --color-primary-500: #3b82f6;
-  --color-primary-600: #2563eb;
-  --color-primary-700: #1d4ed8;
+  /* Brand Primary (Dark Green SPThree) */
+  --color-primary-50: #ecfdf5;
+  --color-primary-100: #d1fae5;
+  --color-primary-200: #a7f3d0;
+  --color-primary-300: #6ee7b7;
+  --color-primary-400: #34d399;
+  --color-primary-500: #10b981;
+  --color-primary-600: #059669;
+  --color-primary-700: #047857;
+  --color-primary-800: #065f46;
+  --color-primary-900: #064e3b;
+  --color-primary-950: #022c22;
 
-  --color-accent-500: #10b981;
-  --color-accent-600: #059669;
+  /* Brand Accent (Gold) */
+  --color-accent-50: #fefce8;
+  --color-accent-100: #fef9c3;
+  --color-accent-200: #fef08a;
+  --color-accent-300: #fde047;
+  --color-accent-400: #facc15;
+  --color-accent-500: #eab308;
+  --color-accent-600: #ca8a04;
+  --color-accent-700: #a16207;
+  --color-accent-800: #854d0e;
+  --color-accent-900: #713f12;
+  --color-accent-950: #422006;
 
+  /* Semantic Colors - Success (Standard Green) */
+  --color-success-50: #f0fdf4;
+  --color-success-100: #dcfce7;
+  --color-success-500: #22c55e;
+  --color-success-600: #16a34a;
+  --color-success-700: #15803d;
+
+  /* Semantic Colors - Warning (Amber) */
+  --color-warning-50: #fffbeb;
+  --color-warning-100: #fef3c7;
+  --color-warning-500: #f59e0b;
+  --color-warning-600: #d97706;
+  --color-warning-700: #b45309;
+
+  /* Semantic Colors - Danger (Red) */
+  --color-danger-50: #fef2f2;
+  --color-danger-100: #fee2e2;
+  --color-danger-500: #ef4444;
+  --color-danger-600: #dc2626;
+  --color-danger-700: #b91c1c;
+
+  /* Semantic Colors - Info (Blue) */
+  --color-info-50: #eff6ff;
+  --color-info-100: #dbeafe;
+  --color-info-500: #3b82f6;
+  --color-info-600: #2563eb;
+  --color-info-700: #1d4ed8;
+
+  /* Glass Effects */
   --color-glass: rgba(17, 24, 39, 0.7);
   --color-glass-border: rgba(255, 255, 255, 0.1);
 }
@@ -19,23 +65,33 @@
 @layer base {
   :root {
     --background: #ffffff;
-    --foreground: #18181b;
+    --foreground: #18181b; /* zinc-900 */
   }
 
   :root.dark {
-    --background: #18181b;
-    --foreground: #18181b;
+    --background: #09090b; /* zinc-950 */
+    --foreground: #fafafa; /* zinc-50 */
   }
 
   body {
     color: var(--foreground);
-    background: var(--background);
-    font-family: Arial, Helvetica, sans-serif;
+    background-color: var(--background);
+    background-image: radial-gradient(var(--color-zinc-200) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+  
+  :root.dark body {
+    background-image: radial-gradient(var(--color-zinc-800) 1px, transparent 1px);
   }
 }
 
 @layer utilities {
   .glass {
     @apply bg-white/75 dark:bg-black/45 backdrop-blur-md border border-zinc-200/50 dark:border-zinc-800/80 shadow-lg shadow-zinc-200/30 dark:shadow-none;
+  }
+
+  /* Beranda Card Consistency */
+  .beranda-card {
+    @apply bg-white dark:bg-zinc-900/80 backdrop-blur-md border border-zinc-200/60 dark:border-zinc-800/80 shadow-sm rounded-2xl p-6 transition-all duration-300 hover:shadow-md;
   }
 }

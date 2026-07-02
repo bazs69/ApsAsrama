@@ -4,18 +4,18 @@ import { needsPermissionRefresh, refreshUserPermissions } from "@/lib/security/p
 // ─── needsPermissionRefresh ────────────────────────────────────────────────────
 
 describe("needsPermissionRefresh", () => {
-  it("returns true when lastPermissionSync is undefined", () => {
+  it("returns true when permissionRefreshedAt is undefined", () => {
     expect(needsPermissionRefresh(undefined)).toBe(true)
   })
 
-  it("returns false when lastPermissionSync is recent (< 30 min)", () => {
+  it("returns false when permissionRefreshedAt is recent (< 30 min)", () => {
     const now = Date.now()
     expect(needsPermissionRefresh(now)).toBe(false)
     expect(needsPermissionRefresh(now - 1000)).toBe(false)           // 1s ago
     expect(needsPermissionRefresh(now - 29 * 60 * 1000)).toBe(false) // 29 min ago
   })
 
-  it("returns true when lastPermissionSync is >= 30 minutes ago", () => {
+  it("returns true when permissionRefreshedAt is >= 30 minutes ago", () => {
     const now = Date.now()
     expect(needsPermissionRefresh(now - 30 * 60 * 1000)).toBe(true)  // exactly 30 min
     expect(needsPermissionRefresh(now - 60 * 60 * 1000)).toBe(true)  // 1 hour ago
@@ -48,7 +48,7 @@ describe("refreshUserPermissions", () => {
     ...overrides,
   })
 
-  it("returns fresh role, permissions, satkerId, and lastPermissionSync when user is found", async () => {
+  it("returns fresh role, permissions, satkerId, and permissionRefreshedAt when user is found", async () => {
     mockPrisma.user.findUnique = vi.fn().mockResolvedValue(makeUser())
 
     const before = Date.now()
@@ -59,8 +59,8 @@ describe("refreshUserPermissions", () => {
     expect(result!.role).toBe("SUPER_ADMIN")
     expect(result!.permissions).toEqual(["dashboard.view", "pengaturan.view"])
     expect(result!.satkerId).toBe("satker-1")
-    expect(result!.lastPermissionSync).toBeGreaterThanOrEqual(before)
-    expect(result!.lastPermissionSync).toBeLessThanOrEqual(after)
+    expect(result!.permissionRefreshedAt).toBeGreaterThanOrEqual(before)
+    expect(result!.permissionRefreshedAt).toBeLessThanOrEqual(after)
   })
 
   it("reflects role change from database", async () => {
@@ -124,7 +124,7 @@ describe("refreshUserPermissions", () => {
     expect(result!.role).toBe("")
     expect(result!.permissions).toEqual([])
     expect(result!.satkerId).toBeNull()
-    expect(result!.lastPermissionSync).toBeDefined()
+    expect(result!.permissionRefreshedAt).toBeDefined()
   })
 
   it("returns null (fail-open) when database query throws", async () => {
@@ -158,7 +158,7 @@ describe("refreshUserPermissions", () => {
     expect(result!.satkerId).toBeNull()
   })
 
-  it("updates lastPermissionSync after successful refresh", async () => {
+  it("updates permissionRefreshedAt after successful refresh", async () => {
     const syncBefore = Date.now() - 60 * 60 * 1000 // 1 hour ago
 
     mockPrisma.user.findUnique = vi.fn().mockResolvedValue(makeUser())
@@ -166,8 +166,8 @@ describe("refreshUserPermissions", () => {
     const result = await refreshUserPermissions(mockPrisma, "user-1")
 
     expect(result).not.toBeNull()
-    // lastPermissionSync should be NOW, not the old value
-    expect(result!.lastPermissionSync).toBeGreaterThan(syncBefore)
-    expect(result!.lastPermissionSync).toBeGreaterThanOrEqual(Date.now() - 1000)
+    // permissionRefreshedAt should be NOW, not the old value
+    expect(result!.permissionRefreshedAt).toBeGreaterThan(syncBefore)
+    expect(result!.permissionRefreshedAt).toBeGreaterThanOrEqual(Date.now() - 1000)
   })
 })

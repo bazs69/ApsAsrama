@@ -3,7 +3,7 @@ schema_version: 1
 locale: en-US
 branch: main
 nodes_managed: true
-exported_at: "2026-06-24T12:08:05Z"
+exported_at: "2026-06-28T07:17:26Z"
 modules:
     "":
         dir_name: Dormitory Management Platform
@@ -185,11 +185,12 @@ modules:
         children:
             - app
             - database
+            - tests
         depends_on: []
         related_to: []
     app:
-        dir_name: Dormitory Management System (SPThree Connect)
-        title: Dormitory Management System (SPThree Connect)
+        dir_name: Dormitory Management & Attendance System
+        title: Dormitory Management & Attendance System
         scope:
             - src/
         source_files: []
@@ -228,8 +229,8 @@ modules:
         depends_on: []
         related_to: []
     database:
-        dir_name: Dormitory Management Database Schema
-        title: Dormitory Management Database Schema
+        dir_name: Dormitory Management Data Schema
+        title: Dormitory Management Data Schema
         scope:
             - prisma/
         source_files: []
@@ -297,6 +298,16 @@ modules:
             - src/app/actions/residents.ts
             - src/components/dashboard/audit-log/AuditLogClient.tsx
             - src/components/dashboard/ResidentDetailModal.tsx
+        children: []
+        depends_on: []
+        related_to: []
+    tests:
+        dir_name: Permission Synchronization Tests
+        title: Permission Synchronization Tests
+        scope:
+            - tests/
+            - vitest.config.ts
+        source_files: []
         children: []
         depends_on: []
         related_to: []

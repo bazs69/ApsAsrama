@@ -23,6 +23,6 @@ declare module "next-auth/jwt" {
     permissions: string[]
     id: string
     satkerId?: string | null
-    lastPermissionSync?: number
+    permissionRefreshedAt?: number
   }
 }

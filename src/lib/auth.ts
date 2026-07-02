@@ -2,8 +2,18 @@ import { NextAuthOptions } from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
 import { compare } from "bcrypt"
 import prisma from "./prisma"
-import * as rateLimiter from "./security/rateLimiter"
-import { needsPermissionRefresh, refreshUserPermissions } from "./security/permissionSync"
+import { RateLimiter, RATE_LIMITS, MemoryStore, RateLimitResult } from "./security/rateLimit"
+
+const loginStore = new MemoryStore()
+const loginLimiter = new RateLimiter(loginStore, RATE_LIMITS.LOGIN, "login")
+import { needsPermissionRefresh, refreshUserPermissions, PERMISSION_REFRESH_INTERVAL_MS } from "./security/permissionSync"
+import { logAuditEvent } from "./security/auditLogger"
+import { AuditAction } from "./security/auditActions"
+import { sessionInvalidationStore } from "./auth/sessionInvalidationStore"
+
+// ─── Session Timing Constants ───
+const SESSION_MAX_AGE = 60 * 60 * 8               // 8 hours (seconds)
+const SESSION_UPDATE_AGE = PERMISSION_REFRESH_INTERVAL_MS / 1000 // 30 minutes (seconds)
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -15,21 +25,44 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
+          // Missing credentials
+          await logAuditEvent({
+            action: AuditAction.LOGIN_FAILURE,
+            resource: "auth",
+            metadata: { reason: "missing_credentials" },
+          })
           return null
         }
 
-        // Rate limit check (fail-open)
+        // Rate limit check
+        let rateLimitResult: RateLimitResult | null = null
         try {
-          const rateLimitResult = rateLimiter.check(credentials.email)
-          if (!rateLimitResult.allowed) {
-            return null
-          }
+          rateLimitResult = await loginLimiter.consume(credentials.email)
         } catch {
           // Fail-open: continue login if rate limiter errors
         }
 
+        if (rateLimitResult && !rateLimitResult.success) {
+          try {
+            await logAuditEvent({
+              action: AuditAction.LOGIN_RATE_LIMIT,
+              actorId: null,
+              resource: "auth",
+              metadata: {
+                email: credentials.email,
+                identifier: credentials.email,
+                remaining: rateLimitResult.remaining,
+                resetTime: rateLimitResult.resetTime
+              },
+            })
+          } catch {
+            // Fail-open: logging must never interfere with login block
+          }
+          return null
+        }
+
         const user = await prisma.user.findUnique({
-          where: { email: credentials.email },
+          where: { email: credentials.email.trim().toLowerCase() },
           include: {
             role: {
               include: {
@@ -42,27 +75,39 @@ export const authOptions: NextAuthOptions = {
         })
 
         if (!user) {
+          await logAuditEvent({
+            action: AuditAction.LOGIN_FAILURE,
+            resource: "auth",
+            metadata: { email: credentials.email },
+          })
           return null
         }
 
         const isPasswordValid = await compare(credentials.password, user.password)
 
         if (!isPasswordValid) {
-          // Record failed login attempt (fail-open)
-          try {
-            rateLimiter.recordFailure(credentials.email)
-          } catch {
-            // Fail-open: silently ignore
-          }
+          // Failed authentication attempt naturally consumed the limiter already
+
+          await logAuditEvent({
+            action: AuditAction.LOGIN_FAILURE,
+            resource: "auth",
+            metadata: { email: credentials.email },
+          })
           return null
         }
 
-        // Record successful login (fail-open)
+        // Record successful login - reset the limiter
         try {
-          rateLimiter.recordSuccess(credentials.email)
+          await loginLimiter.reset(credentials.email)
         } catch {
           // Fail-open: silently ignore
         }
+
+        await logAuditEvent({
+          action: AuditAction.LOGIN_SUCCESS,
+          resource: "auth",
+          actorId: user.id,
+        })
 
         return {
           id: user.id,
@@ -83,7 +128,7 @@ export const authOptions: NextAuthOptions = {
         token.permissions = user.permissions
         token.id = user.id
         token.satkerId = (user as { satkerId?: string | null }).satkerId
-        token.lastPermissionSync = Date.now()
+        token.permissionRefreshedAt = Date.now()
         return token
       }
 
@@ -93,8 +138,20 @@ export const authOptions: NextAuthOptions = {
         return token
       }
 
-      // Only query DB when lastPermissionSync indicates a refresh is due
-      if (needsPermissionRefresh(token.lastPermissionSync as number | undefined)) {
+      // ─── Session Invalidation Check ───
+      const invalidatedAt = await sessionInvalidationStore.getInvalidatedAt(token.id as string)
+      if (invalidatedAt && token.iat && (token.iat as number) * 1000 < invalidatedAt) {
+        return {
+          ...token,
+          role: "",
+          permissions: [],
+          satkerId: null,
+          permissionRefreshedAt: Date.now()
+        }
+      }
+
+      // Only query DB when permissionRefreshedAt indicates a refresh is due
+      if (needsPermissionRefresh(token.permissionRefreshedAt as number | undefined)) {
         const result = await refreshUserPermissions(prisma, token.id as string)
 
         if (result) {
@@ -102,7 +159,7 @@ export const authOptions: NextAuthOptions = {
           token.role = result.role
           token.permissions = result.permissions
           token.satkerId = result.satkerId
-          token.lastPermissionSync = result.lastPermissionSync
+          token.permissionRefreshedAt = result.permissionRefreshedAt
         }
         // If result is null (DB failure), keep existing token data (fail-open)
       }
@@ -124,8 +181,18 @@ export const authOptions: NextAuthOptions = {
   },
   session: {
     strategy: "jwt",
-    maxAge: 60 * 60 * 8,     // 8 hours
-    updateAge: 60 * 30,       // 30 minutes
+    maxAge: SESSION_MAX_AGE,
+    updateAge: SESSION_UPDATE_AGE,
+  },
+  events: {
+    async signOut() {
+      // Note: NextAuth v4 signOut event does not provide token/session,
+      // so actorId is unavailable. The event is still recorded for audit.
+      await logAuditEvent({
+        action: AuditAction.LOGOUT,
+        resource: "auth",
+      })
+    },
   },
   secret: process.env.NEXTAUTH_SECRET,
 }

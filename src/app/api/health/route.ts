@@ -1,18 +1,23 @@
 import { NextResponse } from "next/server"
-import prisma from "@/lib/prisma"
+import { getSystemHealth } from "@/lib/health/systemHealth"
 
-// Health check endpoint — digunakan untuk keep-alive ping
-// agar serverless function & database tidak cold start
 export const dynamic = "force-dynamic"
 
 export async function GET() {
   try {
-    // Ping ringan ke DB untuk hangatkan koneksi
-    await prisma.$queryRaw`SELECT 1`
+    const health = await getSystemHealth()
+
+    const isHealthy = health.database === true && health.cache === true
 
     return NextResponse.json(
-      { status: "ok", timestamp: new Date().toISOString() },
-      { status: 200 }
+      { 
+        status: isHealthy ? "ok" : "degraded", 
+        database: health.database ? "connected" : "disconnected",
+        cache: health.cache ? "connected" : "disconnected",
+        queue: health.queue ? "connected" : "disconnected",
+        timestamp: new Date().toISOString() 
+      },
+      { status: isHealthy ? 200 : 503 }
     )
   } catch {
     return NextResponse.json(

@@ -1,0 +1,4 @@
+- Uses Vitest as the testing framework with global test APIs enabled via `vitest.config.ts`.
+- Configures path aliasing (`@/`) to resolve source modules, allowing tests to import from `src/lib/security/permissionSync`.
+- Employs dependency injection by passing a mocked Prisma client instance to `refreshUserPermissions`, isolating database interactions.
+- Structures tests into two distinct suites: one for the synchronous time-check logic (`needsPermissionRefresh`) and one for the asynchronous data-fetching logic (`refreshUserPermissions`).

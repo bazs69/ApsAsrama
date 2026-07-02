@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
-import { Toaster } from "react-hot-toast";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -19,6 +18,9 @@ export const metadata: Metadata = {
   description: "Dormitory Management System",
 };
 
+import { ToastProvider } from "@/components/ui/ToastProvider";
+import QueryProvider from "@/providers/QueryProvider";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -32,8 +34,10 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 transition-colors duration-300" suppressHydrationWarning>
         <Script src="/theme.js" strategy="afterInteractive" />
-        <Toaster position="top-right" />
-        {children}
+        <ToastProvider />
+        <QueryProvider>
+          {children}
+        </QueryProvider>
       </body>
     </html>
   );

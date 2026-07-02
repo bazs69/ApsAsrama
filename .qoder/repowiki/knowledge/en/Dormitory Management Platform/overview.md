@@ -1,1 +1,1 @@
-Orchestrates the Next.js application and Prisma database schema into a unified dormitory management system through shared infrastructure and server-side logic.
+Orchestrates a Next.js application and Prisma schema into a unified dormitory management system through shared infrastructure, server-side logic, and role-based access control.

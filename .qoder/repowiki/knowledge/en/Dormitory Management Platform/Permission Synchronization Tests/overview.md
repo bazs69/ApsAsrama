@@ -1,0 +1,1 @@
+Validates the logic for determining when user permissions need refreshing and executing the refresh process from the database.

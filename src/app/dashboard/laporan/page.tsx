@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation"
 import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/lib/auth"
+import { PERMISSIONS } from "@/lib/security/permissions"
 import LaporanClient from "@/components/dashboard/laporan/LaporanClient"
 import { 
   getLaporanDashboardData, 
@@ -23,7 +24,7 @@ export default async function LaporanPage({ searchParams }: { searchParams: { [k
   const permissions = session.user.permissions || []
   const hasPerm = (code: string) => permissions.includes(code)
 
-  if (!hasPerm("laporan.view")) {
+  if (!hasPerm(PERMISSIONS.LAPORAN_VIEW)) {
     redirect("/dashboard")
   }
 
@@ -47,7 +48,7 @@ export default async function LaporanPage({ searchParams }: { searchParams: { [k
   if (tab === "keaktifan") {
     rekapData = await getRekapKeaktifanData({ bulan, tahun, satkerId }) as Record<string, unknown>[]
   } else if (tab === "monitoring") {
-    if (session.user.satkerId && !hasPerm("satker.view")) {
+    if (session.user.satkerId && !hasPerm(PERMISSIONS.SATKER_VIEW)) {
       riwayatLaporanSatkerData = await getRiwayatLaporanSatker() as Record<string, unknown>[]
     } else {
       monitoringData = await getLaporanMonitoringData({ bulan, tahun, satkerId, status }) as Record<string, unknown>[]

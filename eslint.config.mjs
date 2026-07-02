@@ -12,12 +12,15 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
-    // Ignore database maintenance scripts
+    // Ignore database maintenance and dev utility scripts
     "delete_data.js",
     "drop.js",
     "drop_pg.js",
     "test-db.js",
     "test-prisma.js",
+    "test-auth.js",
+    "test-hash.js",
+    "reset-pw.js",
     "update-roles.js",
   ]),
 ]);

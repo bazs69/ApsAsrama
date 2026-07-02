@@ -1,0 +1,9 @@
+schema_version: 1
+module_path: database
+title: Dormitory Management Data Schema
+scope:
+    - prisma/
+source_files: []
+depends_on: []
+related_to:
+    - path: app

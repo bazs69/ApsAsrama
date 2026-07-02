@@ -20,7 +20,11 @@ import {
   MapPin,
   FileText,
   Activity,
-  ShieldCheck
+  ShieldCheck,
+  HeartPulse,
+  ShieldAlert,
+  Cpu,
+  BellRing
 } from "lucide-react"
 import { signOut } from "next-auth/react"
 import { useState } from "react"
@@ -220,6 +224,75 @@ function ReferensiDropdown({ pathname, permissions }: { pathname: string, permis
   )
 }
 
+// ─── Operational Center Dropdown ────────────────────────────────────────────────
+
+const opsSubLinks = [
+  { href: "/dashboard/ops", label: "Overview", icon: Activity },
+  { href: "/dashboard/ops/health", label: "Health", icon: HeartPulse },
+  { href: "/dashboard/ops/monitoring", label: "Monitoring", icon: Activity },
+  { href: "/dashboard/ops/security", label: "Security", icon: ShieldAlert },
+  { href: "/dashboard/ops/audit", label: "Audit", icon: ShieldCheck },
+  { href: "/dashboard/ops/runtime", label: "Runtime", icon: Cpu },
+  { href: "/dashboard/ops/notifications", label: "Notifications", icon: BellRing },
+]
+
+function OpsDropdown({ pathname }: { pathname: string }) {
+  const isActive = opsSubLinks.some((l) => pathname === l.href) || pathname.startsWith("/dashboard/ops")
+  const [isOpen, setIsOpen] = useState(isActive)
+
+  return (
+    <div>
+      <button
+        onClick={() => setIsOpen((prev) => !prev)}
+        className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all cursor-pointer ${
+          isActive
+            ? "bg-primary-500/10 text-primary-600 dark:text-primary-400 border border-primary-500/25"
+            : "text-zinc-500 dark:text-zinc-400 hover:bg-zinc-150 dark:hover:bg-zinc-800/50 hover:text-zinc-800 dark:hover:text-zinc-200"
+        }`}
+      >
+        <div className="flex items-center space-x-3">
+          <Activity
+            className={`w-5 h-5 ${isActive ? "text-primary-600 dark:text-primary-400" : ""}`}
+          />
+          <span className="font-semibold">Operational Center</span>
+        </div>
+        <ChevronDown
+          className={`w-4 h-4 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
+        />
+      </button>
+
+      <div
+        className={`overflow-hidden transition-all duration-200 ease-in-out ${
+          isOpen ? "max-h-[500px] opacity-100 mt-1" : "max-h-0 opacity-0"
+        }`}
+      >
+        <div className="ml-4 pl-4 border-l-2 border-zinc-200 dark:border-zinc-800 space-y-1">
+          {opsSubLinks.map((link) => {
+            const Icon = link.icon
+            const isLinkActive = pathname === link.href
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={`flex items-center space-x-2.5 px-3 py-2.5 rounded-xl transition-all text-sm ${
+                  isLinkActive
+                    ? "bg-primary-500/10 text-primary-600 dark:text-primary-400 font-semibold border border-primary-500/20"
+                    : "text-zinc-500 dark:text-zinc-400 hover:bg-zinc-150 dark:hover:bg-zinc-800/50 hover:text-zinc-800 dark:hover:text-zinc-200 font-medium"
+                }`}
+              >
+                <Icon className="w-4 h-4 flex-shrink-0" />
+                <span>{link.label}</span>
+              </Link>
+            )
+          })}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ─── Main Sidebar ─────────────────────────────────────────────────────────────
+
 export default function Sidebar({ permissions = [] }: { userRole: string, permissions?: string[] }) {
   const pathname = usePathname()
 
@@ -284,11 +357,8 @@ export default function Sidebar({ permissions = [] }: { userRole: string, permis
           )
         })}
 
-
-        {/* Data Master Dropdown */}
         {showDataMaster && <DataMasterDropdown pathname={pathname} />}
 
-        {/* Unit Penugasan Dropdown */}
         <div>
           <button
             onClick={() => setIsUnitPenugasanOpen((prev) => !prev)}
@@ -309,7 +379,6 @@ export default function Sidebar({ permissions = [] }: { userRole: string, permis
             />
           </button>
 
-          {/* Sub-menu items */}
           <div
             className={`overflow-hidden transition-all duration-200 ease-in-out ${
               isUnitPenugasanOpen ? "max-h-40 opacity-100 mt-1" : "max-h-0 opacity-0"
@@ -346,15 +415,10 @@ export default function Sidebar({ permissions = [] }: { userRole: string, permis
           </div>
         </div>
 
-
-
-        {/* Absensi Dropdown */}
         {showAbsensi && <AbsensiDropdown pathname={pathname} />}
-
-        {/* Referensi Menu */}
         {showReferensi && <ReferensiDropdown pathname={pathname} permissions={permissions} />}
+        {showAuditLog && <OpsDropdown pathname={pathname} />}
 
-        {/* Audit Log */}
         {showAuditLog && (
           <Link
             href="/dashboard/audit-logs"

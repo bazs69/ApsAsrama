@@ -1,0 +1,6 @@
+- Centralized domain modeling in `prisma/schema.prisma` using Prisma ORM with a PostgreSQL datasource.
+- Core entities include `Resident`, `Room`, `User` (RBAC), and academic structures (`Fakultas`, `Prodi`, `Angkatan`).
+- Attendance logic is split across `Muallim`, `Kegiatan`, and `Apel` models with corresponding join tables for status tracking.
+- Administrative geography is modeled hierarchically from `Country` down to `Village`.
+- Schema evolution is managed via SQL migrations in `prisma/migrations/`, such as making `Resident.nim` optional.
+- Initial data bootstrapping is handled by `prisma/seed.ts`, which sets up permissions, system roles, and a default admin user.

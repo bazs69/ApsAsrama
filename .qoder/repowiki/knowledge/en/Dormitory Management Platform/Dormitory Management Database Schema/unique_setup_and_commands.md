@@ -1,1 +1,0 @@
-Run `npx prisma db seed` to execute `seed.ts` and populate initial RBAC data and admin user.

@@ -18,9 +18,11 @@ model User {
   satkerId      String?
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
-  exportHistory ExportHistory[]
-  role          Role?           @relation(fields: [roleId], references: [id])
-  satker        Satker?         @relation(fields: [satkerId], references: [id])
+  exportHistory  ExportHistory[]
+  securityEvents SecurityEvent[]
+  notifications  Notification[]
+  role           Role?           @relation(fields: [roleId], references: [id])
+  satker         Satker?         @relation(fields: [satkerId], references: [id])
 }
 
 model Room {
@@ -110,14 +112,23 @@ model Assignment {
   status      String                @default("ACTIVE")
   startDate   DateTime              @default(now())
   endDate     DateTime?
-  createdAt   DateTime              @default(now())
-  updatedAt   DateTime              @updatedAt
-  resident    Resident              @relation(fields: [residentId], references: [id], onDelete: Cascade)
-  satker      Satker                @relation(fields: [satkerId], references: [id], onDelete: Cascade)
-  monitorings MonitoringPenugasan[]
+  groupId     String?
+  transferReason    String?
+  transferredAt     DateTime?
+  transferredFromId String?               @unique
+  transferredFrom   Assignment?           @relation("AssignmentTransfer", fields: [transferredFromId], references: [id], onDelete: SetNull)
+  transferredTo     Assignment?           @relation("AssignmentTransfer")
 
-  @@unique([residentId, satkerId])
+  createdAt         DateTime              @default(now())
+  updatedAt         DateTime              @updatedAt
+  resident          Resident              @relation(fields: [residentId], references: [id], onDelete: Cascade)
+  satker            Satker                @relation(fields: [satkerId], references: [id], onDelete: Cascade)
+  monitorings       MonitoringPenugasan[]
+
   @@index([satkerId])
+  @@index([groupId])
+  @@index([residentId])
+  @@index([status])
 }
 
 model MonitoringPenugasan {
@@ -407,6 +418,26 @@ model Village {
   @@index([districtId])
 }
 
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  message   String   @db.Text
+  type      String   @default("INFO")  // INFO | SUCCESS | WARNING | ERROR
+  link      String?                    // (Optional) URL navigasi saat notifikasi diklik
+  isRead    Boolean  @default(false)
+  metadata  Json?                      // Payload tambahan (e.g. groupId, satkerId, dll.)
+  createdAt DateTime @default(now())
+
+  // Index primer: query notifikasi milik satu user
+  @@index([userId])
+  // Index komposit: query unread per-user (query paling sering dieksekusi)
+  @@index([userId, isRead])
+  // Index untuk sorting/pagination by time
+  @@index([createdAt])
+}
+
 model AuditLog {
   id          String   @id @default(uuid())
   action      String
@@ -418,6 +449,24 @@ model AuditLog {
   createdAt   DateTime @default(now())
 
   @@index([entityType, entityId])
+}
+
+model SecurityEvent {
+  id         String   @id @default(uuid())
+  actorId    String?
+  action     String
+  resource   String
+  resourceId String?
+  ipAddress  String?
+  userAgent  String?
+  metadata   Json?
+  createdAt  DateTime @default(now())
+  actor      User?    @relation(fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([actorId])
+  @@index([action])
+  @@index([resource])
+  @@index([createdAt])
 }
 
 model ResidentRoomHistory {

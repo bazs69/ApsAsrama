@@ -1,10 +1,18 @@
 "use server"
 
+import { logOperationalError } from "@/lib/business/businessLogger"
 import prisma from "@/lib/prisma"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { revalidatePath } from "next/cache"
 import { Prisma } from "@prisma/client"
+import { RateLimiter, RATE_LIMITS, MemoryStore } from "@/lib/security/rateLimit"
+import { checkCrudRateLimit } from "@/lib/security/crudRateLimit"
+import { logAuditEvent } from "@/lib/security/auditLogger"
+import { AuditAction } from "@/lib/security/auditActions"
+
+const exportStore = new MemoryStore()
+const exportLimiter = new RateLimiter(exportStore, RATE_LIMITS.EXPORT, "export")
 
 const KEAKTIFAN_SCORE = {
   "Sangat Aktif": 4,
@@ -114,7 +122,7 @@ export async function getLaporanDashboardData(filters: { bulan?: number, tahun?:
       distribusiData
     }
   } catch (error) {
-    console.error("Dashboard error:", error)
+    logOperationalError({ action: "Dashboard error:", error: error })
     return null
   }
 }
@@ -123,6 +131,16 @@ export async function getRekapKeaktifanData(filters: { bulan?: number, tahun?: n
   try {
     const session = await getServerSession(authOptions)
     if (!session || !session.user.permissions?.includes("dashboard.view")) return []
+
+    const rlResult = await exportLimiter.consume(session.user.id)
+    if (!rlResult.success) {
+      try {
+
+      } catch {
+        // fail-open
+      }
+      return []
+    }
 
     if (!session.user.permissions?.includes("satker.view") && session.user.satkerId) {
       filters.satkerId = session.user.satkerId
@@ -189,7 +207,7 @@ export async function getRekapKeaktifanData(filters: { bulan?: number, tahun?: n
     return results.sort((a, b) => b.score - a.score)
 
   } catch (error) {
-    console.error("Rekap error:", error)
+    logOperationalError({ action: "Rekap error:", error: error })
     return []
   }
 }
@@ -198,6 +216,16 @@ export async function logExportAction(fileName: string, reportType: string) {
   try {
     const session = await getServerSession(authOptions)
     if (!session || !session.user.permissions?.includes("laporan.export")) return { error: "Unauthorized" }
+
+    const rlResult = await exportLimiter.consume(session.user.id)
+    if (!rlResult.success) {
+      try {
+
+      } catch {
+        // fail-open
+      }
+      return { error: "Too many export requests. Please wait before exporting again." }
+    }
 
     await prisma.exportHistory.create({
       data: {
@@ -209,7 +237,7 @@ export async function logExportAction(fileName: string, reportType: string) {
     revalidatePath("/dashboard/laporan")
     return { success: true }
   } catch (error) {
-    console.error("Log export error:", error)
+    logOperationalError({ action: "Log export error:", error: error })
     return { error: "Failed" }
   }
 }
@@ -237,6 +265,16 @@ export async function getLaporanMonitoringData(filters: { bulan?: number, tahun?
   try {
     const session = await getServerSession(authOptions)
     if (!session || !session.user.permissions?.includes("monitoring.view")) return []
+
+    const rlResult = await exportLimiter.consume(session.user.id)
+    if (!rlResult.success) {
+      try {
+
+      } catch {
+        // fail-open
+      }
+      return []
+    }
 
     if (!session.user.permissions?.includes("satker.view") && session.user.satkerId) {
       filters.satkerId = session.user.satkerId
@@ -283,7 +321,7 @@ export async function getLaporanMonitoringData(filters: { bulan?: number, tahun?
       tanggal: m.tanggalMonitoring
     }))
   } catch (error) {
-    console.error("Laporan monitoring error:", error)
+    logOperationalError({ action: "Laporan monitoring error:", error: error })
     return []
   }
 }
@@ -292,6 +330,16 @@ export async function getLaporanPenugasanData(filters: { bulan?: number, tahun?:
   try {
     const session = await getServerSession(authOptions)
     if (!session || !session.user.permissions?.includes("penugasan.view")) return []
+
+    const rlResult = await exportLimiter.consume(session.user.id)
+    if (!rlResult.success) {
+      try {
+
+      } catch {
+        // fail-open
+      }
+      return []
+    }
 
     if (!session.user.permissions?.includes("satker.view") && session.user.satkerId) {
       filters.satkerId = session.user.satkerId
@@ -335,13 +383,15 @@ export async function getLaporanPenugasanData(filters: { bulan?: number, tahun?:
       status: a.status
     }))
   } catch (error) {
-    console.error("Laporan penugasan error:", error)
+    logOperationalError({ action: "Laporan penugasan error:", error: error })
     return []
   }
 }
 
 export async function deleteExportHistory(id: string) {
   try {
+    if (!await checkCrudRateLimit()) return { error: "Too many requests." }
+
     const session = await getServerSession(authOptions)
     if (!session || !session.user.permissions?.includes("laporan.export")) {
       return { error: "Unauthorized" }
@@ -351,7 +401,7 @@ export async function deleteExportHistory(id: string) {
     revalidatePath("/dashboard/laporan")
     return { success: true }
   } catch (error) {
-    console.error("Delete export history error:", error)
+    logOperationalError({ action: "Delete export history error:", error: error })
     return { error: "Gagal menghapus riwayat export." }
   }
 }
@@ -416,7 +466,7 @@ export async function getSantriDetailForLaporan(residentId: string) {
       }))
     }
   } catch (error) {
-    console.error("Get detail santri error:", error)
+    logOperationalError({ action: "Get detail santri error:", error: error })
     return null
   }
 }
@@ -436,6 +486,8 @@ export type SaveMonitoringSatkerInput = {
 
 export async function saveMonitoringSatker(input: SaveMonitoringSatkerInput) {
   try {
+    if (!await checkCrudRateLimit()) return { success: false, error: "Too many requests." }
+
     const session = await getServerSession(authOptions)
     if (!session || !session.user.permissions?.includes("monitoring.create")) {
       return { success: false, error: "Unauthorized" }
@@ -513,7 +565,7 @@ export async function saveMonitoringSatker(input: SaveMonitoringSatkerInput) {
     
     return { success: true }
   } catch (error) {
-    console.error("Save monitoring satker error:", error)
+    logOperationalError({ action: "Save monitoring satker error:", error: error })
     return { success: false, error: "Failed to save data" }
   }
 }
@@ -557,7 +609,7 @@ export async function getRiwayatLaporanSatker() {
 
     return result
   } catch (error) {
-    console.error("Get riwayat laporan error:", error)
+    logOperationalError({ action: "Get riwayat laporan error:", error: error })
     return []
   }
 }

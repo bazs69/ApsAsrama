@@ -1,24 +1,25 @@
 import { withAuth } from "next-auth/middleware"
 import { NextResponse } from "next/server"
+import { PERMISSIONS } from "@/lib/security/permissions"
 
 // Mapping of route prefixes to required permissions
 const ROUTE_PERMISSIONS: Record<string, string> = {
-  "/dashboard/residents": "santri.view",
-  "/dashboard/muallim": "muallim.view",
-  "/dashboard/assignments": "penugasan.view",
-  "/dashboard/monitoring-penugasan": "monitoring.view",
-  "/dashboard/absensi/muallim": "absensi.view",
-  "/dashboard/absensi/kegiatan": "absensi.view",
-  "/dashboard/absensi/apel": "absensi.view",
-  "/dashboard/area": "area.view",
-  "/dashboard/akademik": "akademik.view",
-  "/dashboard/kbm": "kbm.view",
-  "/dashboard/role-user": "role.view",
-  "/dashboard/assignments/satkers": "satker.view",
-  "/dashboard/settings": "pengaturan.view",
-  "/dashboard/laporan": "laporan.view",
-  "/dashboard/formulir": "formulir.view",
-  "/dashboard/referensi/wilayah": "wilayah.view",
+  "/dashboard/residents": PERMISSIONS.SANTRI_VIEW,
+  "/dashboard/muallim": PERMISSIONS.MUALLIM_VIEW,
+  "/dashboard/assignments": PERMISSIONS.PENUGASAN_VIEW,
+  "/dashboard/monitoring-penugasan": PERMISSIONS.MONITORING_VIEW,
+  "/dashboard/absensi/muallim": PERMISSIONS.ABSENSI_VIEW,
+  "/dashboard/absensi/kegiatan": PERMISSIONS.ABSENSI_VIEW,
+  "/dashboard/absensi/apel": PERMISSIONS.ABSENSI_VIEW,
+  "/dashboard/area": PERMISSIONS.AREA_VIEW,
+  "/dashboard/akademik": PERMISSIONS.AKADEMIK_VIEW,
+  "/dashboard/kbm": PERMISSIONS.KBM_VIEW,
+  "/dashboard/role-user": PERMISSIONS.ROLE_VIEW,
+  "/dashboard/assignments/satkers": PERMISSIONS.SATKER_VIEW,
+  "/dashboard/settings": PERMISSIONS.PENGATURAN_VIEW,
+  "/dashboard/laporan": PERMISSIONS.LAPORAN_VIEW,
+  "/dashboard/formulir": PERMISSIONS.FORMULIR_VIEW,
+  "/dashboard/referensi/wilayah": PERMISSIONS.WILAYAH_VIEW,
 }
 
 // Renamed from "middleware" to "proxy" (Next.js 16 convention)
@@ -41,7 +42,7 @@ export const proxy = withAuth(
     }
 
     // Dashboard base route needs dashboard.view
-    if (pathname === "/dashboard" && !userPermissions.includes("dashboard.view")) {
+    if (pathname === "/dashboard" && !userPermissions.includes(PERMISSIONS.DASHBOARD_VIEW)) {
       return NextResponse.rewrite(new URL("/dashboard/forbidden", req.url))
     }
 

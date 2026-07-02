@@ -5,6 +5,7 @@ import { useRouter, usePathname, useSearchParams } from "next/navigation"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { MapPin, Search, Plus, Edit, Trash2, ChevronLeft, ChevronRight, Save, X, UploadCloud, Globe, Map, Navigation, Flag, Home } from "lucide-react"
 import toast from "react-hot-toast"
+import { PERMISSIONS } from "@/lib/security/permissions"
 import { 
   createCountry, updateCountry, deleteCountry,
   createProvince, updateProvince, deleteProvince,
@@ -70,9 +71,9 @@ export default function WilayahClient({
   const searchParams = useSearchParams()
 
   const hasPerm = (action: string) => permissions.includes(action.toLowerCase())
-  const canCreate = hasPerm("wilayah.create")
-  const canUpdate = hasPerm("wilayah.update")
-  const canDelete = hasPerm("wilayah.delete")
+  const canCreate = hasPerm(PERMISSIONS.WILAYAH_CREATE)
+  const canUpdate = hasPerm(PERMISSIONS.WILAYAH_UPDATE)
+  const canDelete = hasPerm(PERMISSIONS.WILAYAH_DELETE)
 
   const [searchInput, setSearchInput] = useState(search)
   const [isImportOpen, setIsImportOpen] = useState(false)

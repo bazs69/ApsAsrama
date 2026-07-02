@@ -1,5 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { v2 as cloudinary } from "cloudinary";
+import { getServerSession } from "next-auth";
+import { authOptions } from "../../../lib/auth";
+import { RateLimiter, RATE_LIMITS, MemoryStore } from "../../../lib/security/rateLimit";
+import { logAuditEvent } from "../../../lib/security/auditLogger";
+import { AuditAction } from "../../../lib/security/auditActions";
+
+const uploadStore = new MemoryStore();
+const uploadLimiter = new RateLimiter(uploadStore, RATE_LIMITS.UPLOAD, "upload");
 
 // Konfigurasi otomatis mengambil dari process.env (jika format penamaannya standar Cloudinary: CLOUDINARY_URL atau CLOUDINARY_CLOUD_NAME dll)
 // Namun kita pastikan konfigurasinya dengan env yang sudah diatur
@@ -11,6 +19,29 @@ cloudinary.config({
 
 export async function POST(req: NextRequest) {
   try {
+    const session = await getServerSession(authOptions);
+    if (!session || !session.user || !session.user.id) {
+      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
+    }
+
+    const rateLimitResult = await uploadLimiter.consume(session.user.id);
+    if (!rateLimitResult.success) {
+      try {
+        await logAuditEvent({
+          action: AuditAction.UPLOAD_RATE_LIMIT,
+          actorId: session.user.id,
+          resource: "upload",
+          metadata: {
+            remaining: rateLimitResult.remaining,
+            resetTime: rateLimitResult.resetTime,
+          },
+        });
+      } catch {
+        // fail-open: ignore logging error and proceed to block
+      }
+      return NextResponse.json({ success: false, error: "Too many upload requests" }, { status: 429 });
+    }
+
     const formData = await req.formData();
     const file = formData.get("file") as File | null;
 

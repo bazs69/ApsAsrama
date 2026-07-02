@@ -4,6 +4,11 @@ import prisma from "@/lib/prisma"
 import { revalidatePath } from "next/cache"
 import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/lib/auth"
+import { checkCrudRateLimit } from "@/lib/security/crudRateLimit"
+import { BusinessError } from "@/lib/business/businessErrors"
+import { BusinessValidation } from "@/lib/business/businessValidation"
+import { ResidentBusiness } from "@/lib/business/residentBusiness"
+import { mapPrismaError } from "@/lib/prisma/prismaErrorMapper"
 
 export interface RoomTransferPayload {
   residentId: string
@@ -13,52 +18,53 @@ export interface RoomTransferPayload {
 
 export async function transferResidentRoom(payload: RoomTransferPayload) {
   try {
+    if (!await checkCrudRateLimit()) return { error: "Too many requests." }
+
+    const residentId = BusinessValidation.validateParent(payload.residentId, "Santri")
+    const newRoomId = BusinessValidation.validateParent(payload.newRoomId, "Kamar Tujuan")
+
     const session = await getServerSession(authOptions)
     const performedBy = session?.user?.email || "System"
 
-    const resident = await prisma.resident.findUnique({
-      where: { id: payload.residentId },
-      include: { room: true }
-    })
+    const result = await prisma.$transaction(async (tx) => {
+      const resident = await tx.resident.findUnique({
+        where: { id: residentId },
+        include: { room: true }
+      })
 
-    if (!resident) {
-      return { error: "Santri tidak ditemukan." }
-    }
-
-    const newRoom = await prisma.room.findUnique({
-      where: { id: payload.newRoomId },
-      include: {
-        residents: true,
-        daerah: { include: { wilayah: true } }
+      if (!resident) {
+        throw BusinessError.invalidReference("Santri")
       }
-    })
 
-    if (!newRoom) {
-      return { error: "Kamar tujuan tidak ditemukan." }
-    }
+      if (resident.roomId === newRoomId) {
+        throw BusinessError.validation("Santri sudah berada di kamar tujuan tersebut.")
+      }
 
-    if (newRoom.residents.length >= newRoom.capacity) {
-      return { error: `Kamar ${newRoom.number} sudah penuh (kapasitas: ${newRoom.capacity}).` }
-    }
+      // Validate new room assignment
+      const validRoom = await ResidentBusiness.validateRoomAssignment(tx, newRoomId, residentId)
 
-    if (newRoom.id === resident.roomId) {
-      return { error: "Santri sudah berada di kamar ini." }
-    }
+      const newRoomDetail = await tx.room.findUnique({
+        where: { id: newRoomId },
+        include: { daerah: { include: { wilayah: true } } }
+      })
 
-    const oldRoomId = resident.roomId
-    const oldRoomNumber = resident.room?.number || null
-    const oldWilayah = resident.wilayah
-    const oldDaerah = resident.daerah
+      if (!newRoomDetail) {
+        throw BusinessError.invalidReference("Kamar Tujuan")
+      }
 
-    const newWilayah = newRoom.daerah?.wilayah?.name || null
-    const newDaerah = newRoom.daerah?.name || null
+      const oldRoomId = resident.roomId
+      const oldRoomNumber = resident.room?.number || null
+      const oldWilayah = resident.wilayah
+      const oldDaerah = resident.daerah
 
-    await prisma.$transaction(async (tx) => {
+      const newWilayah = newRoomDetail.daerah?.wilayah?.name || null
+      const newDaerah = newRoomDetail.daerah?.name || null
+
       // 1. Update resident room
       await tx.resident.update({
-        where: { id: payload.residentId },
+        where: { id: residentId },
         data: {
-          roomId: newRoom.id,
+          roomId: validRoom.id,
           wilayah: newWilayah,
           daerah: newDaerah
         }
@@ -67,11 +73,11 @@ export async function transferResidentRoom(payload: RoomTransferPayload) {
       // 2. Record room history
       await tx.residentRoomHistory.create({
         data: {
-          residentId: payload.residentId,
+          residentId,
           fromRoomId: oldRoomId,
           fromRoom: oldRoomNumber,
-          toRoomId: newRoom.id,
-          toRoom: newRoom.number,
+          toRoomId: validRoom.id,
+          toRoom: validRoom.number,
           fromWilayah: oldWilayah,
           fromDaerah: oldDaerah,
           toWilayah: newWilayah,
@@ -86,25 +92,42 @@ export async function transferResidentRoom(payload: RoomTransferPayload) {
         data: {
           action: "ROOM_TRANSFER",
           entityType: "RESIDENT",
-          entityId: payload.residentId,
+          entityId: residentId,
           performedBy,
           oldValue: JSON.stringify({ roomId: oldRoomId, room: oldRoomNumber, wilayah: oldWilayah, daerah: oldDaerah }),
-          newValue: JSON.stringify({ roomId: newRoom.id, room: newRoom.number, wilayah: newWilayah, daerah: newDaerah, alasan: payload.alasan })
+          newValue: JSON.stringify({ roomId: validRoom.id, room: validRoom.number, wilayah: newWilayah, daerah: newDaerah, alasan: payload.alasan })
         }
       })
 
-      // 4. Release old room if needed
+      // 4. Release old room status if needed
       if (oldRoomId) {
         const oldRoom = await tx.room.findUnique({
           where: { id: oldRoomId },
-          include: { residents: true }
+          include: { _count: { select: { residents: true } } }
         })
-        if (oldRoom && oldRoom.residents.length <= 1) {
+        if (!oldRoom) {
+          throw BusinessError.invalidReference("Kamar Lama")
+        }
+        if (oldRoom._count.residents <= 1) {
           await tx.room.update({
             where: { id: oldRoomId },
             data: { status: "AVAILABLE" }
           })
         }
+      }
+
+      // 5. Update new room status if full
+      if (validRoom.residentsCount >= validRoom.capacity) {
+        await tx.room.update({
+          where: { id: validRoom.id },
+          data: { status: "OCCUPIED" }
+        })
+      }
+
+      return {
+        newRoom: { id: validRoom.id, number: validRoom.number },
+        newWilayah,
+        newDaerah
       }
     })
 
@@ -113,14 +136,13 @@ export async function transferResidentRoom(payload: RoomTransferPayload) {
 
     return {
       success: true,
-      newRoom: { id: newRoom.id, number: newRoom.number },
-      newWilayah,
-      newDaerah
+      newRoom: result.newRoom,
+      newWilayah: result.newWilayah,
+      newDaerah: result.newDaerah
     }
   } catch (error) {
-    console.error("Room transfer error:", error)
-    const message = error instanceof Error ? error.message : "Gagal memindahkan kamar santri."
-    return { error: message }
+    const businessErr = mapPrismaError(error, "Transfer Kamar")
+    return { error: businessErr.message }
   }
 }
 
@@ -132,8 +154,8 @@ export async function getResidentRoomHistory(residentId: string) {
     })
     return { success: true, history }
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Gagal mengambil riwayat kamar."
-    return { error: message }
+    const businessErr = mapPrismaError(error, "Riwayat Kamar")
+    return { error: businessErr.message }
   }
 }
 
@@ -149,7 +171,7 @@ export async function getAvailableRooms() {
     })
     return { success: true, rooms }
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Gagal mengambil daftar kamar."
-    return { error: message }
+    const businessErr = mapPrismaError(error, "Daftar Kamar")
+    return { error: businessErr.message }
   }
 }

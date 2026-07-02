@@ -1,8 +1,10 @@
 "use server"
 
+import { logOperationalError } from "@/lib/business/businessLogger"
 import prisma from "@/lib/prisma"
 import { revalidatePath } from "next/cache"
 import { MuallimStatus } from "@prisma/client"
+import { checkCrudRateLimit } from "@/lib/security/crudRateLimit"
 
 export async function getMuallims() {
   try {
@@ -10,7 +12,7 @@ export async function getMuallims() {
       orderBy: { name: "asc" },
     })
   } catch (error) {
-    console.error("Failed to fetch muallims:", error)
+    logOperationalError({ action: "Failed to fetch muallims:", error: error })
     return []
   }
 }
@@ -21,6 +23,7 @@ export async function createMuallim(formData: {
   status?: MuallimStatus
 }) {
   try {
+    if (!await checkCrudRateLimit()) return { error: "Too many requests." }
     const muallim = await prisma.muallim.create({
       data: {
         name: formData.name,
@@ -46,6 +49,7 @@ export async function updateMuallim(
   }
 ) {
   try {
+    if (!await checkCrudRateLimit()) return { error: "Too many requests." }
     const muallim = await prisma.muallim.update({
       where: { id },
       data: {
@@ -65,6 +69,7 @@ export async function updateMuallim(
 
 export async function deleteMuallim(id: string) {
   try {
+    if (!await checkCrudRateLimit()) return { error: "Too many requests." }
     await prisma.muallim.delete({
       where: { id },
     })

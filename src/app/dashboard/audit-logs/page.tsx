@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation"
 import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/lib/auth"
+import { PERMISSIONS } from "@/lib/security/permissions"
 import AuditLogClient from "@/components/dashboard/audit-log/AuditLogClient"
 import { getAuditLogs, getAuditLogActions } from "@/app/actions/audit"
 import { Metadata } from "next"
@@ -20,7 +21,7 @@ export default async function AuditLogsPage({
   if (!session) redirect("/login")
 
   const permissions = session.user.permissions || []
-  if (!permissions.includes("audit.view")) redirect("/dashboard/forbidden")
+  if (!permissions.includes(PERMISSIONS.AUDIT_VIEW)) redirect("/dashboard/forbidden")
 
   const sp = await searchParams
   const page = sp.page ? parseInt(sp.page) : 1

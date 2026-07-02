@@ -1,13 +1,21 @@
 "use server"
 
 import prisma from "@/lib/prisma"
-import { hasPermission } from "@/lib/permissions"
+import { PERMISSIONS } from "@/lib/security/permissions"
+import { requirePermission } from "@/lib/security/authorization"
 import { revalidatePath } from "next/cache"
+import { checkCrudRateLimit } from "@/lib/security/crudRateLimit"
+import { secureAction } from "@/lib/security/secureAction"
+import { SECURITY_CONSTANTS } from "@/lib/security/securityConstants"
+import { UserBusiness } from "@/lib/business/userBusiness"
+import { BusinessError } from "@/lib/business/businessErrors"
+import { BusinessValidation } from "@/lib/business/businessValidation"
+import { mapPrismaError } from "@/lib/prisma/prismaErrorMapper"
+import { sessionInvalidationStore } from "@/lib/auth/sessionInvalidationStore"
+import { cache } from "react"
 
-export async function getRoles() {
-  if (!(await hasPermission("role.view"))) {
-    throw new Error("Forbidden")
-  }
+export const getRoles = cache(async () => {
+  await requirePermission(PERMISSIONS.ROLE_VIEW)
   
   return await prisma.role.findMany({
     include: {
@@ -24,95 +32,149 @@ export async function getRoles() {
       createdAt: 'asc'
     }
   })
-}
+})
 
-export async function getPermissions() {
-  if (!(await hasPermission("role.view"))) {
-    throw new Error("Forbidden")
-  }
+export const getPermissions = cache(async () => {
+  await requirePermission(PERMISSIONS.ROLE_VIEW)
 
   return await prisma.permission.findMany({
     orderBy: {
       module: 'asc'
     }
   })
-}
+})
 
 export async function createRole(data: { name: string, permissions: string[] }) {
-  if (!(await hasPermission("role.create"))) {
-    throw new Error("Forbidden")
-  }
+  return secureAction({
+    module: "Role",
+    action: "createRole",
+    permission: PERMISSIONS.ROLE_CREATE,
+    executor: async () => {
+      if (!await checkCrudRateLimit()) throw new Error(SECURITY_CONSTANTS.ERROR_CODES.RATE_001)
 
-  const { name, permissions } = data
+      const validName = BusinessValidation.requireName(data.name, "Nama Role")
+      const cleanPerms = UserBusiness.validatePermissionAssignment(data.permissions)
 
-  const role = await prisma.role.create({
-    data: {
-      name,
-      permissions: {
-        create: permissions.map(id => ({
-          permission: {
-            connect: { id }
+      try {
+        const role = await prisma.$transaction(async (tx) => {
+          // [5B.4] Validate duplicate role name inside transaction
+          const existing = await tx.role.findUnique({ where: { name: validName } })
+          if (existing) {
+            throw BusinessError.alreadyExists(`Role dengan nama ${validName}`)
           }
-        }))
+
+          return await tx.role.create({
+            data: {
+              name: validName,
+              permissions: {
+                create: cleanPerms.map(id => ({
+                  permission: {
+                    connect: { id }
+                  }
+                }))
+              }
+            },
+            include: {
+              permissions: {
+                include: {
+                  permission: { select: { code: true } }
+                }
+              }
+            }
+          })
+        })
+
+        await sessionInvalidationStore.invalidateAll()
+        revalidatePath("/dashboard/role-user")
+        revalidatePath("/dashboard/settings")
+        return role
+      } catch (err) {
+        throw mapPrismaError(err, "Buat Role")
       }
     }
   })
-
-  revalidatePath("/dashboard/role-user")
-  revalidatePath("/dashboard/settings")
-  return role
 }
 
 export async function updateRole(id: string, data: { name: string, permissions: string[] }) {
-  if (!(await hasPermission("role.update"))) {
-    throw new Error("Forbidden")
-  }
+  return secureAction({
+    module: "Role",
+    action: "updateRole",
+    permission: PERMISSIONS.ROLE_UPDATE,
+    executor: async () => {
+      if (!await checkCrudRateLimit()) throw new Error(SECURITY_CONSTANTS.ERROR_CODES.RATE_001)
 
-  const role = await prisma.role.findUnique({ where: { id } })
-  if (!role) throw new Error("Role not found")
-  if (role.isSystem && role.name === "SUPER_ADMIN") {
-    // SUPER_ADMIN cannot be renamed or have permissions reduced by normal UI.
-    // We just prevent updating SUPER_ADMIN here for safety.
-    throw new Error("Cannot modify SUPER_ADMIN role directly")
-  }
+      const role = await prisma.role.findUnique({ where: { id } })
+      if (!role) throw BusinessError.invalidReference("Role")
 
-  const { name, permissions } = data
+      UserBusiness.validateSystemRoleModification(role)
 
-  // Delete old permissions and insert new ones
-  await prisma.$transaction([
-    prisma.rolePermission.deleteMany({
-      where: { roleId: id }
-    }),
-    prisma.role.update({
-      where: { id },
-      data: {
-        name,
-        permissions: {
-          create: permissions.map(permId => ({
-            permission: { connect: { id: permId } }
-          }))
+      const validName = BusinessValidation.requireName(data.name, "Nama Role")
+      const cleanPerms = UserBusiness.validatePermissionAssignment(data.permissions)
+
+      if (role.name !== validName) {
+        const existing = await prisma.role.findUnique({ where: { name: validName } })
+        if (existing) {
+          throw BusinessError.alreadyExists(`Role dengan nama ${validName}`)
         }
       }
-    })
-  ])
 
-  revalidatePath("/dashboard/role-user")
-  revalidatePath("/dashboard/settings")
-  return { success: true }
+      try {
+        await prisma.$transaction([
+          prisma.rolePermission.deleteMany({
+            where: { roleId: id }
+          }),
+          prisma.role.update({
+            where: { id },
+            data: {
+              name: validName,
+              permissions: {
+                create: cleanPerms.map(permId => ({
+                  permission: { connect: { id: permId } }
+                }))
+              }
+            }
+          })
+        ])
+
+        await sessionInvalidationStore.invalidateAll()
+        revalidatePath("/dashboard/role-user")
+        revalidatePath("/dashboard/settings")
+        return {}
+      } catch (err) {
+        throw mapPrismaError(err, "Perbarui Role")
+      }
+    }
+  })
 }
 
 export async function deleteRole(id: string) {
-  if (!(await hasPermission("role.delete"))) {
-    throw new Error("Forbidden")
-  }
+  return secureAction({
+    module: "Role",
+    action: "deleteRole",
+    permission: PERMISSIONS.ROLE_DELETE,
+    executor: async () => {
+      if (!await checkCrudRateLimit()) throw new Error(SECURITY_CONSTANTS.ERROR_CODES.RATE_001)
 
-  const role = await prisma.role.findUnique({ where: { id }, include: { _count: { select: { users: true } } } })
-  if (!role) throw new Error("Role not found")
-  if (role.isSystem) throw new Error("System roles cannot be deleted")
-  if (role._count.users > 0) throw new Error("Role is still assigned to users")
+      const role = await prisma.role.findUnique({ where: { id }, include: { _count: { select: { users: true } } } })
+      if (!role) throw BusinessError.invalidReference("Role")
 
-  await prisma.role.delete({ where: { id } })
-  revalidatePath("/dashboard/role-user")
-  revalidatePath("/dashboard/settings")
-  return { success: true }
+      UserBusiness.validateRoleDeletion(role)
+
+      if (role.name === "SUPER_ADMIN") {
+        const activeAdmins = await prisma.user.count({ where: { roleId: role.id } })
+        UserBusiness.validateLastAdministrator("SUPER_ADMIN", activeAdmins)
+      }
+
+      try {
+        await prisma.role.delete({ where: { id } })
+
+        await sessionInvalidationStore.invalidateAll()
+        revalidatePath("/dashboard/role-user")
+        revalidatePath("/dashboard/settings")
+        return {}
+      } catch (err) {
+        throw mapPrismaError(err, "Hapus Role")
+      }
+    }
+  })
 }

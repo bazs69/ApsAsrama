@@ -8,24 +8,24 @@
 
 import type { PrismaClient } from "@prisma/client"
 
-/** Refresh interval — must match session.updateAge in auth.ts */
-const REFRESH_INTERVAL_MS = 60 * 30 * 1000 // 30 minutes
+/** Permission refresh interval — single source of truth, reused in session config */
+export const PERMISSION_REFRESH_INTERVAL_MS = 60 * 30 * 1000 // 30 minutes
 
 /**
  * Determine whether permissions need to be refreshed based on the
- * explicit lastPermissionSync timestamp.
+ * explicit permissionRefreshedAt timestamp.
  */
-export function needsPermissionRefresh(lastPermissionSync: number | undefined): boolean {
-  if (lastPermissionSync === undefined || lastPermissionSync === null) {
+export function needsPermissionRefresh(permissionRefreshedAt: number | undefined): boolean {
+  if (permissionRefreshedAt === undefined || permissionRefreshedAt === null) {
     return true
   }
-  return (Date.now() - lastPermissionSync) >= REFRESH_INTERVAL_MS
+  return (Date.now() - permissionRefreshedAt) >= PERMISSION_REFRESH_INTERVAL_MS
 }
 
 /**
  * Refresh user authorization data from the database.
  *
- * - If user is found: returns updated { role, permissions, satkerId, lastPermissionSync }
+ * - If user is found: returns updated { role, permissions, satkerId, permissionRefreshedAt }
  * - If user is deleted: returns cleared auth data (role="", permissions=[], satkerId=null)
  * - If DB fails: returns null (caller should keep existing token data — fail-open)
  */
@@ -62,17 +62,20 @@ export async function refreshUserPermissions(
         role: "",
         permissions: [] as string[],
         satkerId: null,
-        lastPermissionSync: Date.now(),
+        permissionRefreshedAt: Date.now(),
       }
     }
 
+    // Extract permission codes from the nested select result
+    const permissionCodes = freshUser.role?.permissions.map(
+      (rp) => rp.permission.code
+    ) ?? []
+
     return {
-      role: freshUser.role?.name || "GUEST",
-      permissions: freshUser.role?.permissions.map(
-        (rp: { permission: { code: string } }) => rp.permission.code
-      ) || [],
+      role: freshUser.role?.name ?? "GUEST",
+      permissions: permissionCodes,
       satkerId: freshUser.satkerId,
-      lastPermissionSync: Date.now(),
+      permissionRefreshedAt: Date.now(),
     }
   } catch {
     // Fail-open: return null so caller keeps existing token data.

@@ -1,7 +1,12 @@
 "use server"
 
+import { logOperationalError } from "@/lib/business/businessLogger"
 import prisma from "@/lib/prisma"
 import { revalidatePath } from "next/cache"
+import { checkCrudRateLimit } from "@/lib/security/crudRateLimit"
+import { ActivityBusiness } from "@/lib/business/activityBusiness"
+import { BusinessError } from "@/lib/business/businessErrors"
+import { mapPrismaError } from "@/lib/prisma/prismaErrorMapper"
 
 export async function getKbms() {
   try {
@@ -10,54 +15,61 @@ export async function getKbms() {
     })
     return kbms
   } catch (error) {
-    console.error("Error fetching KBMs:", error)
+    logOperationalError({ action: "Error fetching KBMs:", error: error })
     return []
   }
 }
 
 export async function createKbm(name: string) {
   try {
-    const existing = await prisma.kbm.findUnique({ where: { name } })
+    if (!await checkCrudRateLimit()) return { error: "Too many requests." }
+    const validName = ActivityBusiness.validateKBMName(name)
+
+    const existing = await prisma.kbm.findUnique({ where: { name: validName } })
     if (existing) {
-      return { error: "Nama KBM sudah ada." }
+      throw BusinessError.alreadyExists(`KBM dengan nama ${validName}`)
     }
 
     const data = await prisma.kbm.create({
-      data: { name },
+      data: { name: validName },
     })
     
     revalidatePath("/dashboard/kbm")
     return { success: true, data }
   } catch (error) {
-    console.error("Error creating KBM:", error)
-    return { error: "Gagal menambahkan data." }
+    const businessErr = mapPrismaError(error, "Tambah KBM")
+    return { error: businessErr.message }
   }
 }
 
 export async function updateKbm(id: string, name: string) {
   try {
+    if (!await checkCrudRateLimit()) return { error: "Too many requests." }
+    const validName = ActivityBusiness.validateKBMName(name)
+
     const existing = await prisma.kbm.findFirst({
-      where: { name, NOT: { id } },
+      where: { name: validName, NOT: { id } },
     })
     if (existing) {
-      return { error: "Nama KBM sudah digunakan." }
+      throw BusinessError.alreadyExists(`KBM dengan nama ${validName}`)
     }
 
     const data = await prisma.kbm.update({
       where: { id },
-      data: { name },
+      data: { name: validName },
     })
     
     revalidatePath("/dashboard/kbm")
     return { success: true, data }
   } catch (error) {
-    console.error("Error updating KBM:", error)
-    return { error: "Gagal memperbarui data." }
+    const businessErr = mapPrismaError(error, "Perbarui KBM")
+    return { error: businessErr.message }
   }
 }
 
 export async function deleteKbm(id: string) {
   try {
+    if (!await checkCrudRateLimit()) return { error: "Too many requests." }
     await prisma.kbm.delete({
       where: { id },
     })
@@ -65,7 +77,7 @@ export async function deleteKbm(id: string) {
     revalidatePath("/dashboard/kbm")
     return { success: true }
   } catch (error) {
-    console.error("Error deleting KBM:", error)
-    return { error: "Gagal menghapus data." }
+    const businessErr = mapPrismaError(error, "Hapus KBM")
+    return { error: businessErr.message }
   }
 }

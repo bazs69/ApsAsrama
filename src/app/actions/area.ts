@@ -1,8 +1,11 @@
 "use server"
 
+import { logOperationalError } from "@/lib/business/businessLogger"
 import prisma from "@/lib/prisma"
 import { revalidatePath } from "next/cache"
 import { RoomStatus, Prisma } from "@prisma/client"
+import { checkCrudRateLimit } from "@/lib/security/crudRateLimit"
+import { BusinessError } from "@/lib/business/businessErrors"
 
 export async function getAreaHierarchy() {
   try {
@@ -23,7 +26,7 @@ export async function getAreaHierarchy() {
       }
     })
   } catch (error) {
-    console.error("Failed to fetch area hierarchy:", error)
+    logOperationalError({ action: "Failed to fetch area hierarchy:", error: error })
     return []
   }
 }
@@ -31,6 +34,7 @@ export async function getAreaHierarchy() {
 // WILAYAH
 export async function createWilayah(name: string) {
   try {
+    if (!await checkCrudRateLimit()) return { error: "Too many requests." }
     const data = await prisma.wilayah.create({ data: { name } })
     revalidatePath("/dashboard/area")
     return { success: true, data }
@@ -42,6 +46,7 @@ export async function createWilayah(name: string) {
 
 export async function updateWilayah(id: string, name: string) {
   try {
+    if (!await checkCrudRateLimit()) return { error: "Too many requests." }
     const data = await prisma.wilayah.update({ where: { id }, data: { name } })
     revalidatePath("/dashboard/area")
     return { success: true, data }
@@ -53,13 +58,14 @@ export async function updateWilayah(id: string, name: string) {
 
 export async function deleteWilayah(id: string) {
   try {
+    if (!await checkCrudRateLimit()) return { error: "Too many requests." }
     const wilayah = await prisma.wilayah.findUnique({
       where: { id },
       include: { daerahs: true }
     })
     
-    if (wilayah?.daerahs.length) {
-      return { error: "Gagal menghapus wilayah. Hapus semua daerah di dalamnya terlebih dahulu." }
+    if (wilayah && wilayah.daerahs.length > 0) {
+      return { error: BusinessError.cannotDelete("Wilayah", "Daerah").message }
     }
 
     await prisma.wilayah.delete({ where: { id } })
@@ -73,6 +79,7 @@ export async function deleteWilayah(id: string) {
 // DAERAH
 export async function createDaerah(name: string, wilayahId: string) {
   try {
+    if (!await checkCrudRateLimit()) return { error: "Too many requests." }
     const data = await prisma.daerah.create({ data: { name, wilayahId } })
     revalidatePath("/dashboard/area")
     return { success: true, data }
@@ -84,6 +91,7 @@ export async function createDaerah(name: string, wilayahId: string) {
 
 export async function updateDaerah(id: string, name: string, wilayahId: string) {
   try {
+    if (!await checkCrudRateLimit()) return { error: "Too many requests." }
     const data = await prisma.daerah.update({ where: { id }, data: { name, wilayahId } })
     revalidatePath("/dashboard/area")
     return { success: true, data }
@@ -95,13 +103,14 @@ export async function updateDaerah(id: string, name: string, wilayahId: string) 
 
 export async function deleteDaerah(id: string) {
   try {
+    if (!await checkCrudRateLimit()) return { error: "Too many requests." }
     const daerah = await prisma.daerah.findUnique({
       where: { id },
       include: { rooms: true }
     })
     
-    if (daerah?.rooms.length) {
-      return { error: "Gagal menghapus daerah. Hapus semua kamar di dalamnya terlebih dahulu." }
+    if (daerah && daerah.rooms.length > 0) {
+      return { error: BusinessError.cannotDelete("Daerah", "Kamar").message }
     }
 
     await prisma.daerah.delete({ where: { id } })
@@ -115,6 +124,7 @@ export async function deleteDaerah(id: string) {
 // ROOM
 export async function createAreaRoom(data: { number: string; capacity: number; floor: number; status: RoomStatus; daerahId: string }) {
   try {
+    if (!await checkCrudRateLimit()) return { error: "Too many requests." }
     const existing = await prisma.room.findFirst({ where: { number: data.number, daerahId: data.daerahId } })
     if (existing) return { error: "Nomor kamar sudah ada di daerah ini." }
 
@@ -128,6 +138,7 @@ export async function createAreaRoom(data: { number: string; capacity: number; f
 
 export async function updateAreaRoom(id: string, data: { number: string; capacity: number; floor: number; status: RoomStatus; daerahId: string }) {
   try {
+    if (!await checkCrudRateLimit()) return { error: "Too many requests." }
     const existing = await prisma.room.findFirst({ where: { number: data.number, daerahId: data.daerahId, NOT: { id } } })
     if (existing) return { error: "Nomor kamar sudah dipakai oleh kamar lain di daerah ini." }
 
@@ -141,13 +152,14 @@ export async function updateAreaRoom(id: string, data: { number: string; capacit
 
 export async function deleteAreaRoom(id: string) {
   try {
+    if (!await checkCrudRateLimit()) return { error: "Too many requests." }
     const room = await prisma.room.findUnique({
       where: { id },
       include: { residents: true }
     })
     
-    if (room?.residents.length) {
-      return { error: "Gagal menghapus kamar. Kamar ini sedang dihuni oleh santri." }
+    if (room && room.residents.length > 0) {
+      return { error: BusinessError.cannotDelete("Kamar", "Santri").message }
     }
 
     await prisma.room.delete({ where: { id } })

@@ -5,6 +5,7 @@ import { useState, useEffect, useTransition } from "react"
 import Image from "next/image"
 import { ResidentStatus } from "@prisma/client"
 import toast from "react-hot-toast"
+import { PERMISSIONS } from "@/lib/security/permissions"
 import { getEntityAuditLogs } from "@/app/actions/audit"
 import { transferResidentRoom, getResidentRoomHistory, getAvailableRooms } from "@/app/actions/roomTransfer"
 
@@ -307,8 +308,8 @@ function printResidentCard(resident: Resident) {
 export default function ResidentDetailModal({
   isOpen, onClose, resident, onEdit, permissions = []
 }: ResidentDetailModalProps) {
-  const hasAuditView = permissions.includes("audit.view") || permissions.includes("SUPER_ADMIN")
-  const hasUpdateSantri = permissions.includes("santri.update") || permissions.includes("SUPER_ADMIN")
+  const hasAuditView = permissions.includes(PERMISSIONS.AUDIT_VIEW) || permissions.includes("SUPER_ADMIN")
+  const hasUpdateSantri = permissions.includes(PERMISSIONS.SANTRI_UPDATE) || permissions.includes("SUPER_ADMIN")
 
   const [activeTab, setActiveTab] = useState("Biodata")
   const [copiedNim, setCopiedNim] = useState(false)

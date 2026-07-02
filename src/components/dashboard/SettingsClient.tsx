@@ -1,11 +1,21 @@
 "use client"
 
-import { useState, useTransition } from "react"
-import { createUser, updateUser, deleteUser, updateProfile } from "@/app/actions/settings"
+import { useState, useTransition, useEffect, useRef } from "react"
+import { usePathname } from "next/navigation"
+import { updateProfile } from "@/app/actions/settings"
 import Image from "next/image"
+import Pagination from "@/components/ui/Pagination"
+import TableSkeleton from "@/components/ui/TableSkeleton"
+import EmptyState from "@/components/ui/EmptyState"
+import { usePagination } from "@/hooks/usePagination"
+import { useDebounce } from "@/hooks/useDebounce"
+import { useOptimisticList } from "@/hooks/useOptimisticList"
+import { useUsersQuery } from "@/hooks/queries/useUsersQuery"
+import { useUsersMutations } from "@/hooks/mutations/useUsersMutations"
+import { type UserSortField, type SortOrder } from "@/app/actions/settings"
 import {
   User, Shield, Plus, X, AlertCircle, Loader2, CheckCircle,
-  Eye, EyeOff, Trash2, Edit, Lock, Mail, UserCog, Crown, Users, Camera
+  Eye, EyeOff, Trash2, Edit, Lock, Mail, UserCog, Crown, Users, Camera, Search, RefreshCw
 } from "lucide-react"
 
 interface CurrentUser {
@@ -22,17 +32,28 @@ interface UserRow {
   email: string
   role: { id: string, name: string } | null
   createdAt: Date
-  photo?: string | null
+  photo: string | null
+  satkerId: string | null
 }
 
 export default function SettingsClient({
   currentUser,
   initialUsers,
+  initialPagination,
   satkerList = [],
   availableRoles = [],
 }: {
   currentUser: CurrentUser
   initialUsers: UserRow[]
+  initialPagination: { 
+    totalItems: number; 
+    totalPages: number; 
+    currentPage: number; 
+    pageSize: number; 
+    search: string; 
+    sort: UserSortField; 
+    order: SortOrder 
+  }
   satkerList?: { id: string, name: string }[]
   availableRoles?: { id: string, name: string, isSystem?: boolean }[]
 }) {
@@ -51,8 +72,49 @@ export default function SettingsClient({
   const [showNewPw, setShowNewPw] = useState(false)
   const [profileMsg, setProfileMsg] = useState<{ type: "success" | "error"; text: string } | null>(null)
 
-  // Users state
-  const [users, setUsers] = useState<UserRow[]>(initialUsers)
+  // Users Query
+  const pathname = usePathname()
+  const pagination = usePagination({
+    basePath: pathname,
+    initialMeta: initialPagination,
+  })
+
+  const { data: queryData, isFetching: isFetchingUsers } = useUsersQuery({
+    page: pagination.currentPage,
+    pageSize: pagination.pageSize,
+    search: pagination.search,
+    sort: pagination.sort as UserSortField,
+    order: pagination.order as SortOrder,
+    initialData: { data: initialUsers, metadata: initialPagination },
+  })
+
+  const currentUsers = (queryData?.data || []) as UserRow[]
+  const { optimisticList: optimisticUsers, addOptimisticAction } = useOptimisticList<UserRow>(currentUsers)
+  
+  const totalItems = queryData?.metadata?.totalItems ?? initialPagination.totalItems
+  const totalPages = queryData?.metadata?.totalPages ?? initialPagination.totalPages
+
+  const { createMutation, updateMutation, deleteMutation } = useUsersMutations()
+
+  // Controlled search input — debounced before writing to URL
+  const [searchInput, setSearchInput] = useState(pagination.search)
+  const debouncedSearch = useDebounce(searchInput, 400)
+
+  // When debounced value changes, push to URL (which triggers re-fetch)
+  const isFirstSearch = useRef(true)
+  useEffect(() => {
+    if (isFirstSearch.current) {
+      isFirstSearch.current = false
+      return
+    }
+    pagination.setSearch(debouncedSearch)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedSearch])
+
+  // Re-fetch users whenever URL page/pageSize/search params change.
+  // React Query handles fetching automatically via useUsersQuery above!
+  // We just sync search param back to pagination when debounce updates.
+
   const [isCreateOpen, setIsCreateOpen] = useState(false)
   const [isEditOpen, setIsEditOpen] = useState(false)
   const [editUserId, setEditUserId] = useState("")
@@ -134,31 +196,48 @@ export default function SettingsClient({
   const handleCreateUser = async (e: React.FormEvent) => {
     e.preventDefault()
     setFormError("")
-    if (newPass.length < 6) { setFormError("Password minimal 6 karakter."); return }
+    if (!newRoleId) { setFormError("Silakan pilih role/hak akses."); return }
+    if (newPass.length < 8) { setFormError("Password minimal 8 karakter (termasuk huruf besar, kecil, angka, spesial)."); return }
+
+    const selectedRole = availableRoles.find(r => r.id === newRoleId)
+    
+    // Optimistically close modal
+    setIsCreateOpen(false)
 
     startTransition(async () => {
+      // Optimistic update
+      const tempId = `temp-${Date.now()}`
+      addOptimisticAction({
+        type: "create",
+        payload: {
+          id: tempId,
+          name: newName,
+          email: newEmail,
+          role: selectedRole || null,
+          createdAt: new Date(),
+          photo: null,
+          satkerId: newSatkerId || null,
+        }
+      })
+
       const payload: { name: string; email: string; password: string; roleId: string; satkerId?: string } = { name: newName, email: newEmail, password: newPass, roleId: newRoleId }
       
-      const selectedRole = availableRoles.find(r => r.id === newRoleId)
       if (selectedRole?.name === "KEPALA_SATKER") {
         if (!newSatkerId) {
           setFormError("Satker wajib dipilih untuk role KEPALA_SATKER.")
+          setIsCreateOpen(true) // revert
           return
         }
         payload.satkerId = newSatkerId
       }
 
-      const res = await createUser(payload)
+      const res = await createMutation.mutateAsync(payload)
       if (res.error) {
         setFormError(res.error)
+        setIsCreateOpen(true) // revert
       } else {
-        setIsCreateOpen(false)
         setUserMsg({ type: "success", text: `Akun "${newName}" berhasil dibuat.` })
         setTimeout(() => setUserMsg(null), 4000)
-        // refresh users list
-        setUsers(prev => [...prev, {
-          id: res.userId!, name: newName, email: newEmail, role: selectedRole!, createdAt: new Date()
-        }])
       }
     })
   }
@@ -171,13 +250,26 @@ export default function SettingsClient({
   const handleEditUser = async (e: React.FormEvent) => {
     e.preventDefault()
     setFormError("")
+    if (!editRoleId) { setFormError("Silakan pilih role/hak akses."); return }
+
+    const selectedRole = availableRoles.find(r => r.id === editRoleId)
+    setIsEditOpen(false) // Optimistically close modal
+
     startTransition(async () => {
+      const targetUser = currentUsers.find((u: UserRow) => u.id === editUserId)
+      if (targetUser) {
+        addOptimisticAction({
+          type: "update",
+          payload: { ...targetUser, name: editName, role: selectedRole || null }
+        })
+      }
+
       const payload: { name: string; roleId: string; satkerId?: string | null } = { name: editName, roleId: editRoleId }
       
-      const selectedRole = availableRoles.find(r => r.id === editRoleId)
       if (selectedRole?.name === "KEPALA_SATKER") {
         if (!editSatkerId) {
           setFormError("Satker wajib dipilih untuk role KEPALA_SATKER.")
+          setIsEditOpen(true)
           return
         }
         payload.satkerId = editSatkerId
@@ -185,28 +277,31 @@ export default function SettingsClient({
         payload.satkerId = null
       }
 
-      const res = await updateUser(editUserId, payload)
+      const res = await updateMutation.mutateAsync({ id: editUserId, payload })
       if (res.error) {
         setFormError(res.error)
+        setIsEditOpen(true) // rollback
       } else {
-        setIsEditOpen(false)
-        setUsers(prev => prev.map(u => u.id === editUserId ? { ...u, name: editName, role: selectedRole!, satkerId: payload.satkerId } : u))
         setUserMsg({ type: "success", text: "Data pengguna berhasil diperbarui." })
         setTimeout(() => setUserMsg(null), 4000)
       }
     })
   }
 
-  const handleDeleteUser = async (id: string, name: string) => {
+  const handleDeleteUser = (id: string, name: string) => {
     if (!confirm(`Hapus akun "${name}"? Tindakan ini tidak dapat dibatalkan.`)) return
-    const res = await deleteUser(id)
-    if (res.error) {
-      setUserMsg({ type: "error", text: res.error })
-    } else {
-      setUsers(prev => prev.filter(u => u.id !== id))
-      setUserMsg({ type: "success", text: `Akun "${name}" berhasil dihapus.` })
-    }
-    setTimeout(() => setUserMsg(null), 4000)
+    startTransition(async () => {
+      // Optimistic delete
+      addOptimisticAction({ type: "delete", id })
+
+      const res = await deleteMutation.mutateAsync(id)
+      if (res.error) {
+        setUserMsg({ type: "error", text: res.error })
+      } else {
+        setUserMsg({ type: "success", text: `Akun "${name}" berhasil dihapus.` })
+      }
+      setTimeout(() => setUserMsg(null), 4000)
+    })
   }
 
   const userRoleStr = typeof currentUser.role === 'string' 
@@ -393,7 +488,9 @@ export default function SettingsClient({
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 text-sm text-zinc-500 dark:text-zinc-400">
               <Users className="w-4 h-4" />
-              <span>{users.length} pengguna terdaftar</span>
+              <span>
+                <span className="font-semibold text-zinc-700 dark:text-zinc-300">{totalItems}</span> pengguna terdaftar
+              </span>
             </div>
             <button
               onClick={openCreateModal}
@@ -404,21 +501,43 @@ export default function SettingsClient({
             </button>
           </div>
 
-          {/* Success/Error toast */}
+          {/* Success/Error toast — semantic token */}
           {userMsg && (
             <div className={`p-3 rounded-xl text-sm flex items-center gap-2 border ${
               userMsg.type === "success"
-                ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-700 dark:text-emerald-400"
-                : "bg-red-500/10 border-red-500/20 text-red-700 dark:text-red-400"
+                ? "bg-success-500/10 border-success-500/20 text-success-700 dark:text-success-400"
+                : "bg-danger-500/10 border-danger-500/20 text-danger-700 dark:text-danger-400"
             }`}>
               {userMsg.type === "success" ? <CheckCircle className="w-4 h-4 flex-shrink-0" /> : <AlertCircle className="w-4 h-4 flex-shrink-0" />}
               {userMsg.text}
             </div>
           )}
 
+          {/* Search Bar */}
+          <div className="relative group">
+            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400 dark:text-zinc-500 pointer-events-none group-focus-within:text-primary-500 transition-colors" />
+            <input
+              type="text"
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              placeholder="Cari nama atau email pengguna..."
+              aria-label="Cari pengguna"
+              className="w-full bg-white dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800 rounded-xl py-2.5 pl-9 pr-4 text-sm text-zinc-800 dark:text-zinc-200 placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-primary-500/40 focus:border-primary-500 transition-all"
+            />
+            {searchInput && (
+              <button
+                onClick={() => { setSearchInput(""); pagination.setSearch("") }}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 rounded-md text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 transition-colors"
+                aria-label="Hapus pencarian"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
+          </div>
+
           {/* Users Table */}
           <div className="glass rounded-2xl border border-zinc-200 dark:border-zinc-800 overflow-hidden">
-            <div className="overflow-x-auto">
+            <div className="relative overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="bg-zinc-50 dark:bg-zinc-900/50 border-b border-zinc-200 dark:border-zinc-800">
@@ -430,17 +549,27 @@ export default function SettingsClient({
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800">
-                  {users.length === 0 ? (
-                    <tr>
-                      <td colSpan={5} className="text-center py-10 text-zinc-400">Belum ada pengguna.</td>
-                    </tr>
+                  {isFetchingUsers ? (
+                    <TableSkeleton rows={5} columns={5} />
+                  ) : optimisticUsers.length === 0 ? (
+                    <EmptyState
+                      isFiltered={!!pagination.search}
+                      onClear={() => { setSearchInput(""); pagination.setSearch("") }}
+                    />
                   ) : (
-                    users.map(u => (
-                      <tr key={u.id} className="hover:bg-zinc-50/50 dark:hover:bg-zinc-900/30 transition-colors">
+                    optimisticUsers.map(u => (
+                      <tr key={u.id} className={`hover:bg-zinc-50/50 dark:hover:bg-zinc-900/30 transition-all ${u._isOptimistic ? "opacity-60 bg-zinc-50 dark:bg-zinc-900/40" : ""}`}>
                         <td className="px-5 py-4">
                           <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-primary-500 to-accent-500 flex items-center justify-center flex-shrink-0">
-                              <span className="text-sm font-bold text-white">{u.name?.charAt(0)?.toUpperCase()}</span>
+                            <div className="relative">
+                              <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-primary-500 to-accent-500 flex items-center justify-center flex-shrink-0">
+                                <span className="text-sm font-bold text-white">{u.name?.charAt(0)?.toUpperCase()}</span>
+                              </div>
+                              {u._isOptimistic && (
+                                <div className="absolute -bottom-1 -right-1 bg-white dark:bg-zinc-900 rounded-full p-0.5 shadow-sm">
+                                  <RefreshCw className="w-3 h-3 text-primary-500 animate-spin" />
+                                </div>
+                              )}
                             </div>
                             <div>
                               <p className="font-semibold text-zinc-900 dark:text-white">{u.name}</p>
@@ -468,16 +597,19 @@ export default function SettingsClient({
                           <div className="flex items-center gap-1 justify-end">
                             <button
                               onClick={() => openEditModal(u)}
-                              className="p-2 text-zinc-400 hover:text-blue-500 hover:bg-blue-500/10 rounded-lg transition-colors"
+                              disabled={u._isOptimistic}
+                              className="p-2 text-zinc-400 hover:text-info-500 hover:bg-info-500/10 rounded-lg transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
                               title="Edit"
+                              aria-label={`Edit pengguna ${u.name}`}
                             >
                               <Edit className="w-4 h-4" />
                             </button>
                             <button
                               onClick={() => handleDeleteUser(u.id, u.name)}
-                              disabled={u.id === currentUser.id}
-                              className="p-2 text-zinc-400 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                              disabled={u.id === currentUser.id || u._isOptimistic}
+                              className="p-2 text-zinc-400 hover:text-danger-500 hover:bg-danger-500/10 rounded-lg transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
                               title="Hapus"
+                              aria-label={`Hapus pengguna ${u.name}`}
                             >
                               <Trash2 className="w-4 h-4" />
                             </button>
@@ -489,6 +621,15 @@ export default function SettingsClient({
                 </tbody>
               </table>
             </div>
+            <Pagination
+              currentPage={pagination.currentPage}
+              totalPages={totalPages}
+              totalItems={totalItems}
+              pageSize={pagination.pageSize}
+              entityName="Pengguna"
+              onPageChange={pagination.goToPage}
+              onPageSizeChange={pagination.changePageSize}
+            />
           </div>
         </div>
       )}
@@ -532,7 +673,7 @@ export default function SettingsClient({
                 <div className="relative">
                   <input type={newShowPass ? "text" : "password"} required value={newPass} onChange={e => setNewPass(e.target.value)}
                     className="w-full bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl py-3 pl-4 pr-11 text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500/50 text-sm"
-                    placeholder="Min. 6 karakter"
+                    placeholder="Min. 8 karakter (A-Z, a-z, 0-9, Spesial)"
                   />
                   <button type="button" onClick={() => setNewShowPass(p => !p)} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600">
                     {newShowPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}

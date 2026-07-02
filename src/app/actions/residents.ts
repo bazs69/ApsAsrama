@@ -5,9 +5,17 @@ import { revalidatePath } from "next/cache"
 import { ResidentStatus, RoomStatus, Prisma } from "@prisma/client"
 import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/lib/auth"
+import { checkCrudRateLimit } from "@/lib/security/crudRateLimit"
+import { BusinessError } from "@/lib/business/businessErrors"
+import { BusinessValidation } from "@/lib/business/businessValidation"
+import { BusinessNormalizer } from "@/lib/business/businessNormalizer"
+import { ResidentBusiness } from "@/lib/business/residentBusiness"
+import { mapPrismaError } from "@/lib/prisma/prismaErrorMapper"
+import { logOperationalError } from "@/lib/business/businessLogger"
+import { normalizeBusinessError } from "@/lib/business/errorNormalizer"
 
 function cleanText(value: unknown) {
-  return String(value ?? "").trim()
+  return BusinessNormalizer.normalizeWhitespace(String(value ?? ""))
 }
 
 function normalizeGender(value: unknown) {
@@ -15,62 +23,6 @@ function normalizeGender(value: unknown) {
   if (["l", "lk", "lakilaki", "pria"].includes(normalized)) return "LAKI_LAKI"
   if (["p", "pr", "perempuan", "wanita"].includes(normalized)) return "PEREMPUAN"
   return cleanText(value)
-}
-
-function validateRequiredResidentData(formData: {
-  name?: string
-  gender?: string
-  tempatLahir?: string
-  tanggalLahir?: string | Date
-  prodi?: string
-  angkatan?: string
-}) {
-  const missing = [
-    !cleanText(formData.name) && "Nama Lengkap",
-    !cleanText(formData.gender) && "Jenis Kelamin",
-    !cleanText(formData.tempatLahir) && "Tempat Lahir",
-    !formData.tanggalLahir && "Tanggal Lahir",
-    !cleanText(formData.prodi) && "Program Studi",
-    !cleanText(formData.angkatan) && "Angkatan",
-  ].filter(Boolean)
-
-  if (missing.length > 0) {
-    return `Data wajib belum lengkap: ${missing.join(", ")}.`
-  }
-
-  if (formData.tanggalLahir && Number.isNaN(new Date(formData.tanggalLahir).getTime())) {
-    return "Tanggal Lahir harus memakai format tanggal yang valid, contoh 2000-01-31."
-  }
-
-  const gender = normalizeGender(formData.gender)
-  if (gender !== "LAKI_LAKI" && gender !== "PEREMPUAN") {
-    return "Jenis Kelamin harus diisi LAKI_LAKI/Laki-Laki atau PEREMPUAN/Perempuan."
-  }
-
-  return null
-}
-
-function validateImportResidentData(formData: {
-  name?: string
-  tanggalLahir?: string | Date
-  gender?: string | null
-}) {
-  if (!cleanText(formData.name)) {
-    return "Nama Lengkap wajib diisi."
-  }
-
-  if (formData.tanggalLahir && Number.isNaN(new Date(formData.tanggalLahir).getTime())) {
-    return "Tanggal Lahir harus memakai format tanggal yang valid, contoh 2000-01-31."
-  }
-
-  if (cleanText(formData.gender)) {
-    const gender = normalizeGender(formData.gender)
-    if (gender !== "LAKI_LAKI" && gender !== "PEREMPUAN") {
-      return "Jenis Kelamin harus diisi LAKI_LAKI/Laki-Laki atau PEREMPUAN/Perempuan."
-    }
-  }
-
-  return null
 }
 
 export async function getResidents() {
@@ -87,8 +39,57 @@ export async function getResidents() {
       }
     })
   } catch (error) {
-    console.error("Failed to fetch residents:", error)
+    logOperationalError({ action: "getResidents", error })
     return []
+  }
+}
+
+export async function getResidentsPaginated(options: { page: number; pageSize: number; search?: string }) {
+  try {
+    const { page, pageSize, search } = options
+    const skip = (page - 1) * pageSize
+    const take = pageSize
+
+    const where = search ? {
+      OR: [
+        { name: { contains: search, mode: "insensitive" as const } },
+        { nim: { contains: search, mode: "insensitive" as const } },
+      ]
+    } : {}
+
+    const [total, data] = await prisma.$transaction([
+      prisma.resident.count({ where }),
+      prisma.resident.findMany({
+        where,
+        orderBy: { name: "asc" },
+        skip,
+        take,
+        include: {
+          room: true,
+          assignments: {
+            include: {
+              satker: true
+            }
+          }
+        }
+      })
+    ])
+
+    const totalPages = Math.ceil(total / pageSize)
+    return {
+      data,
+      pagination: {
+        page,
+        pageSize,
+        total,
+        totalPages,
+        hasNextPage: page < totalPages,
+        hasPreviousPage: page > 1
+      }
+    }
+  } catch (error) {
+    logOperationalError({ action: "getResidentsPaginated", error })
+    return { data: [], pagination: { page: options.page, pageSize: options.pageSize, total: 0, totalPages: 0, hasNextPage: false, hasPreviousPage: false } }
   }
 }
 
@@ -105,7 +106,7 @@ export async function getResidentOptions() {
       },
     })
   } catch (error) {
-    console.error("Failed to fetch resident options:", error)
+    logOperationalError({ action: "getResidentOptions", error })
     return []
   }
 }
@@ -129,8 +130,6 @@ export async function createResident(formData: {
   asalRegencyId?: string
   asalDistrictId?: string
   asalVillageId?: string
-  
-  // New Fields
   tempatLahir?: string
   tanggalLahir?: string | Date
   gender?: string
@@ -142,104 +141,113 @@ export async function createResident(formData: {
   angkatanId?: string
 }) {
   try {
-    const validationError = validateRequiredResidentData(formData)
-    if (validationError) return { error: validationError }
+    if (!await checkCrudRateLimit()) return { error: "Too many requests." }
 
-    const nim = cleanText(formData.nim)
-    const niup = cleanText(formData.niup)
-
-    // Check if NIM is unique
-    const existing = nim
-      ? await prisma.resident.findUnique({ where: { nim } })
-      : null
-
-    if (existing) {
-      return { error: "Resident with this NIM is already registered." }
+    const cleanName = BusinessValidation.requireName(formData.name, "Nama Lengkap")
+    const gender = normalizeGender(formData.gender)
+    if (gender !== "LAKI_LAKI" && gender !== "PEREMPUAN") {
+      throw BusinessError.validation("Jenis Kelamin harus diisi LAKI_LAKI atau PEREMPUAN.")
+    }
+    if (!formData.tanggalLahir || Number.isNaN(new Date(formData.tanggalLahir).getTime())) {
+      throw BusinessError.validation("Tanggal Lahir tidak valid.")
     }
 
-    // Check NIUP uniqueness if provided
-    if (niup) {
-      const existingNiup = await prisma.resident.findUnique({
-        where: { niup }
-      })
-      if (existingNiup) {
-        return { error: "Resident with this NIUP is already registered." }
-      }
-    }
+    const nim = cleanText(formData.nim) || null
+    const niup = cleanText(formData.niup) || null
+    const nik = cleanText(formData.nik) || null
+    const phone = cleanText(formData.phone) || null
 
-    // Check if room is available and has capacity
-    if (formData.roomId) {
-      const room = await prisma.room.findUnique({
-        where: { id: formData.roomId },
-        include: { residents: true }
-      })
+    const session = await getServerSession(authOptions)
+    const performedBy = session?.user?.email || "System"
 
-      if (!room) {
-        return { error: "Selected room not found." }
-      }
+    const resident = await prisma.$transaction(async (tx) => {
+      // 1. Validate identity uniqueness
+      await ResidentBusiness.validateResidentIdentity(tx, { nim, niup, nik, phone })
 
-      if (room.status === RoomStatus.MAINTENANCE) {
-        return { error: "Selected room is currently under maintenance." }
-      }
-
-      if (room.residents.length >= room.capacity) {
-        return { error: "Selected room is already at full capacity." }
-      }
-    }
-
-    const resident = await prisma.resident.create({
-      data: {
-        name: cleanText(formData.name),
-        photo: formData.photo || null,
-        nim: nim || null,
-        niup: niup || null,
-        angkatan: cleanText(formData.angkatan) || null,
-        prodi: cleanText(formData.prodi) || null,
-        wilayah: cleanText(formData.wilayah) || null,
-        daerah: cleanText(formData.daerah) || null,
-        kotaAsal: cleanText(formData.kotaAsal) || null,
-        fakultas: cleanText(formData.fakultas) || null,
-        phone: cleanText(formData.phone) || null,
-        roomId: formData.roomId || null,
-        status: formData.status,
-        asalCountryId: formData.asalCountryId || null,
-        asalProvinceId: formData.asalProvinceId || null,
-        asalRegencyId: formData.asalRegencyId || null,
-        asalDistrictId: formData.asalDistrictId || null,
-        asalVillageId: formData.asalVillageId || null,
-        tempatLahir: cleanText(formData.tempatLahir) || null,
-        tanggalLahir: formData.tanggalLahir ? new Date(formData.tanggalLahir) : null,
-        gender: normalizeGender(formData.gender) || null,
-        nik: cleanText(formData.nik) || null,
-        alamatLengkap: cleanText(formData.alamatLengkap) || null,
-        kodePos: cleanText(formData.kodePos) || null,
-        fakultasId: formData.fakultasId || null,
-        prodiId: formData.prodiId || null,
-        angkatanId: formData.angkatanId || null
-      }
-    })
-
-    // Auto-update room status if it reached capacity
-    if (formData.roomId) {
-      const updatedRoom = await prisma.room.findUnique({
-        where: { id: formData.roomId },
-        include: { residents: true }
+      // 2. Validate academic hierarchy
+      await ResidentBusiness.validateAcademicHierarchy(tx, {
+        fakultasId: formData.fakultasId,
+        prodiId: formData.prodiId,
+        angkatanId: formData.angkatanId
       })
 
-      if (updatedRoom && updatedRoom.residents.length >= updatedRoom.capacity) {
-        await prisma.room.update({
+      // 3. Validate room assignment if provided
+      if (formData.roomId) {
+        // [5B.5] Resident Business Invariant
+        const newStatus = formData.status || ResidentStatus.ACTIVE
+        if (newStatus !== ResidentStatus.ACTIVE) {
+          throw BusinessError.validation("Santri dengan status tidak aktif (INACTIVE/GRADUATED) tidak boleh menempati kamar.")
+        }
+        await ResidentBusiness.validateRoomAssignment(tx, formData.roomId)
+      }
+
+      // 4. Create resident
+      const created = await tx.resident.create({
+        data: {
+          name: cleanName,
+          photo: formData.photo || null,
+          nim,
+          niup,
+          angkatan: cleanText(formData.angkatan) || null,
+          prodi: cleanText(formData.prodi) || null,
+          wilayah: cleanText(formData.wilayah) || null,
+          daerah: cleanText(formData.daerah) || null,
+          kotaAsal: cleanText(formData.kotaAsal) || null,
+          fakultas: cleanText(formData.fakultas) || null,
+          phone,
+          roomId: formData.roomId || null,
+          status: formData.status || ResidentStatus.ACTIVE,
+          asalCountryId: formData.asalCountryId || null,
+          asalProvinceId: formData.asalProvinceId || null,
+          asalRegencyId: formData.asalRegencyId || null,
+          asalDistrictId: formData.asalDistrictId || null,
+          asalVillageId: formData.asalVillageId || null,
+          tempatLahir: cleanText(formData.tempatLahir) || null,
+          tanggalLahir: formData.tanggalLahir ? new Date(formData.tanggalLahir) : null,
+          gender,
+          nik,
+          alamatLengkap: cleanText(formData.alamatLengkap) || null,
+          kodePos: cleanText(formData.kodePos) || null,
+          fakultasId: formData.fakultasId || null,
+          prodiId: formData.prodiId || null,
+          angkatanId: formData.angkatanId || null
+        }
+      })
+
+      // 5. Update room status if full
+      if (formData.roomId) {
+        const room = await tx.room.findUnique({
           where: { id: formData.roomId },
-          data: { status: RoomStatus.OCCUPIED }
+          include: { residents: true }
         })
+        if (room && room.residents.length >= room.capacity) {
+          await tx.room.update({
+            where: { id: formData.roomId },
+            data: { status: RoomStatus.OCCUPIED }
+          })
+        }
       }
-    }
+
+      // 6. Audit Log
+      await tx.auditLog.create({
+        data: {
+          action: "CREATE_RESIDENT",
+          entityType: "RESIDENT",
+          entityId: created.id,
+          performedBy,
+          newValue: JSON.parse(JSON.stringify(created)) as Prisma.InputJsonValue
+        }
+      })
+
+      return created
+    })
 
     revalidatePath("/dashboard/residents")
     revalidatePath("/dashboard/rooms")
     return { success: true, resident }
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Failed to register resident."
-    return { error: message }
+    const businessErr = mapPrismaError(error, "Santri")
+    return { error: businessErr.message }
   }
 }
 
@@ -276,201 +284,206 @@ export async function updateResident(
   }
 ) {
   try {
-    const oldResident = await prisma.resident.findUnique({
-      where: { id }
-    })
+    if (!await checkCrudRateLimit()) return { error: "Too many requests." }
 
-    if (!oldResident) {
-      return { error: "Resident not found." }
+    const cleanName = BusinessValidation.requireName(formData.name, "Nama Lengkap")
+    const gender = normalizeGender(formData.gender)
+    if (gender !== "LAKI_LAKI" && gender !== "PEREMPUAN") {
+      throw BusinessError.validation("Jenis Kelamin harus diisi LAKI_LAKI atau PEREMPUAN.")
     }
 
-    const nim = cleanText(formData.nim)
-    const niup = cleanText(formData.niup)
-
-    const existing = nim
-      ? await prisma.resident.findFirst({
-          where: {
-            nim,
-            NOT: { id }
-          }
-        })
-      : null
-
-    if (existing) {
-      return { error: "Resident with this NIM is already registered." }
-    }
-
-    // Check NIUP uniqueness if provided (exclude self)
-    if (niup) {
-      const existingNiup = await prisma.resident.findFirst({
-        where: {
-          niup,
-          NOT: { id }
-        }
-      })
-      if (existingNiup) {
-        return { error: "Resident with this NIUP is already registered." }
-      }
-    }
-
-    const oldRoomId = oldResident.roomId
-
-    // Check room capacity if room changed
-    if (formData.roomId && formData.roomId !== oldRoomId) {
-      const room = await prisma.room.findUnique({
-        where: { id: formData.roomId },
-        include: { residents: true }
-      })
-
-      if (!room) {
-        return { error: "Selected room not found." }
-      }
-
-      if (room.status === RoomStatus.MAINTENANCE) {
-        return { error: "Selected room is currently under maintenance." }
-      }
-
-      if (room.residents.length >= room.capacity) {
-        return { error: "Selected room is already at full capacity." }
-      }
-    }
-
-    const resident = await prisma.resident.update({
-      where: { id },
-      data: {
-        name: cleanText(formData.name),
-        photo: formData.photo || null,
-        nim: nim || null,
-        niup: niup || null,
-        angkatan: cleanText(formData.angkatan) || null,
-        prodi: cleanText(formData.prodi) || null,
-        wilayah: cleanText(formData.wilayah) || null,
-        daerah: cleanText(formData.daerah) || null,
-        kotaAsal: cleanText(formData.kotaAsal) || null,
-        fakultas: cleanText(formData.fakultas) || null,
-        phone: cleanText(formData.phone) || null,
-        roomId: formData.roomId || null,
-        status: formData.status,
-        asalCountryId: formData.asalCountryId || null,
-        asalProvinceId: formData.asalProvinceId || null,
-        asalRegencyId: formData.asalRegencyId || null,
-        asalDistrictId: formData.asalDistrictId || null,
-        asalVillageId: formData.asalVillageId || null,
-        tempatLahir: cleanText(formData.tempatLahir) || null,
-        tanggalLahir: formData.tanggalLahir ? new Date(formData.tanggalLahir) : null,
-        gender: normalizeGender(formData.gender) || null,
-        nik: cleanText(formData.nik) || null,
-        alamatLengkap: cleanText(formData.alamatLengkap) || null,
-        kodePos: cleanText(formData.kodePos) || null,
-        fakultasId: formData.fakultasId || null,
-        prodiId: formData.prodiId || null,
-        angkatanId: formData.angkatanId || null
-      }
-    })
+    const nim = cleanText(formData.nim) || null
+    const niup = cleanText(formData.niup) || null
+    const nik = cleanText(formData.nik) || null
+    const phone = cleanText(formData.phone) || null
 
     const session = await getServerSession(authOptions)
-    const userEmail = session?.user?.email || "System"
+    const performedBy = session?.user?.email || "System"
 
-    if (oldResident) {
-      const changedFields: string[] = []
-      const oldValues: Record<string, unknown> = {}
-      const newValues: Record<string, unknown> = {}
+    const resident = await prisma.$transaction(async (tx) => {
+      const oldResident = await tx.resident.findUnique({ where: { id } })
+      if (!oldResident) {
+        throw BusinessError.conflict("Santri")
+      }
 
-      // Only track human-readable fields, skip internal IDs and timestamps
-      const TRACKED_FIELDS = [
-        'name', 'nim', 'niup', 'phone', 'angkatan', 'prodi', 'wilayah', 'daerah',
-        'kotaAsal', 'fakultas', 'status', 'roomId', 'gender', 'nik', 'tempatLahir',
-        'tanggalLahir', 'alamatLengkap', 'kodePos', 'photo'
-      ]
+      // 1. Validate identity uniqueness excluding self
+      await ResidentBusiness.validateResidentIdentity(tx, { nim, niup, nik, phone }, id)
 
-      for (const key of TRACKED_FIELDS) {
-        const oldValue = (oldResident as Record<string, unknown>)[key]
-        const newValue = (resident as Record<string, unknown>)[key]
+      // 2. Validate academic hierarchy
+      await ResidentBusiness.validateAcademicHierarchy(tx, {
+        fakultasId: formData.fakultasId,
+        prodiId: formData.prodiId,
+        angkatanId: formData.angkatanId
+      })
 
-        const oldStr = oldValue instanceof Date ? oldValue.toISOString() : String(oldValue ?? "")
-        const newStr = newValue instanceof Date ? newValue.toISOString() : String(newValue ?? "")
+      const oldRoomId = oldResident.roomId
 
-        if (oldStr !== newStr) {
-          changedFields.push(key)
-          oldValues[key] = oldValue instanceof Date ? oldValue.toISOString() : oldValue
-          newValues[key] = newValue instanceof Date ? newValue.toISOString() : newValue
+      // 3. Check room if changed
+      if (formData.roomId && formData.roomId !== oldRoomId) {
+        // [5B.5] Resident Business Invariant
+        const newStatus = formData.status || oldResident.status
+        if (newStatus !== ResidentStatus.ACTIVE) {
+          throw BusinessError.validation("Santri dengan status tidak aktif (INACTIVE/GRADUATED) tidak boleh dipindahkan atau dimasukkan ke kamar.")
+        }
+        await ResidentBusiness.validateRoomAssignment(tx, formData.roomId, id)
+      }
+
+      // [5B.3] Resident Lifecycle State Guard
+      const newStatus = formData.status || oldResident.status
+      if (oldResident.status === ResidentStatus.ACTIVE && newStatus === ResidentStatus.INACTIVE) {
+        // Guard 1: Cannot change status if still has active assignments
+        const activeAssignments = await tx.assignment.count({
+          where: { residentId: id, status: "ACTIVE" }
+        })
+        if (activeAssignments > 0) {
+          throw BusinessError.validation("Resident masih memiliki penugasan aktif. Selesaikan atau transfer penugasan terlebih dahulu.")
+        }
+
+        // Guard 2: Cannot change status if still occupies a room
+        const finalRoomId = formData.roomId !== undefined ? formData.roomId : oldResident.roomId
+        if (finalRoomId !== null) {
+          throw BusinessError.validation("Resident masih menempati kamar. Keluarkan dari kamar terlebih dahulu.")
         }
       }
 
-      if (changedFields.length > 0) {
-        await prisma.auditLog.create({
-          data: {
-            action: "UPDATE_RESIDENT",
-            entityType: "RESIDENT",
-            entityId: id,
-            performedBy: userEmail,
-            oldValue: { ...oldValues } as Prisma.InputJsonValue,
-            newValue: { ...newValues, changedFields } as Prisma.InputJsonValue
-          }
+      const updated = await tx.resident.update({
+        where: { id },
+        data: {
+          name: cleanName,
+          photo: formData.photo !== undefined ? formData.photo : oldResident.photo,
+          nim,
+          niup,
+          angkatan: cleanText(formData.angkatan) || null,
+          prodi: cleanText(formData.prodi) || null,
+          wilayah: cleanText(formData.wilayah) || null,
+          daerah: cleanText(formData.daerah) || null,
+          kotaAsal: cleanText(formData.kotaAsal) || null,
+          fakultas: cleanText(formData.fakultas) || null,
+          phone,
+          roomId: formData.roomId || null,
+          status: formData.status || oldResident.status,
+          asalCountryId: formData.asalCountryId || null,
+          asalProvinceId: formData.asalProvinceId || null,
+          asalRegencyId: formData.asalRegencyId || null,
+          asalDistrictId: formData.asalDistrictId || null,
+          asalVillageId: formData.asalVillageId || null,
+          tempatLahir: cleanText(formData.tempatLahir) || null,
+          tanggalLahir: formData.tanggalLahir ? new Date(formData.tanggalLahir) : oldResident.tanggalLahir,
+          gender,
+          nik,
+          alamatLengkap: cleanText(formData.alamatLengkap) || null,
+          kodePos: cleanText(formData.kodePos) || null,
+          fakultasId: formData.fakultasId || null,
+          prodiId: formData.prodiId || null,
+          angkatanId: formData.angkatanId || null
+        }
+      })
+
+      // 4. Update old and new room statuses
+      // [R-01 FIX] Count remaining residents in old room after this resident moves out.
+      // Only set to AVAILABLE if no other residents remain — prevents false availability.
+      if (oldRoomId && oldRoomId !== formData.roomId) {
+        const oldRoomAfterMove = await tx.room.findUnique({
+          where: { id: oldRoomId },
+          include: { residents: { select: { id: true } } }
         })
+        // Exclude the current resident (already updated above) from count
+        const remainingOccupants = (oldRoomAfterMove?.residents ?? []).filter(r => r.id !== id).length
+        if (remainingOccupants === 0) {
+          await tx.room.update({
+            where: { id: oldRoomId },
+            data: { status: RoomStatus.AVAILABLE }
+          })
+        }
+        // If remainingOccupants > 0, retain OCCUPIED status — do NOT change it
       }
-    }
 
-    // If room changed, handle old room status release and new room status occupation
-    if (oldRoomId && oldRoomId !== formData.roomId) {
-      await prisma.room.update({
-        where: { id: oldRoomId },
-        data: { status: RoomStatus.AVAILABLE }
-      })
-    }
-
-    if (formData.roomId) {
-      const room = await prisma.room.findUnique({
-        where: { id: formData.roomId },
-        include: { residents: true }
-      })
-      if (room && room.residents.length >= room.capacity) {
-        await prisma.room.update({
+      if (formData.roomId) {
+        const room = await tx.room.findUnique({
           where: { id: formData.roomId },
-          data: { status: RoomStatus.OCCUPIED }
+          include: { residents: true }
         })
+        if (room && room.residents.length >= room.capacity) {
+          await tx.room.update({
+            where: { id: formData.roomId },
+            data: { status: RoomStatus.OCCUPIED }
+          })
+        }
       }
-    }
+
+      // 5. Audit Log
+      await tx.auditLog.create({
+        data: {
+          action: "UPDATE_RESIDENT",
+          entityType: "RESIDENT",
+          entityId: id,
+          performedBy,
+          oldValue: JSON.parse(JSON.stringify(oldResident)) as Prisma.InputJsonValue,
+          newValue: JSON.parse(JSON.stringify(updated)) as Prisma.InputJsonValue
+        }
+      })
+
+      return updated
+    })
 
     revalidatePath("/dashboard/residents")
     revalidatePath("/dashboard/rooms")
     return { success: true, resident }
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Failed to update resident."
-    return { error: message }
+    const businessErr = mapPrismaError(error, "Santri")
+    return { error: businessErr.message }
   }
 }
 
 export async function deleteResident(id: string) {
   try {
-    const resident = await prisma.resident.findUnique({
-      where: { id }
-    })
+    if (!await checkCrudRateLimit()) return { error: "Too many requests." }
 
-    if (!resident) {
-      return { error: "Resident not found." }
-    }
+    const session = await getServerSession(authOptions)
+    const performedBy = session?.user?.email || "System"
 
-    const oldRoomId = resident.roomId
-
-    await prisma.resident.delete({
-      where: { id }
-    })
-
-    // Free up old room status
-    if (oldRoomId) {
-      await prisma.room.update({
-        where: { id: oldRoomId },
-        data: { status: RoomStatus.AVAILABLE }
+    await prisma.$transaction(async (tx) => {
+      const resident = await tx.resident.findUnique({
+        where: { id },
+        include: { _count: { select: { assignments: true, absensiApel: true, absensiKegiatan: true } } }
       })
-    }
+
+      if (!resident) {
+        throw BusinessError.conflict("Santri")
+      }
+
+      if (resident._count.assignments > 0 || resident._count.absensiApel > 0 || resident._count.absensiKegiatan > 0) {
+        throw BusinessError.cannotDelete("Santri", "Penugasan atau Riwayat Absensi")
+      }
+
+      const oldRoomId = resident.roomId
+
+      await tx.resident.delete({ where: { id } })
+
+      if (oldRoomId) {
+        await tx.room.update({
+          where: { id: oldRoomId },
+          data: { status: RoomStatus.AVAILABLE }
+        })
+      }
+
+      await tx.auditLog.create({
+        data: {
+          action: "DELETE_RESIDENT",
+          entityType: "RESIDENT",
+          entityId: id,
+          performedBy,
+          oldValue: JSON.parse(JSON.stringify(resident)) as Prisma.InputJsonValue
+        }
+      })
+    })
 
     revalidatePath("/dashboard/residents")
     revalidatePath("/dashboard/rooms")
     return { success: true }
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Failed to check out resident."
-    return { error: message }
+    const businessErr = mapPrismaError(error, "Santri")
+    return { error: businessErr.message }
   }
 }
 
@@ -492,174 +505,240 @@ export async function bulkCreateResidents(data: {
   nik?: string
   alamatLengkap?: string
   kodePos?: string
-}[]){
+}[]) {
   try {
-    let successCount = 0
-    let skippedCount = 0
+    if (!await checkCrudRateLimit()) return { error: "Too many requests." }
 
-    // Get all rooms to lookup ID by number and check capacity
-    const rooms = await prisma.room.findMany({
-      include: { residents: true }
-    })
-    const roomMap = new Map<string, typeof rooms[0]>()
-    rooms.forEach(r => roomMap.set(r.number, r))
+    // Pre-validate in memory
+    ResidentBusiness.validateBulkResidents(data)
 
-    for (const row of data) {
-      const validationError = validateImportResidentData(row)
-      if (validationError) {
-        skippedCount++
-        continue
-      }
+    const session = await getServerSession(authOptions)
+    const performedBy = session?.user?.email || "System"
 
-      const nim = cleanText(row.nim)
-      const niup = cleanText(row.niup)
+    const result = await prisma.$transaction(async (tx) => {
+      let successCount = 0
 
-      const [existingNim, existingNiup] = await Promise.all([
-        nim ? prisma.resident.findUnique({ where: { nim } }) : Promise.resolve(null),
-        niup ? prisma.resident.findUnique({ where: { niup } }) : Promise.resolve(null),
-      ])
+      // Get all rooms to lookup ID by number
+      const rooms = await tx.room.findMany({ include: { _count: { select: { residents: true } } } })
+      const roomMap = new Map<string, typeof rooms[0] & { tempOccupancy: number }>()
+      rooms.forEach(r => roomMap.set(r.number, { ...r, tempOccupancy: r._count.residents }))
 
-      if (existingNim || existingNiup) {
-        skippedCount++
-        continue
-      }
+      for (const row of data) {
+        const cleanName = BusinessValidation.requireName(row.name, "Nama Lengkap")
+        const nim = cleanText(row.nim) || null
+        const niup = cleanText(row.niup) || null
+        const nik = cleanText(row.nik) || null
+        const phone = cleanText(row.phone) || null
 
-      let roomId: string | null = null
+        await ResidentBusiness.validateResidentIdentity(tx, { nim, niup, nik, phone })
 
-      if (row.roomNumber) {
-        const room = roomMap.get(String(row.roomNumber))
-        if (room && room.status !== RoomStatus.MAINTENANCE && room.residents.length < room.capacity) {
+        let roomId: string | null = null
+        if (row.roomNumber) {
+          const room = roomMap.get(String(row.roomNumber))
+          if (!room) throw BusinessError.invalidReference(`Kamar ${row.roomNumber}`)
+          if (room.status === RoomStatus.MAINTENANCE) {
+            throw BusinessError.validation(`Kamar ${row.roomNumber} sedang maintenance.`)
+          }
+          if (room.tempOccupancy >= room.capacity) {
+            throw BusinessError.validation(`Kamar ${row.roomNumber} sudah penuh.`)
+          }
           roomId = room.id
-          // Optimistically update the in-memory room map capacity
-          room.residents.push({ id: "temp", residentId: null, roomId: room.id } as unknown as typeof room.residents[0])
-          
-          if (room.residents.length >= room.capacity) {
-            await prisma.room.update({
-              where: { id: room.id },
-              data: { status: RoomStatus.OCCUPIED }
-            })
+          room.tempOccupancy++
+          if (room.tempOccupancy >= room.capacity) {
+            await tx.room.update({ where: { id: room.id }, data: { status: RoomStatus.OCCUPIED } })
           }
         }
+
+        await tx.resident.create({
+          data: {
+            name: cleanName,
+            nim,
+            niup,
+            phone,
+            angkatan: cleanText(row.angkatan) || null,
+            prodi: cleanText(row.prodi) || null,
+            wilayah: cleanText(row.wilayah) || null,
+            daerah: cleanText(row.daerah) || null,
+            kotaAsal: cleanText(row.kotaAsal) || null,
+            fakultas: cleanText(row.fakultas) || null,
+            tempatLahir: cleanText(row.tempatLahir) || null,
+            tanggalLahir: row.tanggalLahir ? new Date(row.tanggalLahir) : null,
+            gender: normalizeGender(row.gender) || null,
+            nik,
+            alamatLengkap: cleanText(row.alamatLengkap) || null,
+            kodePos: cleanText(row.kodePos) || null,
+            roomId,
+            status: ResidentStatus.ACTIVE
+          }
+        })
+        successCount++
       }
 
-      await prisma.resident.create({
+      await tx.auditLog.create({
         data: {
-          name: cleanText(row.name),
-          nim: nim || null,
-          niup: niup || null,
-          phone: cleanText(row.phone) || null,
-          angkatan: cleanText(row.angkatan) || null,
-          prodi: cleanText(row.prodi) || null,
-          wilayah: cleanText(row.wilayah) || null,
-          daerah: cleanText(row.daerah) || null,
-          kotaAsal: cleanText(row.kotaAsal) || null,
-          fakultas: cleanText(row.fakultas) || null,
-          tempatLahir: cleanText(row.tempatLahir) || null,
-          tanggalLahir: row.tanggalLahir ? new Date(row.tanggalLahir) : null,
-          gender: normalizeGender(row.gender) || null,
-          nik: cleanText(row.nik) || null,
-          alamatLengkap: cleanText(row.alamatLengkap) || null,
-          kodePos: cleanText(row.kodePos) || null,
-          roomId: roomId,
-          status: ResidentStatus.ACTIVE
+          action: "BULK_IMPORT_RESIDENTS",
+          entityType: "RESIDENT",
+          performedBy,
+          newValue: JSON.stringify({ successCount })
         }
       })
-      successCount++
-    }
+
+      return successCount
+    })
 
     revalidatePath("/dashboard/residents")
     revalidatePath("/dashboard/rooms")
-    return { success: true, successCount, skippedCount }
+    return { success: true, successCount: result, skippedCount: 0 }
   } catch (error) {
-    console.error("Bulk upload error:", error)
-    const message = error instanceof Error ? error.message : "Terjadi kesalahan saat mengimpor data."
-    return { error: message }
+    const businessErr = mapPrismaError(error, "Import Santri")
+    return { error: businessErr.message }
   }
 }
 
 export async function bulkDeleteResidents(ids: string[]) {
   try {
-    const residents = await prisma.resident.findMany({
-      where: { id: { in: ids } },
-      select: { roomId: true }
-    })
+    if (!await checkCrudRateLimit()) return { error: "Too many requests." }
 
-    const roomIds = residents.map(r => r.roomId).filter(Boolean) as string[]
+    const session = await getServerSession(authOptions)
+    const performedBy = session?.user?.email || "System"
 
-    await prisma.resident.deleteMany({
-      where: { id: { in: ids } }
-    })
-
-    if (roomIds.length > 0) {
-      await prisma.room.updateMany({
-        where: { id: { in: roomIds } },
-        data: { status: RoomStatus.AVAILABLE }
+    await prisma.$transaction(async (tx) => {
+      const residents = await tx.resident.findMany({
+        where: { id: { in: ids } },
+        include: { _count: { select: { assignments: true, absensiApel: true, absensiKegiatan: true } } }
       })
-    }
+
+      for (const res of residents) {
+        if (res._count.assignments > 0 || res._count.absensiApel > 0 || res._count.absensiKegiatan > 0) {
+          throw BusinessError.cannotDelete(`Santri ${res.name}`, "Penugasan atau Riwayat Absensi")
+        }
+      }
+
+      const roomIds = Array.from(new Set(residents.map(r => r.roomId).filter(Boolean) as string[]))
+
+      await tx.resident.deleteMany({
+        where: { id: { in: ids } }
+      })
+
+      if (roomIds.length > 0) {
+        await tx.room.updateMany({
+          where: { id: { in: roomIds } },
+          data: { status: RoomStatus.AVAILABLE }
+        })
+      }
+
+      await tx.auditLog.create({
+        data: {
+          action: "BULK_DELETE_RESIDENTS",
+          entityType: "RESIDENT",
+          performedBy,
+          oldValue: JSON.stringify({ count: ids.length, ids })
+        }
+      })
+    })
 
     revalidatePath("/dashboard/residents")
     revalidatePath("/dashboard/rooms")
     return { success: true }
   } catch (error) {
-    console.error("Bulk delete error:", error)
-    const message = error instanceof Error ? error.message : "Gagal menghapus santri pilihan."
-    return { error: message }
+    const businessErr = mapPrismaError(error, "Hapus Santri")
+    return { error: businessErr.message }
   }
 }
 
 export async function bulkMoveResidents(ids: string[], data: { roomId?: string }) {
   try {
-    const residents = await prisma.resident.findMany({
-      where: { id: { in: ids } },
-      select: { roomId: true }
-    })
-    const oldRoomIds = residents.map(r => r.roomId).filter(Boolean) as string[]
+    if (!await checkCrudRateLimit()) return { error: "Too many requests." }
 
-    if (data.roomId) {
-      const room = await prisma.room.findUnique({
-        where: { id: data.roomId },
-        include: { residents: true }
+    const session = await getServerSession(authOptions)
+    const performedBy = session?.user?.email || "System"
+
+    await prisma.$transaction(async (tx) => {
+      // Fetch residents with their current room info for history recording
+      const residents = await tx.resident.findMany({
+        where: { id: { in: ids } },
+        select: { id: true, roomId: true, wilayah: true, daerah: true, room: { select: { number: true } } }
       })
-      if (!room) return { error: "Kamar tidak ditemukan." }
-      if (room.status === RoomStatus.MAINTENANCE) return { error: "Kamar sedang dalam perbaikan." }
-      if (room.residents.length + ids.length > room.capacity) {
-        return { error: "Kapasitas kamar tidak mencukupi untuk jumlah santri yang dipilih." }
-      }
-    }
+      const oldRoomIds = Array.from(new Set(residents.map(r => r.roomId).filter(Boolean) as string[]))
 
-    await prisma.resident.updateMany({
-      where: { id: { in: ids } },
-      data: {
-        roomId: data.roomId !== undefined ? data.roomId : undefined
-      }
-    })
-
-    if (oldRoomIds.length > 0) {
-      await prisma.room.updateMany({
-        where: { id: { in: oldRoomIds } },
-        data: { status: RoomStatus.AVAILABLE }
-      })
-    }
-
-    if (data.roomId) {
-      const room = await prisma.room.findUnique({
-        where: { id: data.roomId },
-        include: { residents: true }
-      })
-      if (room && room.residents.length >= room.capacity) {
-        await prisma.room.update({
+      // Fetch new room details for history recording
+      let newRoomDetail: { number: string; daerah?: { name: string; wilayah?: { name: string } | null } | null } | null = null
+      if (data.roomId) {
+        await ResidentBusiness.validateRoomAssignment(tx, data.roomId, undefined, ids.length)
+        newRoomDetail = await tx.room.findUnique({
           where: { id: data.roomId },
-          data: { status: RoomStatus.OCCUPIED }
+          include: { daerah: { include: { wilayah: true } } }
         })
       }
-    }
+
+      const newWilayah = newRoomDetail?.daerah?.wilayah?.name || null
+      const newDaerah = newRoomDetail?.daerah?.name || null
+
+      await tx.resident.updateMany({
+        where: { id: { in: ids } },
+        data: {
+          roomId: data.roomId !== undefined ? data.roomId : undefined,
+          wilayah: data.roomId !== undefined ? newWilayah : undefined,
+          daerah: data.roomId !== undefined ? newDaerah : undefined
+        }
+      })
+
+      // [R-02 FIX] Record per-resident room history for full audit trail.
+      // Consistent with single-resident transferResidentRoom which records history.
+      if (residents.length > 0) {
+        await tx.residentRoomHistory.createMany({
+          data: residents.map(r => ({
+            residentId: r.id,
+            fromRoomId: r.roomId || null,
+            fromRoom: r.room?.number || null,
+            toRoomId: data.roomId || null,
+            toRoom: newRoomDetail?.number || null,
+            fromWilayah: r.wilayah || null,
+            fromDaerah: r.daerah || null,
+            toWilayah: newWilayah,
+            toDaerah: newDaerah,
+            alasan: "Perpindahan massal",
+            transferedBy: performedBy
+          }))
+        })
+      }
+
+      if (oldRoomIds.length > 0) {
+        await tx.room.updateMany({
+          where: { id: { in: oldRoomIds } },
+          data: { status: RoomStatus.AVAILABLE }
+        })
+      }
+
+      if (data.roomId) {
+        const room = await tx.room.findUnique({
+          where: { id: data.roomId },
+          include: { residents: true }
+        })
+        if (room && room.residents.length >= room.capacity) {
+          await tx.room.update({
+            where: { id: data.roomId },
+            data: { status: RoomStatus.OCCUPIED }
+          })
+        }
+      }
+
+      await tx.auditLog.create({
+        data: {
+          action: "BULK_MOVE_RESIDENTS",
+          entityType: "RESIDENT",
+          performedBy,
+          newValue: JSON.stringify({ count: ids.length, targetRoomId: data.roomId, newWilayah, newDaerah })
+        }
+      })
+    })
 
     revalidatePath("/dashboard/residents")
     revalidatePath("/dashboard/rooms")
     return { success: true }
   } catch (error) {
-    console.error("Bulk move error:", error)
-    const message = error instanceof Error ? error.message : "Gagal memindahkan santri pilihan."
-    return { error: message }
+    const businessErr = mapPrismaError(error, "Pindah Kamar")
+    return { error: businessErr.message }
   }
 }
+
