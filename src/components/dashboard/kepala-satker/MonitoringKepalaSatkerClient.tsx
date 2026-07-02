@@ -1,7 +1,7 @@
 "use client"
 
-import { useState, useMemo } from "react"
-import { Search, Save, FileText, CheckCircle, Printer, Star } from "lucide-react"
+import { useState } from "react"
+import { Search, Save, FileText, CheckCircle, Printer, ChevronDown } from "lucide-react"
 import { saveMonitoringSatker, type SaveMonitoringSatkerInput } from "@/app/actions/laporan"
 
 interface AssignmentData {
@@ -54,6 +54,51 @@ const CRITERIA = [
 
 type CriteriaKey = typeof CRITERIA[number]["key"];
 
+const OPTIONS_MAP = {
+  attendanceScore: [
+    { value: 5, label: "Sangat Rajin" },
+    { value: 4, label: "Rajin" },
+    { value: 3, label: "Cukup Rajin" },
+    { value: 2, label: "Kurang Rajin" },
+    { value: 1, label: "Tidak Rajin" },
+  ],
+  disciplineScore: [
+    { value: 5, label: "Sangat Disiplin" },
+    { value: 4, label: "Disiplin" },
+    { value: 3, label: "Cukup Disiplin" },
+    { value: 2, label: "Kurang Disiplin" },
+    { value: 1, label: "Tidak Disiplin" },
+  ],
+  responsibilityScore: [
+    { value: 5, label: "Sangat Bertanggung Jawab" },
+    { value: 4, label: "Bertanggung Jawab" },
+    { value: 3, label: "Cukup Bertanggung Jawab" },
+    { value: 2, label: "Kurang Bertanggung Jawab" },
+    { value: 1, label: "Tidak Bertanggung Jawab" },
+  ],
+  workQualityScore: [
+    { value: 5, label: "Hasil Kerja Sangat Memuaskan" },
+    { value: 4, label: "Hasil Kerja Baik" },
+    { value: 3, label: "Hasil Kerja Cukup Baik" },
+    { value: 2, label: "Hasil Kerja Kurang Memuaskan" },
+    { value: 1, label: "Hasil Kerja Tidak Memuaskan" },
+  ],
+  attitudeScore: [
+    { value: 5, label: "Sangat Baik" },
+    { value: 4, label: "Baik" },
+    { value: 3, label: "Cukup Baik" },
+    { value: 2, label: "Cukup" },
+    { value: 1, label: "Tidak Baik" },
+  ],
+  teamworkScore: [
+    { value: 5, label: "Sangat Kooperatif" },
+    { value: 4, label: "Kooperatif" },
+    { value: 3, label: "Cukup Kooperatif" },
+    { value: 2, label: "Kurang Kooperatif" },
+    { value: 1, label: "Tidak Kooperatif" },
+  ],
+} as const;
+
 type ResidentScores = Record<CriteriaKey, number> & {
   supervisorNotes: string
 }
@@ -71,13 +116,31 @@ function calculatePreview(scores: Record<CriteriaKey, number>) {
 
   let predicate = "-"
   let predicateColor = "text-zinc-500"
-  if (average >= 4.5) { predicate = "Sangat Baik"; predicateColor = "text-emerald-500" }
-  else if (average >= 3.5) { predicate = "Baik"; predicateColor = "text-teal-500" }
-  else if (average >= 2.5) { predicate = "Cukup"; predicateColor = "text-amber-500" }
-  else if (average >= 1.5) { predicate = "Kurang"; predicateColor = "text-orange-500" }
-  else if (average > 0) { predicate = "Sangat Kurang"; predicateColor = "text-red-500" }
+  let bgGradient = "from-zinc-500/10 to-transparent"
 
-  return { total, average, predicate, predicateColor }
+  if (average >= 4.5) { 
+    predicate = "Sangat Baik"; 
+    predicateColor = "text-emerald-600 dark:text-emerald-400"; 
+    bgGradient = "from-emerald-500/5 to-transparent";
+  } else if (average >= 3.5) { 
+    predicate = "Baik"; 
+    predicateColor = "text-teal-600 dark:text-teal-400"; 
+    bgGradient = "from-teal-500/5 to-transparent";
+  } else if (average >= 2.5) { 
+    predicate = "Cukup"; 
+    predicateColor = "text-amber-600 dark:text-amber-400"; 
+    bgGradient = "from-amber-500/5 to-transparent";
+  } else if (average >= 1.5) { 
+    predicate = "Kurang"; 
+    predicateColor = "text-orange-600 dark:text-orange-400"; 
+    bgGradient = "from-orange-500/5 to-transparent";
+  } else if (average > 0) { 
+    predicate = "Sangat Kurang"; 
+    predicateColor = "text-red-600 dark:text-red-400"; 
+    bgGradient = "from-red-500/5 to-transparent";
+  }
+
+  return { total, average, predicate, predicateColor, bgGradient }
 }
 
 export default function MonitoringKepalaSatkerClient({
@@ -141,10 +204,10 @@ export default function MonitoringKepalaSatkerClient({
     try {
       // Validate
       if (statusLaporan === "SUBMITTED") {
-        for (const [id, data] of Object.entries(monitoringData)) {
+        for (const [, data] of Object.entries(monitoringData)) {
           const isComplete = CRITERIA.every(c => data[c.key] > 0)
           if (!isComplete) {
-            alert("Harap lengkapi semua kriteria penilaian (minimal 1 bintang) untuk seluruh santri sebelum Submit Laporan.")
+            alert("Harap lengkapi semua kriteria penilaian untuk seluruh santri sebelum Submit Laporan.")
             return
           }
         }
@@ -187,6 +250,15 @@ export default function MonitoringKepalaSatkerClient({
 
   const handlePrint = () => {
     window.print()
+  }
+
+  const getDropdownBorderColor = (val: number) => {
+    if (val === 5) return "border-emerald-500/30 focus:border-emerald-500 focus:ring-emerald-500/20"
+    if (val === 4) return "border-teal-500/30 focus:border-teal-500 focus:ring-teal-500/20"
+    if (val === 3) return "border-amber-500/30 focus:border-amber-500 focus:ring-amber-500/20"
+    if (val === 2) return "border-orange-500/30 focus:border-orange-500 focus:ring-orange-500/20"
+    if (val === 1) return "border-red-500/30 focus:border-red-500 focus:ring-red-500/20"
+    return "border-zinc-200 dark:border-zinc-800 focus:border-blue-500 focus:ring-blue-500/20"
   }
 
   return (
@@ -237,7 +309,10 @@ export default function MonitoringKepalaSatkerClient({
           const preview = calculatePreview(data)
 
           return (
-            <div key={assignment.id} className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow">
+            <div 
+              key={assignment.id} 
+              className={`bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-300 relative overflow-hidden bg-gradient-to-br ${preview.bgGradient}`}
+            >
               
               <div className="flex justify-between items-start mb-6">
                 <div>
@@ -258,30 +333,37 @@ export default function MonitoringKepalaSatkerClient({
                 </div>
               </div>
 
+              {/* Rubric Criteria Dropdown inputs */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4 mb-6">
-                {CRITERIA.map(crit => (
-                  <div key={crit.key} className="flex flex-col space-y-1.5">
-                    <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">{crit.label}</span>
-                    <div className="flex space-x-1">
-                      {[1, 2, 3, 4, 5].map(star => (
-                        <button
-                          key={star}
-                          onClick={() => handleScoreChange(assignment.id, crit.key, star)}
+                {CRITERIA.map(crit => {
+                  const currentValue = data[crit.key];
+                  const options = OPTIONS_MAP[crit.key];
+                  return (
+                    <div key={crit.key} className="flex flex-col space-y-1.5">
+                      <span className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">{crit.label}</span>
+                      <div className="relative">
+                        <select
+                          value={currentValue || ""}
+                          onChange={(e) => handleScoreChange(assignment.id, crit.key, Number(e.target.value))}
                           disabled={isReadOnly}
-                          className={`p-1 focus:outline-none transition-transform hover:scale-110 disabled:cursor-not-allowed ${
-                            data[crit.key] >= star ? "text-yellow-400" : "text-zinc-300 dark:text-zinc-700 hover:text-yellow-200"
-                          }`}
+                          className={`w-full bg-zinc-50 dark:bg-zinc-800/50 border rounded-xl py-3 pl-4 pr-10 text-sm font-medium focus:ring-2 outline-none transition-all appearance-none cursor-pointer disabled:cursor-not-allowed ${getDropdownBorderColor(currentValue)}`}
                         >
-                          <Star className="w-6 h-6" fill={data[crit.key] >= star ? "currentColor" : "none"} />
-                        </button>
-                      ))}
+                          <option value="" disabled className="text-zinc-400">Pilih penilaian...</option>
+                          {options.map(opt => (
+                            <option key={opt.value} value={opt.value} className="text-zinc-800 dark:text-zinc-200">
+                              {opt.label} ({opt.value})
+                            </option>
+                          ))}
+                        </select>
+                        <ChevronDown className="w-4 h-4 absolute right-3.5 top-1/2 transform -translate-y-1/2 text-zinc-400 pointer-events-none" />
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  )
+                })}
               </div>
 
               <div className="mt-4">
-                <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">Saran Kepala Satker (Opsional)</label>
+                <label className="block text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-2">Saran Kepala Satker (Opsional)</label>
                 <textarea
                   value={data.supervisorNotes}
                   onChange={(e) => handleNotesChange(assignment.id, e.target.value)}
