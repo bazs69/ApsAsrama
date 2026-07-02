@@ -1,5 +1,5 @@
 generator client {
-  provider        = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 datasource db {
@@ -7,17 +7,17 @@ datasource db {
 }
 
 model User {
-  id            String          @id @default(uuid())
-  name          String
-  photo         String?
-  username      String?         @unique
-  email         String          @unique
-  password      String
-  roleId        String?
-  isActive      Boolean         @default(true)
-  satkerId      String?
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
+  id             String          @id @default(uuid())
+  name           String
+  photo          String?
+  username       String?         @unique
+  email          String          @unique
+  password       String
+  roleId         String?
+  isActive       Boolean         @default(true)
+  satkerId       String?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
   exportHistory  ExportHistory[]
   securityEvents SecurityEvent[]
   notifications  Notification[]
@@ -105,25 +105,25 @@ model Satker {
 }
 
 model Assignment {
-  id          String                @id @default(uuid())
-  residentId  String
-  satkerId    String
-  position    String                @default("Anggota")
-  status      String                @default("ACTIVE")
-  startDate   DateTime              @default(now())
-  endDate     DateTime?
-  groupId     String?
+  id                String      @id @default(uuid())
+  residentId        String
+  satkerId          String
+  position          String      @default("Anggota")
+  status            String      @default("ACTIVE")
+  startDate         DateTime    @default(now())
+  endDate           DateTime?
+  groupId           String?
   transferReason    String?
   transferredAt     DateTime?
-  transferredFromId String?               @unique
-  transferredFrom   Assignment?           @relation("AssignmentTransfer", fields: [transferredFromId], references: [id], onDelete: SetNull)
-  transferredTo     Assignment?           @relation("AssignmentTransfer")
+  transferredFromId String?     @unique
+  transferredFrom   Assignment? @relation("AssignmentTransfer", fields: [transferredFromId], references: [id], onDelete: SetNull)
+  transferredTo     Assignment? @relation("AssignmentTransfer")
 
-  createdAt         DateTime              @default(now())
-  updatedAt         DateTime              @updatedAt
-  resident          Resident              @relation(fields: [residentId], references: [id], onDelete: Cascade)
-  satker            Satker                @relation(fields: [satkerId], references: [id], onDelete: Cascade)
-  monitorings       MonitoringPenugasan[]
+  createdAt   DateTime              @default(now())
+  updatedAt   DateTime              @updatedAt
+  resident    Resident              @relation(fields: [residentId], references: [id], onDelete: Cascade)
+  satker      Satker                @relation(fields: [satkerId], references: [id], onDelete: Cascade)
+  monitorings MonitoringPenugasan[]
 
   @@index([satkerId])
   @@index([groupId])
@@ -131,18 +131,42 @@ model Assignment {
   @@index([status])
 }
 
+enum MonitoringPredicate {
+  SANGAT_BAIK
+  BAIK
+  CUKUP
+  KURANG
+  SANGAT_KURANG
+}
+
 model MonitoringPenugasan {
-  id                String     @id @default(uuid())
-  assignmentId      String     @map("penugasan_id")
-  tanggalMonitoring DateTime   @map("tanggal_monitoring")
-  statusMonitoring  String     @map("status_monitoring")
-  catatanMonitoring String?    @map("catatan_monitoring")
-  catatanPembimbing String?    @map("catatan_pembimbing")
+  id                String   @id @default(uuid())
+  assignmentId      String   @map("penugasan_id")
+  tanggalMonitoring DateTime @map("tanggal_monitoring")
+  statusMonitoring  String   @map("status_monitoring")
+  catatanMonitoring String?  @map("catatan_monitoring")
+  catatanPembimbing String?  @map("catatan_pembimbing")
   dokumentasi       String?
-  createdBy         String?    @map("created_by")
-  createdAt         DateTime   @default(now()) @map("created_at")
-  updatedAt         DateTime   @updatedAt @map("updated_at")
-  assignment        Assignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+
+  // New scoring fields
+  attendanceScore     Int?                 @map("attendance_score")
+  disciplineScore     Int?                 @map("discipline_score")
+  responsibilityScore Int?                 @map("responsibility_score")
+  workQualityScore    Int?                 @map("work_quality_score")
+  attitudeScore       Int?                 @map("attitude_score")
+  teamworkScore       Int?                 @map("teamwork_score")
+  totalScore          Int?                 @map("total_score")
+  averageScore        Float?               @map("average_score")
+  predicate           MonitoringPredicate? @map("predicate")
+  supervisorNotes     String?              @map("supervisor_notes")
+
+  evaluatedAt DateTime? @map("evaluated_at")
+  evaluatedBy String?   @map("evaluated_by")
+
+  createdBy  String?    @map("created_by")
+  createdAt  DateTime   @default(now()) @map("created_at")
+  updatedAt  DateTime   @updatedAt @map("updated_at")
+  assignment Assignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
 
   @@index([assignmentId])
   @@index([tanggalMonitoring])
@@ -424,10 +448,10 @@ model Notification {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   title     String
   message   String   @db.Text
-  type      String   @default("INFO")  // INFO | SUCCESS | WARNING | ERROR
-  link      String?                    // (Optional) URL navigasi saat notifikasi diklik
+  type      String   @default("INFO") // INFO | SUCCESS | WARNING | ERROR
+  link      String? // (Optional) URL navigasi saat notifikasi diklik
   isRead    Boolean  @default(false)
-  metadata  Json?                      // Payload tambahan (e.g. groupId, satkerId, dll.)
+  metadata  Json? // Payload tambahan (e.g. groupId, satkerId, dll.)
   createdAt DateTime @default(now())
 
   // Index primer: query notifikasi milik satu user

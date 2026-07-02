@@ -84,13 +84,20 @@ export default function MonitoringPenugasanClient({ user, satkerList, initialDat
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "Sangat Aktif":
+      case "Sangat Baik":
+      case "Sangat Aktif": // Backward compat
         return "bg-emerald-100 text-emerald-700"
+      case "Baik":
       case "Aktif":
-        return "bg-emerald-100 text-emerald-700"
+        return "bg-teal-100 text-teal-700"
+      case "Cukup":
       case "Cukup Aktif":
-        return "bg-orange-100 text-orange-700"
+        return "bg-amber-100 text-amber-700"
+      case "Kurang":
       case "Kurang Aktif":
+        return "bg-orange-100 text-orange-700"
+      case "Sangat Kurang":
+      case "Tidak Aktif":
         return "bg-red-100 text-red-700"
       default:
         return "bg-gray-100 text-gray-700"
@@ -99,13 +106,14 @@ export default function MonitoringPenugasanClient({ user, satkerList, initialDat
 
   // Calculate chart data from monitoringData
   const totalMonitorings = monitoringData.length
-  let sangatAktif = 0, aktif = 0, cukupAktif = 0, kurangAktif = 0
+  let sangatBaik = 0, baik = 0, cukup = 0, kurang = 0, sangatKurang = 0
 
   monitoringData.forEach((m: Record<string, string | number | null | undefined>) => {
-    if (m.status === "Sangat Aktif") sangatAktif++
-    else if (m.status === "Aktif") aktif++
-    else if (m.status === "Cukup Aktif") cukupAktif++
-    else if (m.status === "Kurang Aktif") kurangAktif++
+    if (m.status === "Sangat Baik" || m.status === "Sangat Aktif") sangatBaik++
+    else if (m.status === "Baik" || m.status === "Aktif") baik++
+    else if (m.status === "Cukup" || m.status === "Cukup Aktif") cukup++
+    else if (m.status === "Kurang" || m.status === "Kurang Aktif") kurang++
+    else if (m.status === "Sangat Kurang" || m.status === "Tidak Aktif") sangatKurang++
   })
 
   const getPct = (val: number) => totalMonitorings > 0 ? val / totalMonitorings : 0
@@ -114,13 +122,15 @@ export default function MonitoringPenugasanClient({ user, satkerList, initialDat
   const C = 251.2
   
   // Offsets
-  const offsetSangatAktif = C * (1 - getPct(sangatAktif))
-  const rotAktif = -90 + (getPct(sangatAktif) * 360)
-  const offsetAktif = C * (1 - getPct(aktif))
-  const rotCukup = rotAktif + (getPct(aktif) * 360)
-  const offsetCukup = C * (1 - getPct(cukupAktif))
-  const rotKurang = rotCukup + (getPct(cukupAktif) * 360)
-  const offsetKurang = C * (1 - getPct(kurangAktif))
+  const offsetSangatBaik = C * (1 - getPct(sangatBaik))
+  const rotBaik = -90 + (getPct(sangatBaik) * 360)
+  const offsetBaik = C * (1 - getPct(baik))
+  const rotCukup = rotBaik + (getPct(baik) * 360)
+  const offsetCukup = C * (1 - getPct(cukup))
+  const rotKurang = rotCukup + (getPct(cukup) * 360)
+  const offsetKurang = C * (1 - getPct(kurang))
+  const rotSangatKurang = rotKurang + (getPct(kurang) * 360)
+  const offsetSangatKurang = C * (1 - getPct(sangatKurang))
 
   return (
     <div className="space-y-6">
@@ -264,10 +274,11 @@ export default function MonitoringPenugasanClient({ user, satkerList, initialDat
               className="w-full bg-white border border-slate-200 rounded-lg px-4 py-2.5 text-sm font-semibold text-slate-700 appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="ALL">Semua Status</option>
-              <option value="Sangat Aktif">Sangat Aktif</option>
-              <option value="Aktif">Aktif</option>
-              <option value="Cukup Aktif">Cukup Aktif</option>
-              <option value="Kurang Aktif">Kurang Aktif</option>
+              <option value="Sangat Baik">Sangat Baik</option>
+              <option value="Baik">Baik</option>
+              <option value="Cukup">Cukup</option>
+              <option value="Kurang">Kurang</option>
+              <option value="Sangat Kurang">Sangat Kurang</option>
             </select>
             <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
           </div>
@@ -446,31 +457,38 @@ export default function MonitoringPenugasanClient({ user, satkerList, initialDat
                   
                   {totalMonitorings > 0 && (
                     <>
-                      {/* Segment: Sangat Aktif - Green */}
-                      {sangatAktif > 0 && (
+                      {/* Segment: Sangat Baik - Emerald */}
+                      {sangatBaik > 0 && (
                         <circle cx="50" cy="50" r="40" fill="transparent" stroke="#10b981" strokeWidth="15" 
-                          strokeDasharray={C} strokeDashoffset={offsetSangatAktif} />
+                          strokeDasharray={C} strokeDashoffset={offsetSangatBaik} />
                       )}
                       
-                      {/* Segment: Aktif - Teal */}
-                      {aktif > 0 && (
-                        <circle cx="50" cy="50" r="40" fill="transparent" stroke="#34d399" strokeWidth="15" 
-                          strokeDasharray={C} strokeDashoffset={offsetAktif} 
-                          transform={`rotate(${rotAktif} 50 50)`} />
+                      {/* Segment: Baik - Teal */}
+                      {baik > 0 && (
+                        <circle cx="50" cy="50" r="40" fill="transparent" stroke="#14b8a6" strokeWidth="15" 
+                          strokeDasharray={C} strokeDashoffset={offsetBaik} 
+                          transform={`rotate(${rotBaik} 50 50)`} />
                       )}
                       
-                      {/* Segment: Cukup Aktif - Orange */}
-                      {cukupAktif > 0 && (
+                      {/* Segment: Cukup - Amber */}
+                      {cukup > 0 && (
                         <circle cx="50" cy="50" r="40" fill="transparent" stroke="#f59e0b" strokeWidth="15" 
                           strokeDasharray={C} strokeDashoffset={offsetCukup} 
                           transform={`rotate(${rotCukup} 50 50)`} />
                       )}
                       
-                      {/* Segment: Kurang Aktif - Red */}
-                      {kurangAktif > 0 && (
-                        <circle cx="50" cy="50" r="40" fill="transparent" stroke="#ef4444" strokeWidth="15" 
+                      {/* Segment: Kurang - Orange */}
+                      {kurang > 0 && (
+                        <circle cx="50" cy="50" r="40" fill="transparent" stroke="#f97316" strokeWidth="15" 
                           strokeDasharray={C} strokeDashoffset={offsetKurang} 
                           transform={`rotate(${rotKurang} 50 50)`} />
+                      )}
+
+                      {/* Segment: Sangat Kurang - Red */}
+                      {sangatKurang > 0 && (
+                        <circle cx="50" cy="50" r="40" fill="transparent" stroke="#ef4444" strokeWidth="15" 
+                          strokeDasharray={C} strokeDashoffset={offsetSangatKurang} 
+                          transform={`rotate(${rotSangatKurang} 50 50)`} />
                       )}
                     </>
                   )}
@@ -488,40 +506,50 @@ export default function MonitoringPenugasanClient({ user, satkerList, initialDat
                 <div className="flex items-center justify-between text-sm">
                   <div className="flex items-center gap-2">
                     <div className="w-3 h-3 rounded-full bg-emerald-500"></div>
-                    <span className="font-semibold text-slate-700">Sangat Aktif</span>
+                    <span className="font-semibold text-slate-700">Sangat Baik</span>
                   </div>
                   <div className="font-bold text-slate-800 text-right">
-                    {sangatAktif} <span className="text-slate-500 font-medium">({(getPct(sangatAktif) * 100).toFixed(1)}%)</span>
+                    {sangatBaik} <span className="text-slate-500 font-medium">({(getPct(sangatBaik) * 100).toFixed(1)}%)</span>
                   </div>
                 </div>
                 
                 <div className="flex items-center justify-between text-sm">
                   <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full bg-emerald-400"></div>
-                    <span className="font-semibold text-slate-700">Aktif</span>
+                    <div className="w-3 h-3 rounded-full bg-teal-500"></div>
+                    <span className="font-semibold text-slate-700">Baik</span>
                   </div>
                   <div className="font-bold text-slate-800 text-right">
-                    {aktif} <span className="text-slate-500 font-medium">({(getPct(aktif) * 100).toFixed(1)}%)</span>
+                    {baik} <span className="text-slate-500 font-medium">({(getPct(baik) * 100).toFixed(1)}%)</span>
                   </div>
                 </div>
 
                 <div className="flex items-center justify-between text-sm">
                   <div className="flex items-center gap-2">
                     <div className="w-3 h-3 rounded-full bg-amber-500"></div>
-                    <span className="font-semibold text-slate-700">Cukup Aktif</span>
+                    <span className="font-semibold text-slate-700">Cukup</span>
                   </div>
                   <div className="font-bold text-slate-800 text-right">
-                    {cukupAktif} <span className="text-slate-500 font-medium">({(getPct(cukupAktif) * 100).toFixed(1)}%)</span>
+                    {cukup} <span className="text-slate-500 font-medium">({(getPct(cukup) * 100).toFixed(1)}%)</span>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between text-sm">
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 rounded-full bg-orange-500"></div>
+                    <span className="font-semibold text-slate-700">Kurang</span>
+                  </div>
+                  <div className="font-bold text-slate-800 text-right">
+                    {kurang} <span className="text-slate-500 font-medium">({(getPct(kurang) * 100).toFixed(1)}%)</span>
                   </div>
                 </div>
 
                 <div className="flex items-center justify-between text-sm">
                   <div className="flex items-center gap-2">
                     <div className="w-3 h-3 rounded-full bg-red-500"></div>
-                    <span className="font-semibold text-slate-700">Kurang Aktif</span>
+                    <span className="font-semibold text-slate-700">Sangat Kurang</span>
                   </div>
                   <div className="font-bold text-slate-800 text-right">
-                    {kurangAktif} <span className="text-slate-500 font-medium">({(getPct(kurangAktif) * 100).toFixed(1)}%)</span>
+                    {sangatKurang} <span className="text-slate-500 font-medium">({(getPct(sangatKurang) * 100).toFixed(1)}%)</span>
                   </div>
                 </div>
                 </div>

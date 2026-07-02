@@ -10,6 +10,8 @@ import { RateLimiter, RATE_LIMITS, MemoryStore } from "@/lib/security/rateLimit"
 import { checkCrudRateLimit } from "@/lib/security/crudRateLimit"
 import { logAuditEvent } from "@/lib/security/auditLogger"
 import { AuditAction } from "@/lib/security/auditActions"
+import { calculateTotalScore, calculateAverageScore, calculatePredicate, getPredicateLabel, mapOldStatusToPredicate } from "@/lib/business/monitoringScoring"
+
 
 const exportStore = new MemoryStore()
 const exportLimiter = new RateLimiter(exportStore, RATE_LIMITS.EXPORT, "export")
@@ -70,21 +72,25 @@ export async function getLaporanDashboardData(filters: { bulan?: number, tahun?:
     // Keaktifan Keseluruhan
     const allMonitoring = await prisma.monitoringPenugasan.findMany({
       where: monitoringWhere,
-      select: { statusMonitoring: true }
+      select: { statusMonitoring: true, averageScore: true, predicate: true }
     })
 
     let totalScore = 0
     let validCount = 0
     allMonitoring.forEach(m => {
-      const score = getScore(m.statusMonitoring)
-      if (score > 0) {
-        totalScore += score
+      if (m.averageScore !== null) {
+        totalScore += (m.averageScore / 5) * 100
         validCount++
+      } else {
+        const score = getScore(m.statusMonitoring)
+        if (score > 0) {
+          totalScore += (score / 4) * 100
+          validCount++
+        }
       }
     })
 
-    // max score per monitoring is 4.
-    const averageKeaktifan = validCount > 0 ? (totalScore / (validCount * 4)) * 100 : 0
+    const averageKeaktifan = validCount > 0 ? (totalScore / validCount) : 0
 
     // Grafik Trend Monitoring (6 bulan terakhir)
     const trendData = []
@@ -104,10 +110,12 @@ export async function getLaporanDashboardData(filters: { bulan?: number, tahun?:
     }
 
     // Grafik Distribusi
-    const distribusi = { "Sangat Aktif": 0, "Aktif": 0, "Cukup Aktif": 0, "Kurang Aktif": 0 }
+    const distribusi = { "Sangat Baik": 0, "Baik": 0, "Cukup": 0, "Kurang": 0, "Sangat Kurang": 0 }
     allMonitoring.forEach(m => {
-      if (distribusi[m.statusMonitoring as keyof typeof distribusi] !== undefined) {
-        distribusi[m.statusMonitoring as keyof typeof distribusi]++
+      const predicate = m.predicate || mapOldStatusToPredicate(m.statusMonitoring)
+      const label = getPredicateLabel(predicate)
+      if (distribusi[label as keyof typeof distribusi] !== undefined) {
+        distribusi[label as keyof typeof distribusi]++
       }
     })
 
@@ -177,18 +185,26 @@ export async function getRekapKeaktifanData(filters: { bulan?: number, tahun?: n
       let totalScore = 0
       let validCount = 0
       a.monitorings.forEach(m => {
-        const score = getScore(m.statusMonitoring)
-        if (score > 0) {
-          totalScore += score
+        if (m.averageScore !== null) {
+          totalScore += m.averageScore
           validCount++
+        } else {
+          const score = getScore(m.statusMonitoring)
+          if (score > 0) {
+            // Map old scale of 4 to 5
+            totalScore += (score / 4) * 5
+            validCount++
+          }
         }
       })
       const averageScore = validCount > 0 ? (totalScore / validCount) : 0
+      
       let statusLabel = "-"
-      if (averageScore >= 3.5) statusLabel = "Sangat Aktif"
-      else if (averageScore >= 2.5) statusLabel = "Aktif"
-      else if (averageScore >= 1.5) statusLabel = "Cukup Aktif"
-      else if (averageScore > 0) statusLabel = "Kurang Aktif"
+      if (averageScore >= 4.5) statusLabel = "Sangat Baik"
+      else if (averageScore >= 3.5) statusLabel = "Baik"
+      else if (averageScore >= 2.5) statusLabel = "Cukup"
+      else if (averageScore >= 1.5) statusLabel = "Kurang"
+      else if (averageScore > 0) statusLabel = "Sangat Kurang"
 
       return {
         id: a.resident.id,
@@ -290,7 +306,12 @@ export async function getLaporanMonitoringData(filters: { bulan?: number, tahun?
     }
     
     if (filters.status && filters.status !== "ALL") {
-      where.statusMonitoring = filters.status
+      // Handle both old and new filters
+      if (["Sangat Baik", "Baik", "Cukup", "Kurang", "Sangat Kurang"].includes(filters.status)) {
+        where.statusMonitoring = filters.status
+      } else {
+        where.statusMonitoring = filters.status
+      }
     }
     
     if (filters.satkerId) {
@@ -316,8 +337,8 @@ export async function getLaporanMonitoringData(filters: { bulan?: number, tahun?
       namaSantri: m.assignment.resident.name,
       nim: m.assignment.resident.nim,
       satker: m.assignment.satker.name,
-      status: m.statusMonitoring,
-      catatan: m.catatanMonitoring || "-",
+      status: m.statusMonitoring, // This contains the predicate string for new records
+      catatan: m.supervisorNotes || m.catatanMonitoring || "-",
       tanggal: m.tanggalMonitoring
     }))
   } catch (error) {
@@ -462,7 +483,7 @@ export async function getSantriDetailForLaporan(residentId: string) {
         tanggal: m.tanggalMonitoring,
         satker: m.assignment.satker.name,
         status: m.statusMonitoring,
-        catatan: m.catatanMonitoring
+        catatan: m.supervisorNotes || m.catatanMonitoring
       }))
     }
   } catch (error) {
@@ -479,8 +500,13 @@ export type SaveMonitoringSatkerInput = {
   statusLaporan: "DRAFT" | "SUBMITTED"
   monitorings: {
     assignmentId: string
-    status: string
-    catatan: string
+    attendanceScore?: number
+    disciplineScore?: number
+    responsibilityScore?: number
+    workQualityScore?: number
+    attitudeScore?: number
+    teamworkScore?: number
+    supervisorNotes?: string
   }[]
 }
 
@@ -526,6 +552,23 @@ export async function saveMonitoringSatker(input: SaveMonitoringSatkerInput) {
     
     // Process each monitoring sequentially to avoid complex raw upserts or transaction issues with prisma
     for (const m of monitorings) {
+      // Calculate scores on backend side
+      const scores = {
+        attendanceScore: m.attendanceScore || 0,
+        disciplineScore: m.disciplineScore || 0,
+        responsibilityScore: m.responsibilityScore || 0,
+        workQualityScore: m.workQualityScore || 0,
+        attitudeScore: m.attitudeScore || 0,
+        teamworkScore: m.teamworkScore || 0
+      }
+      
+      const isScored = Object.values(scores).some(val => val > 0)
+      
+      const totalScore = isScored ? calculateTotalScore(scores) : null
+      const averageScore = isScored ? calculateAverageScore(scores) : null
+      const predicate = isScored ? calculatePredicate(averageScore as number) : null
+      const predicateLabel = predicate ? getPredicateLabel(predicate) : ""
+
       // Find if there's already a monitoring for this assignment in this month/year
       const existingMonitoring = await prisma.monitoringPenugasan.findFirst({
         where: {
@@ -541,8 +584,20 @@ export async function saveMonitoringSatker(input: SaveMonitoringSatkerInput) {
         await prisma.monitoringPenugasan.update({
           where: { id: existingMonitoring.id },
           data: {
-            statusMonitoring: m.status,
-            catatanMonitoring: m.catatan,
+            statusMonitoring: predicateLabel || existingMonitoring.statusMonitoring,
+            catatanMonitoring: m.supervisorNotes || existingMonitoring.catatanMonitoring,
+            attendanceScore: scores.attendanceScore,
+            disciplineScore: scores.disciplineScore,
+            responsibilityScore: scores.responsibilityScore,
+            workQualityScore: scores.workQualityScore,
+            attitudeScore: scores.attitudeScore,
+            teamworkScore: scores.teamworkScore,
+            totalScore: totalScore,
+            averageScore: averageScore,
+            predicate: predicate,
+            supervisorNotes: m.supervisorNotes,
+            evaluatedAt: new Date(),
+            evaluatedBy: session.user.id,
             updatedAt: new Date()
           }
         })
@@ -551,8 +606,20 @@ export async function saveMonitoringSatker(input: SaveMonitoringSatkerInput) {
           data: {
             assignmentId: m.assignmentId,
             tanggalMonitoring: targetDate,
-            statusMonitoring: m.status,
-            catatanMonitoring: m.catatan,
+            statusMonitoring: predicateLabel || "-",
+            catatanMonitoring: m.supervisorNotes,
+            attendanceScore: scores.attendanceScore,
+            disciplineScore: scores.disciplineScore,
+            responsibilityScore: scores.responsibilityScore,
+            workQualityScore: scores.workQualityScore,
+            attitudeScore: scores.attitudeScore,
+            teamworkScore: scores.teamworkScore,
+            totalScore: totalScore,
+            averageScore: averageScore,
+            predicate: predicate,
+            supervisorNotes: m.supervisorNotes,
+            evaluatedAt: new Date(),
+            evaluatedBy: session.user.id,
             createdBy: session.user.id
           }
         })

@@ -1,7 +1,7 @@
 "use client"
 
-import { useState } from "react"
-import { Search, Save, FileText, CheckCircle, Printer } from "lucide-react"
+import { useState, useMemo } from "react"
+import { Search, Save, FileText, CheckCircle, Printer, Star } from "lucide-react"
 import { saveMonitoringSatker, type SaveMonitoringSatkerInput } from "@/app/actions/laporan"
 
 interface AssignmentData {
@@ -13,6 +13,13 @@ interface AssignmentData {
   monitorings: {
     statusMonitoring: string
     catatanMonitoring: string | null
+    attendanceScore?: number | null
+    disciplineScore?: number | null
+    responsibilityScore?: number | null
+    workQualityScore?: number | null
+    attitudeScore?: number | null
+    teamworkScore?: number | null
+    supervisorNotes?: string | null
   }[]
 }
 
@@ -36,6 +43,43 @@ const MONTH_NAMES = [
   "Juli", "Agustus", "September", "Oktober", "November", "Desember"
 ]
 
+const CRITERIA = [
+  { key: "attendanceScore", label: "Kehadiran" },
+  { key: "disciplineScore", label: "Kedisiplinan" },
+  { key: "responsibilityScore", label: "Tanggung Jawab" },
+  { key: "workQualityScore", label: "Kualitas Kerja" },
+  { key: "attitudeScore", label: "Sikap dan Etika" },
+  { key: "teamworkScore", label: "Kerja Sama" }
+] as const;
+
+type CriteriaKey = typeof CRITERIA[number]["key"];
+
+type ResidentScores = Record<CriteriaKey, number> & {
+  supervisorNotes: string
+}
+
+function calculatePreview(scores: Record<CriteriaKey, number>) {
+  const total = 
+    scores.attendanceScore + 
+    scores.disciplineScore + 
+    scores.responsibilityScore + 
+    scores.workQualityScore + 
+    scores.attitudeScore + 
+    scores.teamworkScore
+  
+  const average = total / 6
+
+  let predicate = "-"
+  let predicateColor = "text-zinc-500"
+  if (average >= 4.5) { predicate = "Sangat Baik"; predicateColor = "text-emerald-500" }
+  else if (average >= 3.5) { predicate = "Baik"; predicateColor = "text-teal-500" }
+  else if (average >= 2.5) { predicate = "Cukup"; predicateColor = "text-amber-500" }
+  else if (average >= 1.5) { predicate = "Kurang"; predicateColor = "text-orange-500" }
+  else if (average > 0) { predicate = "Sangat Kurang"; predicateColor = "text-red-500" }
+
+  return { total, average, predicate, predicateColor }
+}
+
 export default function MonitoringKepalaSatkerClient({
   satker,
   laporanBulanan,
@@ -45,33 +89,25 @@ export default function MonitoringKepalaSatkerClient({
   const [searchTerm, setSearchTerm] = useState("")
   const [isSavingDraft, setIsSavingDraft] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  
   const [kesimpulan, setKesimpulan] = useState(laporanBulanan?.kesimpulan || "")
   
-  // Initialize state with default or existing values
-  const [monitoringData, setMonitoringData] = useState<Record<string, { status: string, catatan: string }>>(() => {
-    const initial: Record<string, { status: string, catatan: string }> = {}
+  const isReadOnly = laporanBulanan?.status === "SUBMITTED"
+
+  const [monitoringData, setMonitoringData] = useState<Record<string, ResidentScores>>(() => {
+    const initial: Record<string, ResidentScores> = {}
     satker.assignments.forEach(assignment => {
       const existing = assignment.monitorings[0]
       initial[assignment.id] = {
-        status: existing?.statusMonitoring || "",
-        catatan: existing?.catatanMonitoring || ""
+        attendanceScore: existing?.attendanceScore || 0,
+        disciplineScore: existing?.disciplineScore || 0,
+        responsibilityScore: existing?.responsibilityScore || 0,
+        workQualityScore: existing?.workQualityScore || 0,
+        attitudeScore: existing?.attitudeScore || 0,
+        teamworkScore: existing?.teamworkScore || 0,
+        supervisorNotes: existing?.supervisorNotes || existing?.catatanMonitoring || ""
       }
     })
     return initial
-  })
-
-  // Calculate stats
-  let sangatAktif = 0
-  let aktif = 0
-  let cukupAktif = 0
-  let kurangAktif = 0
-  
-  Object.values(monitoringData).forEach(m => {
-    if (m.status === "Sangat Aktif") sangatAktif++
-    else if (m.status === "Aktif") aktif++
-    else if (m.status === "Cukup Aktif") cukupAktif++
-    else if (m.status === "Kurang Aktif") kurangAktif++
   })
 
   const filteredAssignments = satker.assignments.filter(a => 
@@ -79,8 +115,41 @@ export default function MonitoringKepalaSatkerClient({
     (a.resident.nim || "").toLowerCase().includes(searchTerm.toLowerCase())
   )
 
+  const handleScoreChange = (assignmentId: string, criteria: CriteriaKey, value: number) => {
+    if (isReadOnly) return
+    setMonitoringData(prev => ({
+      ...prev,
+      [assignmentId]: {
+        ...prev[assignmentId],
+        [criteria]: value
+      }
+    }))
+  }
+
+  const handleNotesChange = (assignmentId: string, value: string) => {
+    if (isReadOnly) return
+    setMonitoringData(prev => ({
+      ...prev,
+      [assignmentId]: {
+        ...prev[assignmentId],
+        supervisorNotes: value
+      }
+    }))
+  }
+
   const handleSave = async (statusLaporan: "DRAFT" | "SUBMITTED") => {
     try {
+      // Validate
+      if (statusLaporan === "SUBMITTED") {
+        for (const [id, data] of Object.entries(monitoringData)) {
+          const isComplete = CRITERIA.every(c => data[c.key] > 0)
+          if (!isComplete) {
+            alert("Harap lengkapi semua kriteria penilaian (minimal 1 bintang) untuk seluruh santri sebelum Submit Laporan.")
+            return
+          }
+        }
+      }
+
       if (statusLaporan === "DRAFT") setIsSavingDraft(true)
       else setIsSubmitting(true)
 
@@ -90,13 +159,16 @@ export default function MonitoringKepalaSatkerClient({
         tahun: currentYear,
         kesimpulan,
         statusLaporan,
-        monitorings: Object.entries(monitoringData)
-          .filter((entry) => entry[1].status !== "") // Only save if status is selected
-          .map(([assignmentId, data]) => ({
-            assignmentId,
-            status: data.status,
-            catatan: data.catatan
-          }))
+        monitorings: Object.entries(monitoringData).map(([assignmentId, data]) => ({
+          assignmentId,
+          attendanceScore: data.attendanceScore,
+          disciplineScore: data.disciplineScore,
+          responsibilityScore: data.responsibilityScore,
+          workQualityScore: data.workQualityScore,
+          attitudeScore: data.attitudeScore,
+          teamworkScore: data.teamworkScore,
+          supervisorNotes: data.supervisorNotes
+        }))
       }
 
       const res = await saveMonitoringSatker(payload)
@@ -117,17 +189,8 @@ export default function MonitoringKepalaSatkerClient({
     window.print()
   }
 
-  const isReadOnly = laporanBulanan?.status === "SUBMITTED"
-
   return (
     <div className="space-y-6 print:space-y-4">
-      {/* Print Header */}
-      <div className="hidden print:block text-center border-b-2 border-black pb-4 mb-6">
-        <h1 className="text-2xl font-bold uppercase">LAPORAN MONITORING PENUGASAN SANTRI</h1>
-        <h2 className="text-xl font-bold uppercase">{satker.name}</h2>
-        <p className="text-lg">Periode: {MONTH_NAMES[currentMonth - 1]} {currentYear}</p>
-      </div>
-
       {/* Screen Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-6 rounded-2xl shadow-sm print:hidden">
         <div>
@@ -155,129 +218,100 @@ export default function MonitoringKepalaSatkerClient({
         </div>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4 print:grid-cols-5 print:gap-2">
-        <div className="glass rounded-xl p-4 border border-blue-500/20">
-          <p className="text-zinc-500 dark:text-zinc-400 text-xs font-semibold mb-1">Total Anggota</p>
-          <h3 className="text-2xl font-bold text-zinc-900 dark:text-white">{satker.assignments.length}</h3>
-        </div>
-        <div className="glass rounded-xl p-4 border border-emerald-500/20">
-          <p className="text-zinc-500 dark:text-zinc-400 text-xs font-semibold mb-1">Sangat Aktif</p>
-          <h3 className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">{sangatAktif}</h3>
-        </div>
-        <div className="glass rounded-xl p-4 border border-teal-500/20">
-          <p className="text-zinc-500 dark:text-zinc-400 text-xs font-semibold mb-1">Aktif</p>
-          <h3 className="text-2xl font-bold text-teal-600 dark:text-teal-400">{aktif}</h3>
-        </div>
-        <div className="glass rounded-xl p-4 border border-amber-500/20">
-          <p className="text-zinc-500 dark:text-zinc-400 text-xs font-semibold mb-1">Cukup Aktif</p>
-          <h3 className="text-2xl font-bold text-amber-600 dark:text-amber-400">{cukupAktif}</h3>
-        </div>
-        <div className="glass rounded-xl p-4 border border-red-500/20">
-          <p className="text-zinc-500 dark:text-zinc-400 text-xs font-semibold mb-1">Kurang Aktif</p>
-          <h3 className="text-2xl font-bold text-red-600 dark:text-red-400">{kurangAktif}</h3>
-        </div>
+      {/* Search Bar */}
+      <div className="relative w-full max-w-md print:hidden">
+        <Search className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-zinc-400" />
+        <input
+          type="text"
+          placeholder="Cari santri berdasarkan nama atau NIS..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="w-full pl-10 pr-4 py-3 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500 outline-none transition-shadow"
+        />
       </div>
 
-      {/* Main Table */}
-      <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-sm overflow-hidden print:border-none print:shadow-none">
-        <div className="p-4 border-b border-zinc-200 dark:border-zinc-800 flex justify-between items-center print:hidden">
-          <h3 className="font-bold text-zinc-900 dark:text-white">Form Monitoring Anggota</h3>
-          <div className="relative w-64">
-            <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-zinc-400" />
-            <input
-              type="text"
-              placeholder="Cari santri..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 bg-zinc-100 dark:bg-zinc-800 border-none rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none"
-            />
-          </div>
-        </div>
+      {/* Modern Cards for Monitoring */}
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+        {filteredAssignments.map((assignment) => {
+          const data = monitoringData[assignment.id]
+          const preview = calculatePreview(data)
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm print:text-xs">
-            <thead className="bg-zinc-50 dark:bg-zinc-800/50 text-zinc-500 dark:text-zinc-400 print:bg-transparent print:border-b-2 print:border-black">
-              <tr>
-                <th className="px-4 py-3 font-semibold">Nama Santri</th>
-                <th className="px-4 py-3 font-semibold">NIS/NIM</th>
-                <th className="px-4 py-3 font-semibold w-48">Status Keaktifan</th>
-                <th className="px-4 py-3 font-semibold">Catatan (Opsional)</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800 print:divide-zinc-300">
-              {filteredAssignments.map((assignment) => (
-                <tr key={assignment.id} className="hover:bg-zinc-50/50 dark:hover:bg-zinc-800/25 transition-colors print:hover:bg-transparent">
-                  <td className="px-4 py-3 font-medium text-zinc-900 dark:text-white print:text-black">
-                    {assignment.resident.name}
-                  </td>
-                  <td className="px-4 py-3 text-zinc-500 dark:text-zinc-400 print:text-black">
-                    {assignment.resident.nim || "-"}
-                  </td>
-                  <td className="px-4 py-3">
-                    <select
-                      value={monitoringData[assignment.id]?.status || ""}
-                      onChange={(e) => setMonitoringData(prev => ({
-                        ...prev,
-                        [assignment.id]: { ...prev[assignment.id], status: e.target.value }
-                      }))}
-                      disabled={isReadOnly}
-                      className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg py-2 px-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none print:appearance-none print:bg-transparent print:p-0 print:font-semibold"
-                    >
-                      <option value="" disabled>Pilih Status...</option>
-                      <option value="Sangat Aktif">Sangat Aktif</option>
-                      <option value="Aktif">Aktif</option>
-                      <option value="Cukup Aktif">Cukup Aktif</option>
-                      <option value="Kurang Aktif">Kurang Aktif</option>
-                    </select>
-                  </td>
-                  <td className="px-4 py-3">
-                    <textarea
-                      value={monitoringData[assignment.id]?.catatan || ""}
-                      onChange={(e) => setMonitoringData(prev => ({
-                        ...prev,
-                        [assignment.id]: { ...prev[assignment.id], catatan: e.target.value }
-                      }))}
-                      disabled={isReadOnly}
-                      rows={1}
-                      placeholder="Tambahkan catatan jika ada..."
-                      className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg py-2 px-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none resize-none print:bg-transparent print:p-0"
-                    />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+          return (
+            <div key={assignment.id} className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow">
+              
+              <div className="flex justify-between items-start mb-6">
+                <div>
+                  <h3 className="text-xl font-bold text-zinc-900 dark:text-white">{assignment.resident.name}</h3>
+                  <p className="text-sm text-zinc-500 dark:text-zinc-400">NIS: {assignment.resident.nim || "-"}</p>
+                </div>
+                
+                <div className="text-right">
+                  <p className="text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Rata-rata</p>
+                  <div className="flex flex-col items-end">
+                    <span className="text-2xl font-black text-zinc-900 dark:text-white">
+                      {preview.average > 0 ? preview.average.toFixed(2) : "-"}
+                    </span>
+                    <span className={`text-sm font-bold ${preview.predicateColor}`}>
+                      {preview.predicate}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4 mb-6">
+                {CRITERIA.map(crit => (
+                  <div key={crit.key} className="flex flex-col space-y-1.5">
+                    <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">{crit.label}</span>
+                    <div className="flex space-x-1">
+                      {[1, 2, 3, 4, 5].map(star => (
+                        <button
+                          key={star}
+                          onClick={() => handleScoreChange(assignment.id, crit.key, star)}
+                          disabled={isReadOnly}
+                          className={`p-1 focus:outline-none transition-transform hover:scale-110 disabled:cursor-not-allowed ${
+                            data[crit.key] >= star ? "text-yellow-400" : "text-zinc-300 dark:text-zinc-700 hover:text-yellow-200"
+                          }`}
+                        >
+                          <Star className="w-6 h-6" fill={data[crit.key] >= star ? "currentColor" : "none"} />
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-4">
+                <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">Saran Kepala Satker (Opsional)</label>
+                <textarea
+                  value={data.supervisorNotes}
+                  onChange={(e) => handleNotesChange(assignment.id, e.target.value)}
+                  disabled={isReadOnly}
+                  rows={2}
+                  placeholder="Berikan masukan, kritik, atau saran..."
+                  className="w-full bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 rounded-xl py-3 px-4 text-sm focus:ring-2 focus:ring-blue-500 outline-none resize-y transition-colors disabled:opacity-75"
+                />
+              </div>
+
+            </div>
+          )
+        })}
       </div>
 
       {/* Kesimpulan */}
-      <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-sm p-6 print:border-none print:shadow-none print:p-0 print:mt-6">
-        <h3 className="font-bold text-zinc-900 dark:text-white mb-4 print:text-lg">Kesimpulan & Evaluasi Bulanan</h3>
+      <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-sm p-6">
+        <h3 className="font-bold text-zinc-900 dark:text-white mb-4">Kesimpulan & Evaluasi Bulanan</h3>
         <textarea
           value={kesimpulan}
           onChange={(e) => setKesimpulan(e.target.value)}
           disabled={isReadOnly}
           rows={5}
           placeholder="Tuliskan evaluasi menyeluruh kinerja satker bulan ini..."
-          className="w-full bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 rounded-xl p-4 text-sm focus:ring-2 focus:ring-blue-500 outline-none resize-y print:border-none print:p-0 print:bg-transparent"
+          className="w-full bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 rounded-xl p-4 text-sm focus:ring-2 focus:ring-blue-500 outline-none resize-y transition-colors disabled:opacity-75"
         />
       </div>
 
-      {/* Print Signatures */}
-      <div className="hidden print:flex justify-between mt-16 pt-8 px-12">
-        <div className="text-center">
-          <p className="mb-20">Mengetahui,<br/>Pembina Asrama</p>
-          <p className="font-bold border-b border-black inline-block px-4">____________________</p>
-        </div>
-        <div className="text-center">
-          <p className="mb-20">Jember, {new Date().toLocaleDateString('id-ID')}<br/>Kepala Satker</p>
-          <p className="font-bold border-b border-black inline-block px-4">____________________</p>
-        </div>
-      </div>
-
       {/* Actions */}
-      <div className="flex flex-col sm:flex-row items-center justify-end gap-3 print:hidden">
+      <div className="flex flex-col sm:flex-row items-center justify-end gap-3 pb-10">
         <button
           onClick={handlePrint}
           className="w-full sm:w-auto px-6 py-2.5 bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 font-semibold rounded-xl hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors flex items-center justify-center space-x-2"
@@ -300,7 +334,7 @@ export default function MonitoringKepalaSatkerClient({
             <button
               onClick={() => handleSave("SUBMITTED")}
               disabled={isSavingDraft || isSubmitting}
-              className="w-full sm:w-auto px-6 py-2.5 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-colors flex items-center justify-center space-x-2 disabled:opacity-50 shadow-lg shadow-blue-500/30"
+              className="w-full sm:w-auto px-6 py-3 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-transform hover:scale-105 active:scale-95 flex items-center justify-center space-x-2 disabled:opacity-50 shadow-lg shadow-blue-500/30"
             >
               <CheckCircle className="w-4 h-4" />
               <span>{isSubmitting ? "Submit..." : "Submit Laporan"}</span>
@@ -308,28 +342,6 @@ export default function MonitoringKepalaSatkerClient({
           </>
         )}
       </div>
-
-      <style dangerouslySetInnerHTML={{__html: `
-        @media print {
-          body * {
-            visibility: hidden;
-          }
-          .print\\:block, .print\\:flex, .print\\:block *, .print\\:flex *, .p-6, .p-6 * {
-            visibility: visible;
-          }
-          .print\\:hidden, .print\\:hidden * {
-            display: none !important;
-          }
-          .p-6 {
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 100%;
-            padding: 0 !important;
-            background: white !important;
-          }
-        }
-      `}} />
     </div>
   )
 }
