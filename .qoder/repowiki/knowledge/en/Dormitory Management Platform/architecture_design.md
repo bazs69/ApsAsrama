@@ -1,4 +1,0 @@
-- The root module binds the app and database layers via a singleton Prisma client (src/lib/prisma.ts) using @prisma/adapter-pg, ensuring consistent PostgreSQL connectivity.
-- NextAuth (src/lib/auth.ts) bridges the database user schema with application session management, injecting role-based permissions into server actions and client components.
-- Server actions in src/app/actions/ serve as the central business logic layer, enforcing domain rules like room capacity and audit logging before interacting with the database.
-- Database lifecycle management, including migrations and seeding, is anchored at the root level (prisma/schema.prisma, prisma/seed.ts) to guarantee schema synchronization for all features.

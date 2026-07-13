@@ -22,6 +22,7 @@ export default function LoginPage() {
       email,
       password,
       redirect: false,
+      callbackUrl: "/dashboard"
     })
 
     if (res?.error) {
@@ -36,8 +37,8 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-zinc-950 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(59,130,246,0.15),rgba(255,255,255,0))]">
       <div className="absolute inset-0 -z-10 overflow-hidden">
-        <div className="absolute -top-1/2 -left-1/2 w-[200%] h-[200%] opacity-20 dark:opacity-40 animate-[spin_60s_linear_infinite]" 
-             style={{ backgroundImage: 'radial-gradient(circle, #3b82f6 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
+        <div className="absolute -top-1/2 -left-1/2 w-[200%] h-[200%] opacity-20 dark:opacity-40 animate-[spin_60s_linear_infinite]"
+          style={{ backgroundImage: 'radial-gradient(circle, #3b82f6 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
       </div>
 
       <div className="w-full max-w-md p-8 rounded-2xl glass transition-all duration-300">
@@ -69,7 +70,7 @@ export default function LoginPage() {
             <label className="text-sm font-medium text-zinc-300 ml-1">Email Address</label>
             <div className="relative">
               <Mail className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" />
-              <input 
+              <input
                 type="email"
                 required
                 value={email}
@@ -84,7 +85,7 @@ export default function LoginPage() {
             <label className="text-sm font-medium text-zinc-300 ml-1">Password</label>
             <div className="relative">
               <KeyRound className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" />
-              <input 
+              <input
                 type="password"
                 required
                 value={password}

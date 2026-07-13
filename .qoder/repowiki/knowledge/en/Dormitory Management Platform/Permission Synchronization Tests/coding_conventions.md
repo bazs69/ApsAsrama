@@ -1,3 +1,0 @@
-- Mocks are cleared before each test using `vi.clearAllMocks()` to ensure test isolation.
-- Async functions returning nullable results are tested for both success paths and fail-open error handling (returning null on exception).
-- Test data factories (e.g., `makeUser`) are used to generate consistent mock user objects with overridable properties.

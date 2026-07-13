@@ -1,1 +1,0 @@
-Defines the PostgreSQL database schema for a dormitory management system, covering resident lifecycle, room allocation, attendance tracking, and RBAC.

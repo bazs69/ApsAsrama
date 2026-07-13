@@ -1,3 +1,0 @@
-- Server actions in src/app/actions/ use the "use server" directive and return standardized result objects with optional success and error fields.
-- Client-side React components are suffixed with Client.tsx and co-located within feature-specific directories to distinguish them from server components.
-- All database interactions are routed exclusively through the shared prisma instance exported from @/lib/prisma, preventing direct client instantiation elsewhere.

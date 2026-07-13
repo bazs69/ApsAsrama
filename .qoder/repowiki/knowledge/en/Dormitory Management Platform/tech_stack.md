@@ -1,1 +1,0 @@
-Next.js 16, Prisma ORM with PostgreSQL adapter, NextAuth v4, Tailwind CSS v4

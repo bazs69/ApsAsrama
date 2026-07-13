@@ -1,3 +1,0 @@
-- All models use UUIDs as primary keys with `@default(uuid())`.
-- Timestamps `createdAt` and `updatedAt` are included in most models with `@default(now())` and `@updatedAt` respectively.
-- Enums are used for status fields such as `RoomStatus`, `ResidentStatus`, and attendance statuses.

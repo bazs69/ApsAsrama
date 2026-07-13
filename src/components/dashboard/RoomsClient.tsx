@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react"
 import { createRoom, updateRoom, deleteRoom } from "@/app/actions/rooms"
 import { RoomStatus } from "@prisma/client"
-import { Plus, Search, Edit2, Trash2, X, AlertCircle, Loader2, DoorOpen, Users, Hammer, CheckCircle2, Download } from "lucide-react"
+import { Plus, Search, Edit2, Trash2, X, AlertCircle, Loader2, DoorOpen, Users, Hammer, CheckCircle2, Download, BedSingle, Bed } from "lucide-react"
 
 interface Resident {
   id: string
@@ -26,13 +26,13 @@ export default function RoomsClient({ initialRooms }: { initialRooms: Room[] }) 
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingRoom, setEditingRoom] = useState<Room | null>(null)
   const [selectedRoom, setSelectedRoom] = useState<Room | null>(null)
-  
+
   // Form fields
   const [number, setNumber] = useState("")
   const [floor, setFloor] = useState(1)
   const [capacity, setCapacity] = useState(2)
   const [status, setStatus] = useState<RoomStatus>(RoomStatus.AVAILABLE)
-  
+
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState("")
 
@@ -43,7 +43,7 @@ export default function RoomsClient({ initialRooms }: { initialRooms: Room[] }) 
   const maintenanceRooms = rooms.filter(r => r.status === RoomStatus.MAINTENANCE).length
 
   // Filtered rooms
-  const filteredRooms = rooms.filter(room => 
+  const filteredRooms = rooms.filter(room =>
     room.number.toLowerCase().includes(search.toLowerCase())
   )
 
@@ -53,7 +53,7 @@ export default function RoomsClient({ initialRooms }: { initialRooms: Room[] }) 
     acc[room.floor].push(room)
     return acc
   }, {} as Record<number, Room[]>)
-  
+
   const sortedFloors = Object.keys(roomsByFloor).map(Number).sort((a, b) => a - b)
 
   const openAddModal = () => {
@@ -98,7 +98,7 @@ export default function RoomsClient({ initialRooms }: { initialRooms: Room[] }) 
         if (editingRoom) {
           setRooms(prev => prev.map(r => r.id === editingRoom.id ? { ...r, number, floor, capacity, status } : r))
         } else {
-          setRooms(prev => [...prev, { ...res.room, residents: [] } as Room].sort((a,b) => a.number.localeCompare(b.number)))
+          setRooms(prev => [...prev, { ...res.room, residents: [] } as Room].sort((a, b) => a.number.localeCompare(b.number)))
         }
         setIsModalOpen(false)
       }
@@ -239,7 +239,7 @@ export default function RoomsClient({ initialRooms }: { initialRooms: Room[] }) 
                 </div>
                 <h2 className="text-lg font-bold text-zinc-900 dark:text-white">Lantai {floor}</h2>
               </div>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {roomsByFloor[floor].map((room) => (
                   <div key={room.id} className="glass rounded-2xl border border-zinc-200/80 dark:border-zinc-800 overflow-hidden flex flex-col hover:border-zinc-300 dark:hover:border-zinc-700 transition-all duration-300">
@@ -250,22 +250,21 @@ export default function RoomsClient({ initialRooms }: { initialRooms: Room[] }) 
                         </h3>
                         <p className="text-zinc-500 dark:text-zinc-400 text-xs mt-1">Kapasitas Kamar: {room.capacity}</p>
                       </div>
-                      <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-                        room.status === RoomStatus.AVAILABLE ? "bg-emerald-500/10 text-emerald-650 dark:text-emerald-400 border border-emerald-500/20" :
-                        room.status === RoomStatus.OCCUPIED ? "bg-primary-500/10 text-primary-600 dark:text-primary-400 border border-primary-500/20" :
-                        "bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20"
-                      }`}>
+                      <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${room.status === RoomStatus.AVAILABLE ? "bg-emerald-500/10 text-emerald-650 dark:text-emerald-400 border border-emerald-500/20" :
+                          room.status === RoomStatus.OCCUPIED ? "bg-primary-500/10 text-primary-600 dark:text-primary-400 border border-primary-500/20" :
+                            "bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20"
+                        }`}>
                         {room.status === RoomStatus.AVAILABLE ? "Tersedia" :
-                         room.status === RoomStatus.OCCUPIED ? "Penuh" : "Perbaikan"}
+                          room.status === RoomStatus.OCCUPIED ? "Penuh" : "Perbaikan"}
                       </span>
                     </div>
 
-                    {/* Residents detail in card */}
-                    <div 
+                    {/* Visualisasi Denah Kasur in Card */}
+                    <div
                       className="p-5 flex-1 cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-900/30 transition-colors"
                       onClick={() => setSelectedRoom(room)}
                     >
-                      <div className="flex items-center justify-between">
+                      <div className="flex items-center justify-between mb-3">
                         <div className="flex items-center space-x-2">
                           <Users className="w-5 h-5 text-zinc-450 dark:text-zinc-500" />
                           <span className="text-sm font-bold text-zinc-700 dark:text-zinc-300">Keterisian</span>
@@ -273,6 +272,23 @@ export default function RoomsClient({ initialRooms }: { initialRooms: Room[] }) 
                         <span className="text-sm font-bold text-zinc-900 dark:text-white bg-zinc-100 dark:bg-zinc-800 px-3 py-1 rounded-full">
                           {room.residents.length} / {room.capacity}
                         </span>
+                      </div>
+                      <div className="grid gap-2" style={{ gridTemplateColumns: `repeat(${Math.min(room.capacity, 5)}, minmax(0, 1fr))` }}>
+                        {Array.from({ length: room.capacity }).map((_, i) => {
+                          const occupant = room.residents[i];
+                          return (
+                            <div
+                              key={i}
+                              className={`h-10 rounded-lg flex items-center justify-center transition-all ${occupant
+                                  ? 'bg-primary-500 text-white shadow-sm shadow-primary-500/30'
+                                  : 'bg-zinc-100 dark:bg-zinc-800/80 text-zinc-300 dark:text-zinc-600 border border-zinc-200 dark:border-zinc-700/50'
+                                }`}
+                              title={occupant ? occupant.name : "Kasur Kosong"}
+                            >
+                              <BedSingle className="w-4 h-4" />
+                            </div>
+                          )
+                        })}
                       </div>
                     </div>
 
@@ -395,34 +411,70 @@ export default function RoomsClient({ initialRooms }: { initialRooms: Room[] }) 
           <div className="w-full max-w-md glass rounded-2xl border border-zinc-200 dark:border-zinc-800 overflow-hidden relative z-10 p-6 space-y-6">
             <div className="flex items-center justify-between border-b border-zinc-200 dark:border-zinc-800 pb-4">
               <div>
-                <h2 className="text-xl font-bold text-zinc-900 dark:text-white">Kamar {selectedRoom.number}</h2>
-                <p className="text-zinc-500 dark:text-zinc-400 text-sm mt-1">
-                  Keterisian: {selectedRoom.residents.length} / {selectedRoom.capacity} Santri
-                </p>
+                <h2 className="text-2xl font-black text-zinc-900 dark:text-white flex items-center space-x-3">
+                  <span>Kamar {selectedRoom.number}</span>
+                  <span className={`text-[10px] uppercase font-bold tracking-widest px-2.5 py-1 rounded-full ${selectedRoom.status === RoomStatus.AVAILABLE ? "bg-emerald-500/10 text-emerald-600 border border-emerald-500/20" :
+                      selectedRoom.status === RoomStatus.OCCUPIED ? "bg-primary-500/10 text-primary-600 border border-primary-500/20" :
+                        "bg-amber-500/10 text-amber-600 border border-amber-500/20"
+                    }`}>
+                    {selectedRoom.status === RoomStatus.AVAILABLE ? "Tersedia" :
+                      selectedRoom.status === RoomStatus.OCCUPIED ? "Penuh" : "Perbaikan"}
+                  </span>
+                </h2>
+                <div className="flex items-center mt-2 space-x-2">
+                  <span className="bg-primary-600 text-white text-xs font-bold px-2 py-0.5 rounded">Lantai {selectedRoom.floor}</span>
+                  <span className="text-zinc-500 dark:text-zinc-400 text-sm font-medium">
+                    Keterisian: {selectedRoom.residents.length} / {selectedRoom.capacity} Santri
+                  </span>
+                </div>
               </div>
               <button onClick={() => setSelectedRoom(null)} className="text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-white p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors">
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <div className="max-h-[60vh] overflow-y-auto space-y-3 pr-2">
-              {selectedRoom.residents.length === 0 ? (
-                <div className="h-32 flex flex-col items-center justify-center border-2 border-dashed border-zinc-200 dark:border-zinc-800 rounded-xl space-y-2">
-                  <DoorOpen className="w-8 h-8 text-zinc-400" />
-                  <p className="text-zinc-450 dark:text-zinc-500 text-sm italic font-semibold">Kamar ini masih kosong</p>
-                </div>
-              ) : (
-                <div className="space-y-2">
-                  {selectedRoom.residents.map(res => (
-                    <div key={res.id} className="bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200 dark:border-zinc-800 rounded-xl p-4 flex items-center justify-between transition-colors hover:border-zinc-300 dark:hover:border-zinc-700">
-                      <div>
-                        <p className="font-bold text-zinc-800 dark:text-zinc-200">{res.name}</p>
-                        <p className="text-zinc-500 dark:text-zinc-400 text-xs mt-1 font-mono">NIM: {res.nim || "-"}</p>
+            <div className="max-h-[65vh] overflow-y-auto px-1 pb-4 custom-scrollbar">
+              <h3 className="text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest mb-3">Denah Penghuni Kamar</h3>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {Array.from({ length: selectedRoom.capacity }).map((_, idx) => {
+                  const occupant = selectedRoom.residents[idx];
+
+                  return (
+                    <div
+                      key={idx}
+                      className={`p-4 rounded-2xl flex items-center space-x-4 transition-all duration-300 ${occupant
+                          ? 'bg-gradient-to-br from-primary-50/80 to-white dark:from-primary-900/10 dark:to-zinc-900 border border-primary-200/50 dark:border-primary-800/30 shadow-sm'
+                          : 'bg-zinc-50/50 dark:bg-zinc-900/20 border-2 border-dashed border-zinc-200 dark:border-zinc-800'
+                        }`}
+                    >
+                      <div className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${occupant
+                          ? 'bg-primary-500 text-white shadow-md shadow-primary-500/30'
+                          : 'bg-zinc-200 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-600'
+                        }`}>
+                        <Bed className="w-6 h-6" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        {occupant ? (
+                          <>
+                            <p className="font-bold text-zinc-900 dark:text-white truncate" title={occupant.name}>
+                              {occupant.name}
+                            </p>
+                            <p className="text-zinc-500 dark:text-zinc-450 text-[11px] font-mono mt-0.5 font-medium truncate">
+                              NIS: {occupant.nim || "-"}
+                            </p>
+                          </>
+                        ) : (
+                          <div>
+                            <p className="font-bold text-zinc-400 dark:text-zinc-600">Ranajang {idx + 1}</p>
+                            <p className="text-zinc-400 dark:text-zinc-600 text-[11px] font-mono mt-0.5 italic">Kosong</p>
+                          </div>
+                        )}
                       </div>
                     </div>
-                  ))}
-                </div>
-              )}
+                  )
+                })}
+              </div>
             </div>
           </div>
         </div>

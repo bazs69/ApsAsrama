@@ -1,1 +1,0 @@
-Vitest with Node.js environment for backend utility testing.

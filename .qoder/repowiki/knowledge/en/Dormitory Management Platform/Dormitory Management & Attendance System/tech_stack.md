@@ -1,1 +1,0 @@
-Next.js 14+ (App Router), NextAuth.js for authentication, Prisma ORM with PostgreSQL, Cloudinary for media storage, and Tailwind CSS for styling.

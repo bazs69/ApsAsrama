@@ -24,6 +24,7 @@ import {
   HeartPulse,
   ShieldAlert,
   Cpu,
+  BedDouble,
   BellRing
 } from "lucide-react"
 import { signOut } from "next-auth/react"
@@ -31,7 +32,7 @@ import { useState } from "react"
 
 const dataMasterSubLinks = [
   { href: "/dashboard/residents", label: "Santri", icon: Users },
-  { href: "/dashboard/muallim", label: "Muallim", icon: GraduationCap },
+  { href: "/dashboard/muallim", label: "Muallim", icon: GraduationCap }
 ]
 
 const absensiSubLinks = [
@@ -62,11 +63,10 @@ function AbsensiDropdown({ pathname }: { pathname: string }) {
     <div>
       <button
         onClick={() => setIsOpen((prev) => !prev)}
-        className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all cursor-pointer ${
-          isAbsensiActive
-            ? "bg-primary-500/10 text-primary-600 dark:text-primary-400 border border-primary-500/25"
-            : "text-zinc-500 dark:text-zinc-400 hover:bg-zinc-150 dark:hover:bg-zinc-800/50 hover:text-zinc-800 dark:hover:text-zinc-200"
-        }`}
+        className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all cursor-pointer ${isAbsensiActive
+          ? "bg-primary-500/10 text-primary-600 dark:text-primary-400 border border-primary-500/25"
+          : "text-zinc-500 dark:text-zinc-400 hover:bg-zinc-150 dark:hover:bg-zinc-800/50 hover:text-zinc-800 dark:hover:text-zinc-200"
+          }`}
       >
         <div className="flex items-center space-x-3">
           <CalendarCheck
@@ -80,9 +80,8 @@ function AbsensiDropdown({ pathname }: { pathname: string }) {
       </button>
 
       <div
-        className={`overflow-hidden transition-all duration-200 ease-in-out ${
-          isOpen ? "max-h-64 opacity-100 mt-1" : "max-h-0 opacity-0"
-        }`}
+        className={`overflow-hidden transition-all duration-200 ease-in-out ${isOpen ? "max-h-64 opacity-100 mt-1" : "max-h-0 opacity-0"
+          }`}
       >
         <div className="ml-4 pl-4 border-l-2 border-zinc-200 dark:border-zinc-800 space-y-1">
           {absensiSubLinks.map((link) => {
@@ -92,11 +91,10 @@ function AbsensiDropdown({ pathname }: { pathname: string }) {
               <Link
                 key={link.href}
                 href={link.href}
-                className={`flex items-center space-x-2.5 px-3 py-2.5 rounded-xl transition-all text-sm ${
-                  isActive
-                    ? "bg-primary-500/10 text-primary-600 dark:text-primary-400 font-semibold border border-primary-500/20"
-                    : "text-zinc-500 dark:text-zinc-400 hover:bg-zinc-150 dark:hover:bg-zinc-800/50 hover:text-zinc-800 dark:hover:text-zinc-200 font-medium"
-                }`}
+                className={`flex items-center space-x-2.5 px-3 py-2.5 rounded-xl transition-all text-sm ${isActive
+                  ? "bg-primary-500/10 text-primary-600 dark:text-primary-400 font-semibold border border-primary-500/20"
+                  : "text-zinc-500 dark:text-zinc-400 hover:bg-zinc-150 dark:hover:bg-zinc-800/50 hover:text-zinc-800 dark:hover:text-zinc-200 font-medium"
+                  }`}
               >
                 <Icon className="w-4 h-4 flex-shrink-0" />
                 <span>{link.label}</span>
@@ -119,11 +117,10 @@ function DataMasterDropdown({ pathname }: { pathname: string }) {
     <div>
       <button
         onClick={() => setIsOpen((prev) => !prev)}
-        className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all cursor-pointer ${
-          isDataMasterActive
-            ? "bg-primary-500/10 text-primary-600 dark:text-primary-400 border border-primary-500/25"
-            : "text-zinc-500 dark:text-zinc-400 hover:bg-zinc-150 dark:hover:bg-zinc-800/50 hover:text-zinc-800 dark:hover:text-zinc-200"
-        }`}
+        className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all cursor-pointer ${isDataMasterActive
+          ? "bg-primary-500/10 text-primary-600 dark:text-primary-400 border border-primary-500/25"
+          : "text-zinc-500 dark:text-zinc-400 hover:bg-zinc-150 dark:hover:bg-zinc-800/50 hover:text-zinc-800 dark:hover:text-zinc-200"
+          }`}
       >
         <div className="flex items-center space-x-3">
           <Database
@@ -137,9 +134,8 @@ function DataMasterDropdown({ pathname }: { pathname: string }) {
       </button>
 
       <div
-        className={`overflow-hidden transition-all duration-200 ease-in-out ${
-          isOpen ? "max-h-40 opacity-100 mt-1" : "max-h-0 opacity-0"
-        }`}
+        className={`overflow-hidden transition-all duration-200 ease-in-out ${isOpen ? "max-h-40 opacity-100 mt-1" : "max-h-0 opacity-0"
+          }`}
       >
         <div className="ml-4 pl-4 border-l-2 border-zinc-200 dark:border-zinc-800 space-y-1">
           {dataMasterSubLinks.map((link) => {
@@ -149,11 +145,10 @@ function DataMasterDropdown({ pathname }: { pathname: string }) {
               <Link
                 key={link.href}
                 href={link.href}
-                className={`flex items-center space-x-2.5 px-3 py-2.5 rounded-xl transition-all text-sm ${
-                  isActive
-                    ? "bg-primary-500/10 text-primary-600 dark:text-primary-400 font-semibold border border-primary-500/20"
-                    : "text-zinc-500 dark:text-zinc-400 hover:bg-zinc-150 dark:hover:bg-zinc-800/50 hover:text-zinc-800 dark:hover:text-zinc-200 font-medium"
-                }`}
+                className={`flex items-center space-x-2.5 px-3 py-2.5 rounded-xl transition-all text-sm ${isActive
+                  ? "bg-primary-500/10 text-primary-600 dark:text-primary-400 font-semibold border border-primary-500/20"
+                  : "text-zinc-500 dark:text-zinc-400 hover:bg-zinc-150 dark:hover:bg-zinc-800/50 hover:text-zinc-800 dark:hover:text-zinc-200 font-medium"
+                  }`}
               >
                 <Icon className="w-4 h-4 flex-shrink-0" />
                 <span>{link.label}</span>
@@ -177,11 +172,10 @@ function ReferensiDropdown({ pathname, permissions }: { pathname: string, permis
     <div>
       <button
         onClick={() => setIsOpen((prev) => !prev)}
-        className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all cursor-pointer ${
-          isReferensiActive
-            ? "bg-primary-500/10 text-primary-600 dark:text-primary-400 border border-primary-500/25"
-            : "text-zinc-500 dark:text-zinc-400 hover:bg-zinc-150 dark:hover:bg-zinc-800/50 hover:text-zinc-800 dark:hover:text-zinc-200"
-        }`}
+        className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all cursor-pointer ${isReferensiActive
+          ? "bg-primary-500/10 text-primary-600 dark:text-primary-400 border border-primary-500/25"
+          : "text-zinc-500 dark:text-zinc-400 hover:bg-zinc-150 dark:hover:bg-zinc-800/50 hover:text-zinc-800 dark:hover:text-zinc-200"
+          }`}
       >
         <div className="flex items-center space-x-3">
           <Database
@@ -195,9 +189,8 @@ function ReferensiDropdown({ pathname, permissions }: { pathname: string, permis
       </button>
 
       <div
-        className={`overflow-hidden transition-all duration-200 ease-in-out ${
-          isOpen ? "max-h-[500px] opacity-100 mt-1" : "max-h-0 opacity-0"
-        }`}
+        className={`overflow-hidden transition-all duration-200 ease-in-out ${isOpen ? "max-h-[500px] opacity-100 mt-1" : "max-h-0 opacity-0"
+          }`}
       >
         <div className="ml-4 pl-4 border-l-2 border-zinc-200 dark:border-zinc-800 space-y-1">
           {links.map((link) => {
@@ -207,11 +200,10 @@ function ReferensiDropdown({ pathname, permissions }: { pathname: string, permis
               <Link
                 key={link.href}
                 href={link.href}
-                className={`flex items-center space-x-2.5 px-3 py-2.5 rounded-xl transition-all text-sm ${
-                  isActive
-                    ? "bg-primary-500/10 text-primary-600 dark:text-primary-400 font-semibold border border-primary-500/20"
-                    : "text-zinc-500 dark:text-zinc-400 hover:bg-zinc-150 dark:hover:bg-zinc-800/50 hover:text-zinc-800 dark:hover:text-zinc-200 font-medium"
-                }`}
+                className={`flex items-center space-x-2.5 px-3 py-2.5 rounded-xl transition-all text-sm ${isActive
+                  ? "bg-primary-500/10 text-primary-600 dark:text-primary-400 font-semibold border border-primary-500/20"
+                  : "text-zinc-500 dark:text-zinc-400 hover:bg-zinc-150 dark:hover:bg-zinc-800/50 hover:text-zinc-800 dark:hover:text-zinc-200 font-medium"
+                  }`}
               >
                 <Icon className="w-4 h-4 flex-shrink-0" />
                 <span>{link.label}</span>
@@ -244,11 +236,10 @@ function OpsDropdown({ pathname }: { pathname: string }) {
     <div>
       <button
         onClick={() => setIsOpen((prev) => !prev)}
-        className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all cursor-pointer ${
-          isActive
-            ? "bg-primary-500/10 text-primary-600 dark:text-primary-400 border border-primary-500/25"
-            : "text-zinc-500 dark:text-zinc-400 hover:bg-zinc-150 dark:hover:bg-zinc-800/50 hover:text-zinc-800 dark:hover:text-zinc-200"
-        }`}
+        className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all cursor-pointer ${isActive
+          ? "bg-primary-500/10 text-primary-600 dark:text-primary-400 border border-primary-500/25"
+          : "text-zinc-500 dark:text-zinc-400 hover:bg-zinc-150 dark:hover:bg-zinc-800/50 hover:text-zinc-800 dark:hover:text-zinc-200"
+          }`}
       >
         <div className="flex items-center space-x-3">
           <Activity
@@ -262,9 +253,8 @@ function OpsDropdown({ pathname }: { pathname: string }) {
       </button>
 
       <div
-        className={`overflow-hidden transition-all duration-200 ease-in-out ${
-          isOpen ? "max-h-[500px] opacity-100 mt-1" : "max-h-0 opacity-0"
-        }`}
+        className={`overflow-hidden transition-all duration-200 ease-in-out ${isOpen ? "max-h-[500px] opacity-100 mt-1" : "max-h-0 opacity-0"
+          }`}
       >
         <div className="ml-4 pl-4 border-l-2 border-zinc-200 dark:border-zinc-800 space-y-1">
           {opsSubLinks.map((link) => {
@@ -274,11 +264,10 @@ function OpsDropdown({ pathname }: { pathname: string }) {
               <Link
                 key={link.href}
                 href={link.href}
-                className={`flex items-center space-x-2.5 px-3 py-2.5 rounded-xl transition-all text-sm ${
-                  isLinkActive
-                    ? "bg-primary-500/10 text-primary-600 dark:text-primary-400 font-semibold border border-primary-500/20"
-                    : "text-zinc-500 dark:text-zinc-400 hover:bg-zinc-150 dark:hover:bg-zinc-800/50 hover:text-zinc-800 dark:hover:text-zinc-200 font-medium"
-                }`}
+                className={`flex items-center space-x-2.5 px-3 py-2.5 rounded-xl transition-all text-sm ${isLinkActive
+                  ? "bg-primary-500/10 text-primary-600 dark:text-primary-400 font-semibold border border-primary-500/20"
+                  : "text-zinc-500 dark:text-zinc-400 hover:bg-zinc-150 dark:hover:bg-zinc-800/50 hover:text-zinc-800 dark:hover:text-zinc-200 font-medium"
+                  }`}
               >
                 <Icon className="w-4 h-4 flex-shrink-0" />
                 <span>{link.label}</span>
@@ -345,11 +334,10 @@ export default function Sidebar({ permissions = [] }: { userRole: string, permis
             <Link
               key={link.href}
               href={link.href}
-              className={`flex items-center space-x-3 px-4 py-3 rounded-xl transition-all ${
-                isActive
-                  ? "bg-primary-500/10 text-primary-600 dark:text-primary-400 border border-primary-500/25"
-                  : "text-zinc-500 dark:text-zinc-400 hover:bg-zinc-150 dark:hover:bg-zinc-800/50 hover:text-zinc-800 dark:hover:text-zinc-200"
-              }`}
+              className={`flex items-center space-x-3 px-4 py-3 rounded-xl transition-all ${isActive
+                ? "bg-primary-500/10 text-primary-600 dark:text-primary-400 border border-primary-500/25"
+                : "text-zinc-500 dark:text-zinc-400 hover:bg-zinc-150 dark:hover:bg-zinc-800/50 hover:text-zinc-800 dark:hover:text-zinc-200"
+                }`}
             >
               <Icon className={`w-5 h-5 ${isActive ? "text-primary-600 dark:text-primary-400" : ""}`} />
               <span className="font-semibold">{link.label}</span>
@@ -362,11 +350,10 @@ export default function Sidebar({ permissions = [] }: { userRole: string, permis
         <div>
           <button
             onClick={() => setIsUnitPenugasanOpen((prev) => !prev)}
-            className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all cursor-pointer ${
-              isAssignmentActive
-                ? "bg-primary-500/10 text-primary-600 dark:text-primary-400 border border-primary-500/25"
-                : "text-zinc-500 dark:text-zinc-400 hover:bg-zinc-150 dark:hover:bg-zinc-800/50 hover:text-zinc-800 dark:hover:text-zinc-200"
-            }`}
+            className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all cursor-pointer ${isAssignmentActive
+              ? "bg-primary-500/10 text-primary-600 dark:text-primary-400 border border-primary-500/25"
+              : "text-zinc-500 dark:text-zinc-400 hover:bg-zinc-150 dark:hover:bg-zinc-800/50 hover:text-zinc-800 dark:hover:text-zinc-200"
+              }`}
           >
             <div className="flex items-center space-x-3">
               <ClipboardList
@@ -380,19 +367,17 @@ export default function Sidebar({ permissions = [] }: { userRole: string, permis
           </button>
 
           <div
-            className={`overflow-hidden transition-all duration-200 ease-in-out ${
-              isUnitPenugasanOpen ? "max-h-40 opacity-100 mt-1" : "max-h-0 opacity-0"
-            }`}
+            className={`overflow-hidden transition-all duration-200 ease-in-out ${isUnitPenugasanOpen ? "max-h-40 opacity-100 mt-1" : "max-h-0 opacity-0"
+              }`}
           >
             <div className="ml-4 pl-4 border-l-2 border-zinc-200 dark:border-zinc-800 space-y-1">
               {showPenugasanSantri && (
                 <Link
                   href="/dashboard/assignments"
-                  className={`flex items-center space-x-2.5 px-3 py-2.5 rounded-xl transition-all text-sm ${
-                    pathname === "/dashboard/assignments"
-                      ? "bg-primary-500/10 text-primary-600 dark:text-primary-400 font-semibold border border-primary-500/20"
-                      : "text-zinc-500 dark:text-zinc-400 hover:bg-zinc-150 dark:hover:bg-zinc-800/50 hover:text-zinc-800 dark:hover:text-zinc-200 font-medium"
-                  }`}
+                  className={`flex items-center space-x-2.5 px-3 py-2.5 rounded-xl transition-all text-sm ${pathname === "/dashboard/assignments"
+                    ? "bg-primary-500/10 text-primary-600 dark:text-primary-400 font-semibold border border-primary-500/20"
+                    : "text-zinc-500 dark:text-zinc-400 hover:bg-zinc-150 dark:hover:bg-zinc-800/50 hover:text-zinc-800 dark:hover:text-zinc-200 font-medium"
+                    }`}
                 >
                   <ClipboardList className="w-4 h-4 flex-shrink-0" />
                   <span>Penugasan Santri</span>
@@ -401,11 +386,10 @@ export default function Sidebar({ permissions = [] }: { userRole: string, permis
               {showMonitoringPenugasan && (
                 <Link
                   href="/dashboard/monitoring-penugasan"
-                  className={`flex items-center space-x-2.5 px-3 py-2.5 rounded-xl transition-all text-sm ${
-                    pathname === "/dashboard/monitoring-penugasan"
-                      ? "bg-primary-500/10 text-primary-600 dark:text-primary-400 font-semibold border border-primary-500/20"
-                      : "text-zinc-500 dark:text-zinc-400 hover:bg-zinc-150 dark:hover:bg-zinc-800/50 hover:text-zinc-800 dark:hover:text-zinc-200 font-medium"
-                  }`}
+                  className={`flex items-center space-x-2.5 px-3 py-2.5 rounded-xl transition-all text-sm ${pathname === "/dashboard/monitoring-penugasan"
+                    ? "bg-primary-500/10 text-primary-600 dark:text-primary-400 font-semibold border border-primary-500/20"
+                    : "text-zinc-500 dark:text-zinc-400 hover:bg-zinc-150 dark:hover:bg-zinc-800/50 hover:text-zinc-800 dark:hover:text-zinc-200 font-medium"
+                    }`}
                 >
                   <Activity className="w-4 h-4 flex-shrink-0" />
                   <span>Monitoring Penugasan</span>
@@ -422,11 +406,10 @@ export default function Sidebar({ permissions = [] }: { userRole: string, permis
         {showAuditLog && (
           <Link
             href="/dashboard/audit-logs"
-            className={`flex items-center space-x-3 px-4 py-3 rounded-xl transition-all ${
-              pathname === "/dashboard/audit-logs"
-                ? "bg-violet-500/10 text-violet-600 dark:text-violet-400 border border-violet-500/25"
-                : "text-zinc-500 dark:text-zinc-400 hover:bg-zinc-150 dark:hover:bg-zinc-800/50 hover:text-zinc-800 dark:hover:text-zinc-200"
-            }`}
+            className={`flex items-center space-x-3 px-4 py-3 rounded-xl transition-all ${pathname === "/dashboard/audit-logs"
+              ? "bg-violet-500/10 text-violet-600 dark:text-violet-400 border border-violet-500/25"
+              : "text-zinc-500 dark:text-zinc-400 hover:bg-zinc-150 dark:hover:bg-zinc-800/50 hover:text-zinc-800 dark:hover:text-zinc-200"
+              }`}
           >
             <ShieldCheck className={`w-5 h-5 ${pathname === "/dashboard/audit-logs" ? "text-violet-600 dark:text-violet-400" : ""}`} />
             <span className="font-semibold">Audit Log</span>
@@ -440,11 +423,10 @@ export default function Sidebar({ permissions = [] }: { userRole: string, permis
             <Link
               key={link.href}
               href={link.href}
-              className={`flex items-center space-x-3 px-4 py-3 rounded-xl transition-all ${
-                isActive
-                  ? "bg-primary-500/10 text-primary-600 dark:text-primary-400 border border-primary-500/25"
-                  : "text-zinc-500 dark:text-zinc-400 hover:bg-zinc-150 dark:hover:bg-zinc-800/50 hover:text-zinc-800 dark:hover:text-zinc-200"
-              }`}
+              className={`flex items-center space-x-3 px-4 py-3 rounded-xl transition-all ${isActive
+                ? "bg-primary-500/10 text-primary-600 dark:text-primary-400 border border-primary-500/25"
+                : "text-zinc-500 dark:text-zinc-400 hover:bg-zinc-150 dark:hover:bg-zinc-800/50 hover:text-zinc-800 dark:hover:text-zinc-200"
+                }`}
             >
               <Icon className={`w-5 h-5 ${isActive ? "text-primary-600 dark:text-primary-400" : ""}`} />
               <span className="font-semibold">{link.label}</span>

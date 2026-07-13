@@ -1,1 +1,0 @@
-A Next.js application for managing dormitory operations, resident tracking, attendance monitoring, and administrative reporting with role-based access control.
