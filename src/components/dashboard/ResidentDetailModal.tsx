@@ -43,10 +43,10 @@ interface ResidentDetailModalProps {
 
 export const StatusBadge = ({ status }: { status: string }) => {
   const map: Record<string, { label: string; className: string }> = {
-    ACTIVE:   { label: "Aktif",   className: "bg-emerald-100 text-emerald-700 border border-emerald-200" },
-    INACTIVE: { label: "Keluar",  className: "bg-red-100 text-red-700 border border-red-200" },
-    CUTI:     { label: "Cuti",    className: "bg-yellow-100 text-yellow-700 border border-yellow-200" },
-    ALUMNI:   { label: "Alumni",  className: "bg-blue-100 text-blue-700 border border-blue-200" },
+    ACTIVE: { label: "Aktif", className: "bg-emerald-100 text-emerald-700 border border-emerald-200" },
+    INACTIVE: { label: "Keluar", className: "bg-red-100 text-red-700 border border-red-200" },
+    CUTI: { label: "Cuti", className: "bg-yellow-100 text-yellow-700 border border-yellow-200" },
+    ALUMNI: { label: "Alumni", className: "bg-blue-100 text-blue-700 border border-blue-200" },
   }
   const config = map[status] ?? { label: status, className: "bg-zinc-100 text-zinc-700 border border-zinc-200" }
   return (
@@ -102,7 +102,7 @@ function RoomTransferModal({
     <div className="fixed inset-0 z-[70] flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
       <div className="relative z-10 bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl border border-zinc-200 dark:border-zinc-800 w-full max-w-lg overflow-hidden animate-in zoom-in-95 duration-200">
-        
+
         {/* Header */}
         <div className="p-5 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between bg-amber-50 dark:bg-amber-900/10">
           <div>
@@ -196,8 +196,8 @@ function printResidentCard(resident: Resident) {
   const nimLabel = resident.nim || "-"
 
   const photoHtml = resident.photo
-    ? `<img src="${resident.photo}" alt="Foto" style="width:100px;height:100px;object-fit:cover;border-radius:12px;border:2px solid #e5e7eb;" />`
-    : `<div style="width:100px;height:100px;border-radius:12px;border:2px solid #e5e7eb;display:flex;align-items:center;justify-content:center;background:#f3f4f6;font-size:40px;">👤</div>`
+    ? `<img src="${resident.photo}" alt="Foto" />`
+    : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:24px;">👤</div>`
 
   const qrSrc = `https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(identityValue)}&color=1e293b`
 
@@ -212,65 +212,130 @@ function printResidentCard(resident: Resident) {
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
-  <title>Data Santri — ${resident.name}</title>
+  <title>Kartu Santri — ${resident.name}</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Segoe UI', Arial, sans-serif; background: #fff; color: #111827; padding: 24px; }
-    .card { max-width: 680px; margin: 0 auto; border: 1.5px solid #e5e7eb; border-radius: 16px; overflow: hidden; }
-    .header { background: linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%); padding: 24px; display: flex; gap: 20px; align-items: center; }
-    .header-info { flex: 1; color: white; }
-    .header-info h1 { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
-    .header-info .meta { font-size: 13px; opacity: 0.85; }
-    .status-badge { display: inline-block; padding: 4px 12px; border-radius: 9999px; font-size: 11px; font-weight: 700; text-transform: uppercase; margin-top: 8px; background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3); }
-    .body { padding: 20px; }
-    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 24px; }
-    .field label { font-size: 10px; font-weight: 700; text-transform: uppercase; color: #6b7280; letter-spacing: 0.05em; display: block; margin-bottom: 2px; }
-    .field span { font-size: 14px; font-weight: 600; color: #111827; }
-    .divider { border: none; border-top: 1px solid #e5e7eb; margin: 16px 0; }
-    .qr-section { display: flex; justify-content: flex-end; align-items: flex-end; gap: 12px; padding-top: 8px; }
-    .qr-label { font-size: 10px; color: #9ca3af; text-align: center; margin-top: 4px; }
-    .footer { background: #f9fafb; border-top: 1px solid #e5e7eb; padding: 12px 20px; font-size: 11px; color: #9ca3af; display: flex; justify-content: space-between; }
-    @media print { body { padding: 0; } .no-print { display: none; } }
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: #f3f4f6; color: #111827; padding: 24px; display: flex; flex-direction: column; align-items: center; }
+    .card-wrapper { margin-bottom: 20px; }
+    .card { 
+      width: 85.6mm; 
+      height: 53.98mm; 
+      border: 1px solid #d1d5db; 
+      border-radius: 3mm; 
+      overflow: hidden; 
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      position: relative;
+    }
+    .header { 
+      background: linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%); 
+      padding: 2.5mm; 
+      color: white; 
+      text-align: center;
+      height: 9mm;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .header h1 { font-size: 8px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+    .header p { font-size: 5px; opacity: 0.9; margin-top: 0.5mm; }
+    .body { 
+      padding: 3mm; 
+      display: flex; 
+      gap: 3mm; 
+      flex: 1;
+    }
+    .photo-container {
+      width: 20mm;
+      height: 28mm;
+      border: 1px solid #e5e7eb;
+      border-radius: 1.5mm;
+      overflow: hidden;
+      background: #f9fafb;
+    }
+    .photo-container img { width: 100%; height: 100%; object-fit: cover; }
+    .details {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5mm;
+    }
+    .field {
+      display: flex;
+      align-items: flex-start;
+      font-size: 5.5px;
+      line-height: 1.2;
+    }
+    .field label {
+      width: 14mm;
+      font-weight: 700;
+      color: #374151;
+    }
+    .field span {
+      flex: 1;
+      font-weight: 700;
+      color: #111827;
+      text-transform: uppercase;
+    }
+    .qr-section {
+      position: absolute;
+      bottom: 2.5mm;
+      right: 3mm;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .qr-section img {
+      width: 13mm;
+      height: 13mm;
+      background: white;
+      padding: 1px;
+      border: 1px solid #e5e7eb;
+      border-radius: 1mm;
+    }
+    .qr-label { font-size: 4px; margin-top: 0.5mm; color: #6b7280; }
+    
+    @media print { 
+      body { padding: 0; background: white; align-items: flex-start; } 
+      .no-print { display: none; } 
+      .card-wrapper { margin: 0; }
+      .card { box-shadow: none; border-color: #000; }
+    }
   </style>
 </head>
 <body>
-  <div class="card">
-    <div class="header">
-      ${photoHtml}
-      <div class="header-info">
-        <h1>${resident.name}</h1>
-        <div class="meta">NIM: ${nimLabel} &nbsp;|&nbsp; NIUP: ${resident.niup || "-"}</div>
-        <div class="meta">Angkatan ${resident.angkatan || "-"} &nbsp;•&nbsp; ${resident.prodi || "-"}</div>
-        <div class="status-badge">${statusLabel}</div>
+  <div class="card-wrapper">
+    <div class="card" id="santri-card">
+      <div class="header">
+        <h1>KARTU TANDA SANTRI</h1>
+        <p>SISTEM INFORMASI ASRAMA</p>
       </div>
-      <img src="${qrSrc}" alt="QR" style="width:80px;height:80px;border-radius:8px;background:white;padding:4px;" />
-    </div>
-
-    <div class="body">
-      <div class="grid">
-        <div class="field"><label>Jenis Kelamin</label><span>${resident.gender === "LAKI_LAKI" ? "Laki-Laki" : resident.gender === "PEREMPUAN" ? "Perempuan" : "-"}</span></div>
-        <div class="field"><label>Tanggal Lahir</label><span>${birthDate}</span></div>
-        <div class="field"><label>Tempat Lahir</label><span>${resident.tempatLahir || resident.kotaAsal || "-"}</span></div>
-        <div class="field"><label>Nomor HP</label><span>${resident.phone || "-"}</span></div>
+      <div class="body">
+        <div class="photo-container">
+          ${photoHtml}
+        </div>
+        <div class="details">
+          <div class="field"><label>NIM / NIUP</label><span>: ${nimLabel} / ${resident.niup || "-"}</span></div>
+          <div class="field"><label>NAMA</label><span>: ${resident.name}</span></div>
+          <div class="field"><label>TTL</label><span>: ${resident.tempatLahir || resident.kotaAsal || "-"}, ${birthDate}</span></div>
+          <div class="field"><label>J. KELAMIN</label><span>: ${resident.gender === "LAKI_LAKI" ? "LAKI-LAKI" : resident.gender === "PEREMPUAN" ? "PEREMPUAN" : "-"}</span></div>
+          <div class="field"><label>ASRAMA</label><span>: ${resident.wilayah || "-"} - ${resident.daerah || "-"}</span></div>
+          <div class="field"><label>KAMAR</label><span>: ${resident.room ? resident.room.number : "-"}</span></div>
+          <div class="field"><label>STATUS</label><span>: ${statusLabel}</span></div>
+        </div>
       </div>
-      <hr class="divider" />
-      <div class="grid">
-        <div class="field"><label>Wilayah</label><span>${resident.wilayah || "-"}</span></div>
-        <div class="field"><label>Daerah</label><span>${resident.daerah || "-"}</span></div>
-        <div class="field"><label>Kamar</label><span>${resident.room ? "Kamar " + resident.room.number : "-"}</span></div>
-        <div class="field"><label>Fakultas</label><span>${resident.fakultas || "-"}</span></div>
+      <div class="qr-section">
+        <img src="${qrSrc}" alt="QR" />
+        <div class="qr-label">Valid System Record</div>
       </div>
-    </div>
-
-    <div class="footer">
-      <span>Dicetak pada: ${new Date().toLocaleString("id-ID")}</span>
-      <span>Sistem Informasi Asrama</span>
     </div>
   </div>
 
   <div class="no-print" style="margin-top:16px;text-align:center;">
     <button onclick="window.print()" style="padding:10px 24px;background:#2563eb;color:white;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;margin-right:8px;">
-      🖨️ Cetak
+      🖨️ Cetak KTP
     </button>
     <button onclick="downloadPDF()" style="padding:10px 24px;background:#10b981;color:white;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;margin-right:8px;">
       ⬇️ Download PDF
@@ -283,13 +348,13 @@ function printResidentCard(resident: Resident) {
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <script>
     function downloadPDF() {
-      const element = document.querySelector('.card');
+      const element = document.getElementById('santri-card');
       const opt = {
-        margin:       10,
-        filename:     'Data_Santri_${identityValue}.pdf',
-        image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2 },
-        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        margin:       0,
+        filename:     'Kartu_Santri_${identityValue}.pdf',
+        image:        { type: 'jpeg', quality: 1 },
+        html2canvas:  { scale: 4, useCORS: true },
+        jsPDF:        { unit: 'mm', format: [85.6, 53.98], orientation: 'landscape' }
       };
       html2pdf().set(opt).from(element).save();
     }
@@ -297,7 +362,7 @@ function printResidentCard(resident: Resident) {
 </body>
 </html>`
 
-  const win = window.open("", "_blank", "width=720,height=700,scrollbars=yes")
+  const win = window.open("", "_blank", "width=720,height=500,scrollbars=yes")
   if (win) {
     win.document.write(html)
     win.document.close()
@@ -370,7 +435,8 @@ export default function ResidentDetailModal({
     navigator.clipboard.writeText(text)
     if (type === "nim") { setCopiedNim(true); setTimeout(() => setCopiedNim(false), 2000) }
     else { setCopiedNiup(true); setTimeout(() => setCopiedNiup(false), 2000) }
-    toast.success(`${type.toUpperCase()} berhasil disalin!`)
+    toast.success(`${type.toUpperCase()
+      } berhasil disalin!`)
   }
 
   const birthDateStr = r.tanggalLahir
@@ -460,7 +526,7 @@ export default function ResidentDetailModal({
                 <div className="flex items-center gap-1.5 text-zinc-600 dark:text-zinc-400">
                   <span>📍</span>
                   <span className="font-medium text-zinc-800 dark:text-zinc-300 truncate max-w-[150px] sm:max-w-none">
-                    {r.daerah || r.wilayah || "Asrama"} / {r.room ? `Kamar ${r.room.number}` : "-"}
+                    {r.daerah || r.wilayah || "Asrama"} / {r.room ? `Kamar ${r.room.number} ` : "-"}
                   </span>
                 </div>
                 <div className="hidden sm:flex items-center gap-1.5 text-zinc-600 dark:text-zinc-400">
@@ -479,7 +545,7 @@ export default function ResidentDetailModal({
           <div className="px-6 border-b border-zinc-200 dark:border-zinc-800 flex overflow-x-auto gap-4 bg-white dark:bg-zinc-900">
             {tabs.map(tab => (
               <button key={tab} onClick={() => setActiveTab(tab)}
-                className={`px-2 py-4 text-sm font-semibold transition-colors relative whitespace-nowrap ${activeTab === tab ? "text-blue-600 dark:text-blue-400" : "text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300"}`}
+                className={`px - 2 py - 4 text - sm font - semibold transition - colors relative whitespace - nowrap ${activeTab === tab ? "text-blue-600 dark:text-blue-400" : "text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300"} `}
               >
                 {tab}
                 {activeTab === tab && <div className="absolute bottom-0 left-0 w-full h-0.5 bg-blue-600 dark:bg-blue-400 rounded-t-full" />}
@@ -520,198 +586,208 @@ export default function ResidentDetailModal({
                       alt="QR Code" width={160} height={160} unoptimized className="w-full h-full object-contain"
                     />
                     <p className="text-center text-[10px] text-zinc-400 mt-1">QR Identitas</p>
-                  </div>
-                </div>
-              </div>
+                  </div >
+                </div >
+              </div >
             )}
 
             {/* RIWAYAT */}
-            {activeTab === "Riwayat" && (
-              <div className="animate-in fade-in duration-300">
-                {loadingHistory ? (
-                  <div className="flex items-center gap-2 text-zinc-400 p-8 justify-center"><Loader2 className="w-5 h-5 animate-spin" /> Memuat riwayat...</div>
-                ) : (
-                  <div className="relative border-l-2 border-zinc-200 dark:border-zinc-700 ml-4 py-2 space-y-6">
-                    {roomHistory.map((h) => (
-                      <div key={h.id} className="relative pl-6">
-                        <div className="absolute w-4 h-4 rounded-full bg-amber-500 border-4 border-white dark:border-zinc-900 -left-[9px] top-1"></div>
-                        <div className="text-sm text-zinc-500 font-medium mb-1">
-                          {new Date(h.createdAt).toLocaleDateString("id-ID", { day: "2-digit", month: "long", year: "numeric" })}
+            {
+              activeTab === "Riwayat" && (
+                <div className="animate-in fade-in duration-300">
+                  {loadingHistory ? (
+                    <div className="flex items-center gap-2 text-zinc-400 p-8 justify-center"><Loader2 className="w-5 h-5 animate-spin" /> Memuat riwayat...</div>
+                  ) : (
+                    <div className="relative border-l-2 border-zinc-200 dark:border-zinc-700 ml-4 py-2 space-y-6">
+                      {roomHistory.map((h) => (
+                        <div key={h.id} className="relative pl-6">
+                          <div className="absolute w-4 h-4 rounded-full bg-amber-500 border-4 border-white dark:border-zinc-900 -left-[9px] top-1"></div>
+                          <div className="text-sm text-zinc-500 font-medium mb-1">
+                            {new Date(h.createdAt).toLocaleDateString("id-ID", { day: "2-digit", month: "long", year: "numeric" })}
+                          </div>
+                          <div className="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg p-4 shadow-sm">
+                            <p className="font-semibold text-zinc-800 dark:text-zinc-200 flex items-center gap-2">
+                              Pindah Kamar
+                              <span className="text-xs bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full font-normal">
+                                {h.fromRoom ? `Kamar ${h.fromRoom}` : "—"} → Kamar {h.toRoom}
+                              </span>
+                            </p>
+                            {h.alasan && <p className="text-sm text-zinc-500 mt-1">Alasan: {h.alasan}</p>}
+                            <p className="text-xs text-zinc-400 mt-1">Oleh: {h.transferedBy || "Sistem"}</p>
+                          </div>
                         </div>
-                        <div className="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg p-4 shadow-sm">
-                          <p className="font-semibold text-zinc-800 dark:text-zinc-200 flex items-center gap-2">
-                            Pindah Kamar
-                            <span className="text-xs bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full font-normal">
-                              {h.fromRoom ? `Kamar ${h.fromRoom}` : "—"} → Kamar {h.toRoom}
-                            </span>
-                          </p>
-                          {h.alasan && <p className="text-sm text-zinc-500 mt-1">Alasan: {h.alasan}</p>}
-                          <p className="text-xs text-zinc-400 mt-1">Oleh: {h.transferedBy || "Sistem"}</p>
-                        </div>
-                      </div>
-                    ))}
+                      ))}
 
-                    {/* Registration event */}
-                    <div className="relative pl-6">
-                      <div className="absolute w-4 h-4 rounded-full bg-emerald-500 border-4 border-white dark:border-zinc-900 -left-[9px] top-1"></div>
-                      <div className="text-sm text-zinc-500 font-medium mb-1">{createdDateStr}</div>
-                      <div className="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg p-4 shadow-sm">
-                        <p className="font-semibold text-zinc-800 dark:text-zinc-200">Santri Didaftarkan</p>
-                        <p className="text-sm text-zinc-500 mt-1">Data awal masuk ke dalam sistem.</p>
+                      {/* Registration event */}
+                      <div className="relative pl-6">
+                        <div className="absolute w-4 h-4 rounded-full bg-emerald-500 border-4 border-white dark:border-zinc-900 -left-[9px] top-1"></div>
+                        <div className="text-sm text-zinc-500 font-medium mb-1">{createdDateStr}</div>
+                        <div className="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg p-4 shadow-sm">
+                          <p className="font-semibold text-zinc-800 dark:text-zinc-200">Santri Didaftarkan</p>
+                          <p className="text-sm text-zinc-500 mt-1">Data awal masuk ke dalam sistem.</p>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                )}
-              </div>
-            )}
+                  )}
+                </div>
+              )
+            }
 
             {/* PENUGASAN */}
-            {activeTab === "Penugasan" && (
-              <div className="animate-in fade-in duration-300">
-                {r.assignments && r.assignments.length > 0 ? (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {r.assignments.map(a => (
-                      <div key={a.id} className="p-4 border border-zinc-200 dark:border-zinc-800 rounded-xl bg-zinc-50 dark:bg-zinc-800/30">
-                        <div className="font-bold text-zinc-800 dark:text-zinc-200 text-lg mb-1">{a.satker?.name || "-"}</div>
-                        <span className="inline-block px-2.5 py-1 bg-zinc-200 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300 text-xs font-semibold rounded-md">{a.position}</span>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="flex flex-col items-center justify-center p-12 text-center border-2 border-dashed border-zinc-200 dark:border-zinc-800 rounded-2xl">
-                    <Clock className="w-10 h-10 text-zinc-300 mb-3" />
-                    <p className="text-zinc-500 font-medium">Belum ada riwayat penugasan.</p>
-                  </div>
-                )}
-              </div>
-            )}
+            {
+              activeTab === "Penugasan" && (
+                <div className="animate-in fade-in duration-300">
+                  {r.assignments && r.assignments.length > 0 ? (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      {r.assignments.map(a => (
+                        <div key={a.id} className="p-4 border border-zinc-200 dark:border-zinc-800 rounded-xl bg-zinc-50 dark:bg-zinc-800/30">
+                          <div className="font-bold text-zinc-800 dark:text-zinc-200 text-lg mb-1">{a.satker?.name || "-"}</div>
+                          <span className="inline-block px-2.5 py-1 bg-zinc-200 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300 text-xs font-semibold rounded-md">{a.position}</span>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-center justify-center p-12 text-center border-2 border-dashed border-zinc-200 dark:border-zinc-800 rounded-2xl">
+                      <Clock className="w-10 h-10 text-zinc-300 mb-3" />
+                      <p className="text-zinc-500 font-medium">Belum ada riwayat penugasan.</p>
+                    </div>
+                  )}
+                </div>
+              )
+            }
 
             {/* DOMISILI */}
-            {activeTab === "Domisili" && (
-              <div className="animate-in fade-in duration-300">
-                <div className="bg-blue-50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-900/30 p-4 rounded-xl">
-                  <h4 className="font-semibold text-blue-800 dark:text-blue-300 mb-3">Penempatan Asrama</h4>
-                  <div className="space-y-2 text-sm">
-                    {[["Wilayah", r.wilayah || "-"], ["Daerah", r.daerah || "-"], ["Kamar", r.room ? `Kamar ${r.room.number}` : "-"]].map(([l, v]) => (
-                      <div key={l} className="flex justify-between">
-                        <span className="text-blue-600/70 dark:text-blue-400/70">{l}:</span>
-                        <span className="font-medium text-blue-900 dark:text-blue-200">{v}</span>
-                      </div>
-                    ))}
+            {
+              activeTab === "Domisili" && (
+                <div className="animate-in fade-in duration-300">
+                  <div className="bg-blue-50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-900/30 p-4 rounded-xl">
+                    <h4 className="font-semibold text-blue-800 dark:text-blue-300 mb-3">Penempatan Asrama</h4>
+                    <div className="space-y-2 text-sm">
+                      {[["Wilayah", r.wilayah || "-"], ["Daerah", r.daerah || "-"], ["Kamar", r.room ? `Kamar ${r.room.number}` : "-"]].map(([l, v]) => (
+                        <div key={l} className="flex justify-between">
+                          <span className="text-blue-600/70 dark:text-blue-400/70">{l}:</span>
+                          <span className="font-medium text-blue-900 dark:text-blue-200">{v}</span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
-              </div>
-            )}
+              )
+            }
 
             {/* PENDIDIKAN */}
-            {activeTab === "Pendidikan" && (
-              <div className="animate-in fade-in duration-300">
-                <div className="bg-emerald-50 dark:bg-emerald-900/10 border border-emerald-100 dark:border-emerald-900/30 p-4 rounded-xl">
-                  <h4 className="font-semibold text-emerald-800 dark:text-emerald-300 mb-3">Status Akademik</h4>
-                  <div className="space-y-2 text-sm">
-                    {[["Fakultas", r.fakultas || "-"], ["Program Studi", r.prodi || "-"], ["Angkatan", r.angkatan || "-"]].map(([l, v]) => (
-                      <div key={l} className="flex justify-between">
-                        <span className="text-emerald-600/70 dark:text-emerald-400/70">{l}:</span>
-                        <span className="font-medium text-emerald-900 dark:text-emerald-200">{v}</span>
-                      </div>
-                    ))}
+            {
+              activeTab === "Pendidikan" && (
+                <div className="animate-in fade-in duration-300">
+                  <div className="bg-emerald-50 dark:bg-emerald-900/10 border border-emerald-100 dark:border-emerald-900/30 p-4 rounded-xl">
+                    <h4 className="font-semibold text-emerald-800 dark:text-emerald-300 mb-3">Status Akademik</h4>
+                    <div className="space-y-2 text-sm">
+                      {[["Fakultas", r.fakultas || "-"], ["Program Studi", r.prodi || "-"], ["Angkatan", r.angkatan || "-"]].map(([l, v]) => (
+                        <div key={l} className="flex justify-between">
+                          <span className="text-emerald-600/70 dark:text-emerald-400/70">{l}:</span>
+                          <span className="font-medium text-emerald-900 dark:text-emerald-200">{v}</span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
-              </div>
-            )}
+              )
+            }
 
             {/* AUDIT LOG */}
-            {activeTab === "Audit Log" && (
-              <div className="animate-in fade-in duration-300">
-                {loadingAudit ? (
-                  <div className="flex flex-col items-center justify-center p-12 space-y-3">
-                    <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
-                    <p className="text-zinc-500 text-sm">Memuat catatan audit...</p>
-                  </div>
-                ) : auditLogs.length > 0 ? (
-                  <div className="space-y-3">
-                    {auditLogs.map(log => {
-                      const newVal = typeof log.newValue === "string"
-                        ? (() => { try { return JSON.parse(log.newValue) } catch { return null } })()
-                        : log.newValue
-                      const oldVal = typeof log.oldValue === "string"
-                        ? (() => { try { return JSON.parse(log.oldValue) } catch { return null } })()
-                        : log.oldValue
+            {
+              activeTab === "Audit Log" && (
+                <div className="animate-in fade-in duration-300">
+                  {loadingAudit ? (
+                    <div className="flex flex-col items-center justify-center p-12 space-y-3">
+                      <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
+                      <p className="text-zinc-500 text-sm">Memuat catatan audit...</p>
+                    </div>
+                  ) : auditLogs.length > 0 ? (
+                    <div className="space-y-3">
+                      {auditLogs.map(log => {
+                        const newVal = typeof log.newValue === "string"
+                          ? (() => { try { return JSON.parse(log.newValue) } catch { return null } })()
+                          : log.newValue
+                        const oldVal = typeof log.oldValue === "string"
+                          ? (() => { try { return JSON.parse(log.oldValue) } catch { return null } })()
+                          : log.oldValue
 
-                      const changedFields: string[] = newVal?.changedFields || []
+                        const changedFields: string[] = newVal?.changedFields || []
 
-                      const FIELD_LABELS: Record<string, string> = {
-                        name: "Nama", nim: "NIM", niup: "NIUP", phone: "No. HP",
-                        angkatan: "Angkatan", prodi: "Program Studi", wilayah: "Wilayah",
-                        daerah: "Daerah", kotaAsal: "Kota Asal", fakultas: "Fakultas",
-                        status: "Status", roomId: "Kamar", gender: "Jenis Kelamin",
-                        nik: "NIK", tempatLahir: "Tempat Lahir", tanggalLahir: "Tanggal Lahir",
-                        alamatLengkap: "Alamat Lengkap", kodePos: "Kode Pos", photo: "Foto"
-                      }
+                        const FIELD_LABELS: Record<string, string> = {
+                          name: "Nama", nim: "NIM", niup: "NIUP", phone: "No. HP",
+                          angkatan: "Angkatan", prodi: "Program Studi", wilayah: "Wilayah",
+                          daerah: "Daerah", kotaAsal: "Kota Asal", fakultas: "Fakultas",
+                          status: "Status", roomId: "Kamar", gender: "Jenis Kelamin",
+                          nik: "NIK", tempatLahir: "Tempat Lahir", tanggalLahir: "Tanggal Lahir",
+                          alamatLengkap: "Alamat Lengkap", kodePos: "Kode Pos", photo: "Foto"
+                        }
 
-                      return (
-                        <div key={log.id} className="rounded-xl border border-zinc-200 dark:border-zinc-700 overflow-hidden">
-                          {/* Log header */}
-                          <div className="flex items-center justify-between px-4 py-3 bg-zinc-50 dark:bg-zinc-800/50 border-b border-zinc-200 dark:border-zinc-700">
-                            <div className="flex items-center gap-2.5">
-                              <span className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-bold bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">
-                                {log.action === "UPDATE_RESIDENT" ? "Diubah" :
-                                 log.action === "CREATE_RESIDENT" ? "Ditambahkan" :
-                                 log.action === "DELETE_RESIDENT" ? "Dihapus" : log.action}
-                              </span>
-                              <span className="text-xs text-zinc-500">
-                                oleh <span className="font-semibold text-zinc-700 dark:text-zinc-300">{log.performedBy || "System"}</span>
+                        return (
+                          <div key={log.id} className="rounded-xl border border-zinc-200 dark:border-zinc-700 overflow-hidden">
+                            {/* Log header */}
+                            <div className="flex items-center justify-between px-4 py-3 bg-zinc-50 dark:bg-zinc-800/50 border-b border-zinc-200 dark:border-zinc-700">
+                              <div className="flex items-center gap-2.5">
+                                <span className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-bold bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">
+                                  {log.action === "UPDATE_RESIDENT" ? "Diubah" :
+                                    log.action === "CREATE_RESIDENT" ? "Ditambahkan" :
+                                      log.action === "DELETE_RESIDENT" ? "Dihapus" : log.action}
+                                </span>
+                                <span className="text-xs text-zinc-500">
+                                  oleh <span className="font-semibold text-zinc-700 dark:text-zinc-300">{log.performedBy || "System"}</span>
+                                </span>
+                              </div>
+                              <span className="text-xs text-zinc-400">
+                                {new Date(log.createdAt).toLocaleString("id-ID", {
+                                  day: "2-digit", month: "short", year: "numeric",
+                                  hour: "2-digit", minute: "2-digit"
+                                })}
                               </span>
                             </div>
-                            <span className="text-xs text-zinc-400">
-                              {new Date(log.createdAt).toLocaleString("id-ID", {
-                                day: "2-digit", month: "short", year: "numeric",
-                                hour: "2-digit", minute: "2-digit"
-                              })}
-                            </span>
-                          </div>
 
-                          {/* Changed fields */}
-                          {changedFields.length > 0 ? (
-                            <div className="divide-y divide-zinc-100 dark:divide-zinc-800">
-                              {changedFields.map(field => (
-                                <div key={field} className="px-4 py-2.5 flex items-start gap-3 text-sm">
-                                  <span className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 min-w-[110px] pt-0.5">
-                                    {FIELD_LABELS[field] || field}
-                                  </span>
-                                  <div className="flex items-center gap-2 flex-wrap">
-                                    <span className="line-through text-red-500/80 text-xs bg-red-50 dark:bg-red-900/20 px-2 py-0.5 rounded">
-                                      {String(oldVal?.[field] ?? "—")}
+                            {/* Changed fields */}
+                            {changedFields.length > 0 ? (
+                              <div className="divide-y divide-zinc-100 dark:divide-zinc-800">
+                                {changedFields.map(field => (
+                                  <div key={field} className="px-4 py-2.5 flex items-start gap-3 text-sm">
+                                    <span className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 min-w-[110px] pt-0.5">
+                                      {FIELD_LABELS[field] || field}
                                     </span>
-                                    <ArrowRight className="w-3 h-3 text-zinc-400 flex-shrink-0" />
-                                    <span className="text-emerald-700 dark:text-emerald-400 text-xs bg-emerald-50 dark:bg-emerald-900/20 px-2 py-0.5 rounded font-medium">
-                                      {String(newVal?.[field] ?? "—")}
-                                    </span>
+                                    <div className="flex items-center gap-2 flex-wrap">
+                                      <span className="line-through text-red-500/80 text-xs bg-red-50 dark:bg-red-900/20 px-2 py-0.5 rounded">
+                                        {String(oldVal?.[field] ?? "—")}
+                                      </span>
+                                      <ArrowRight className="w-3 h-3 text-zinc-400 flex-shrink-0" />
+                                      <span className="text-emerald-700 dark:text-emerald-400 text-xs bg-emerald-50 dark:bg-emerald-900/20 px-2 py-0.5 rounded font-medium">
+                                        {String(newVal?.[field] ?? "—")}
+                                      </span>
+                                    </div>
                                   </div>
-                                </div>
-                              ))}
-                            </div>
-                          ) : (
-                            <div className="px-4 py-3 text-xs text-zinc-400 italic">Data dicatat tanpa perubahan field spesifik.</div>
-                          )}
-                        </div>
-                      )
-                    })}
-                  </div>
-                ) : (
-                  <div className="flex flex-col items-center justify-center p-12 text-center border-2 border-dashed border-zinc-200 dark:border-zinc-800 rounded-2xl">
-                    <AlertCircle className="w-10 h-10 text-zinc-300 mb-3" />
-                    <p className="text-zinc-500 font-medium">Belum ada catatan audit untuk santri ini.</p>
-                    <p className="text-zinc-400 text-sm mt-1">Setiap perubahan data akan tercatat di sini secara otomatis.</p>
-                  </div>
-                )}
-              </div>
-            )}
+                                ))}
+                              </div>
+                            ) : (
+                              <div className="px-4 py-3 text-xs text-zinc-400 italic">Data dicatat tanpa perubahan field spesifik.</div>
+                            )}
+                          </div>
+                        )
+                      })}
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-center justify-center p-12 text-center border-2 border-dashed border-zinc-200 dark:border-zinc-800 rounded-2xl">
+                      <AlertCircle className="w-10 h-10 text-zinc-300 mb-3" />
+                      <p className="text-zinc-500 font-medium">Belum ada catatan audit untuk santri ini.</p>
+                      <p className="text-zinc-400 text-sm mt-1">Setiap perubahan data akan tercatat di sini secara otomatis.</p>
+                    </div>
+                  )}
+                </div>
+              )
+            }
 
-          </div>
+          </div >
 
           {/* Footer Actions */}
-          <div className="p-4 px-6 border-t border-zinc-200 dark:border-zinc-800 flex flex-wrap items-center justify-end gap-3 bg-zinc-50 dark:bg-zinc-900">
+          < div className="p-4 px-6 border-t border-zinc-200 dark:border-zinc-800 flex flex-wrap items-center justify-end gap-3 bg-zinc-50 dark:bg-zinc-900" >
             <button
               type="button"
               onClick={() => printResidentCard(r)}
@@ -721,27 +797,31 @@ export default function ResidentDetailModal({
               <span className="hidden sm:inline">Cetak</span>
             </button>
 
-            {hasUpdateSantri && (
-              <button
-                type="button"
-                onClick={() => setShowRoomTransfer(true)}
-                className="px-4 py-2.5 text-sm font-semibold text-amber-700 bg-amber-50 border border-amber-200 rounded-xl hover:bg-amber-100 dark:bg-amber-900/20 dark:border-amber-900/50 dark:text-amber-400 transition-colors flex items-center gap-2"
-              >
-                <MoveRight className="w-4 h-4" />
-                <span className="hidden sm:inline">Pindah Kamar</span>
-              </button>
-            )}
+            {
+              hasUpdateSantri && (
+                <button
+                  type="button"
+                  onClick={() => setShowRoomTransfer(true)}
+                  className="px-4 py-2.5 text-sm font-semibold text-amber-700 bg-amber-50 border border-amber-200 rounded-xl hover:bg-amber-100 dark:bg-amber-900/20 dark:border-amber-900/50 dark:text-amber-400 transition-colors flex items-center gap-2"
+                >
+                  <MoveRight className="w-4 h-4" />
+                  <span className="hidden sm:inline">Pindah Kamar</span>
+                </button>
+              )
+            }
 
-            {hasUpdateSantri && (
-              <button
-                type="button"
-                onClick={onEdit}
-                className="px-4 py-2.5 text-sm font-semibold text-blue-700 bg-blue-50 border border-blue-200 rounded-xl hover:bg-blue-100 dark:bg-blue-900/20 dark:border-blue-900/50 dark:text-blue-400 transition-colors flex items-center gap-2"
-              >
-                <Edit2 className="w-4 h-4" />
-                <span className="hidden sm:inline">Edit Data</span>
-              </button>
-            )}
+            {
+              hasUpdateSantri && (
+                <button
+                  type="button"
+                  onClick={onEdit}
+                  className="px-4 py-2.5 text-sm font-semibold text-blue-700 bg-blue-50 border border-blue-200 rounded-xl hover:bg-blue-100 dark:bg-blue-900/20 dark:border-blue-900/50 dark:text-blue-400 transition-colors flex items-center gap-2"
+                >
+                  <Edit2 className="w-4 h-4" />
+                  <span className="hidden sm:inline">Edit Data</span>
+                </button>
+              )
+            }
 
             <button
               type="button"
@@ -750,10 +830,10 @@ export default function ResidentDetailModal({
             >
               Tutup
             </button>
-          </div>
+          </div >
 
-        </div>
-      </div>
+        </div >
+      </div >
     </>
   )
 }
