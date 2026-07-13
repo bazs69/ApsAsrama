@@ -69,6 +69,7 @@ export default function AssignmentListClient({
   const [assignments, setAssignments] = useState<Assignment[]>(initialAssignments)
   const [satkers] = useState<Satker[]>(initialSatkers)
   const [searchQuery, setSearchQuery] = useState("")
+  const [residentSearchQuery, setResidentSearchQuery] = useState("")
 
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState("")
@@ -96,9 +97,20 @@ export default function AssignmentListClient({
       a.position.toLowerCase().includes(searchQuery.toLowerCase())
   )
 
+  const unassignedResidents = residents.filter(
+    (r) => !assignments.some((a) => a.residentId === r.id && a.status === "ACTIVE")
+  )
+
+  const filteredUnassignedResidents = unassignedResidents.filter(
+    (r) =>
+      r.name.toLowerCase().includes(residentSearchQuery.toLowerCase()) ||
+      (r.nim && r.nim.toLowerCase().includes(residentSearchQuery.toLowerCase()))
+  )
+
   const openAddModal = () => {
     setEditingAssignment(null)
     setAssignResidentId("")
+    setResidentSearchQuery("")
     setAssignSatkerId("")
     setAssignPosition("Anggota")
     setAssignStatus("ACTIVE")
@@ -308,14 +320,13 @@ export default function AssignmentListClient({
                     </td>
                     <td className="py-4 px-6">
                       <span
-                        className={`px-2 py-0.5 rounded text-xs font-bold ${
-                          a.position.toLowerCase() === "ketua"
+                        className={`px-2 py-0.5 rounded text-xs font-bold ${a.position.toLowerCase() === "ketua"
                             ? "bg-amber-500/10 text-amber-600 border border-amber-500/20"
                             : a.position.toLowerCase() === "sekretaris" ||
                               a.position.toLowerCase() === "bendahara"
-                            ? "bg-purple-500/10 text-purple-600 border border-purple-500/20"
-                            : "bg-zinc-100 dark:bg-zinc-800 text-zinc-750 dark:text-zinc-450 border border-zinc-200 dark:border-zinc-700/50"
-                        }`}
+                              ? "bg-purple-500/10 text-purple-600 border border-purple-500/20"
+                              : "bg-zinc-100 dark:bg-zinc-800 text-zinc-750 dark:text-zinc-450 border border-zinc-200 dark:border-zinc-700/50"
+                          }`}
                       >
                         {a.position}
                       </span>
@@ -348,11 +359,10 @@ export default function AssignmentListClient({
                     </td>
                     <td className="py-4 px-6">
                       <span
-                        className={`px-2.5 py-1 rounded-full text-xs font-bold uppercase ${
-                          a.status === "ACTIVE"
+                        className={`px-2.5 py-1 rounded-full text-xs font-bold uppercase ${a.status === "ACTIVE"
                             ? "bg-emerald-500/10 text-emerald-650 dark:text-emerald-450 border border-emerald-500/20"
                             : "bg-zinc-100 dark:bg-zinc-800 text-zinc-500 border border-zinc-200 dark:border-zinc-700/50"
-                        }`}
+                          }`}
                       >
                         {a.status === "ACTIVE" ? "Aktif" : "Selesai"}
                       </span>
@@ -415,18 +425,39 @@ export default function AssignmentListClient({
                     {editingAssignment.resident.name} ({editingAssignment.resident.nim || "-"})
                   </div>
                 ) : (
-                  <select
-                    value={assignResidentId}
-                    onChange={(e) => setAssignResidentId(e.target.value)}
-                    className="w-full bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-250 dark:border-zinc-800 rounded-xl py-3 px-4 text-zinc-850 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500/50"
-                  >
-                    <option value="">-- Pilih Santri --</option>
-                    {residents.map((r) => (
-                      <option key={r.id} value={r.id}>
-                        {r.name} ({r.nim || "-"})
-                      </option>
-                    ))}
-                  </select>
+                  <div className="space-y-2">
+                    <div className="relative">
+                      <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-zinc-450 dark:text-zinc-500" />
+                      <input
+                        type="text"
+                        placeholder="Ketik untuk mencari nama atau NIM..."
+                        value={residentSearchQuery}
+                        onChange={(e) => setResidentSearchQuery(e.target.value)}
+                        className="w-full bg-white dark:bg-zinc-900/50 border border-zinc-250 dark:border-zinc-800 rounded-xl py-2.5 pl-9 pr-4 text-zinc-850 dark:text-white placeholder-zinc-450 focus:outline-none focus:ring-2 focus:ring-primary-500/50 text-sm shadow-sm"
+                      />
+                    </div>
+                    <select
+                      size={4}
+                      value={assignResidentId}
+                      onChange={(e) => setAssignResidentId(e.target.value)}
+                      className="w-full bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-250 dark:border-zinc-800 rounded-xl py-2 px-3 text-zinc-850 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500/50 overflow-y-auto custom-scrollbar"
+                    >
+                      {filteredUnassignedResidents.map((r) => (
+                        <option
+                          key={r.id}
+                          value={r.id}
+                          className="py-2 px-2 my-0.5 border-b border-zinc-100 dark:border-zinc-800/50 last:border-0 hover:bg-primary-500/10 hover:text-primary-600 dark:hover:text-primary-400 hover:font-medium checked:bg-primary-500/20 checked:text-primary-600 checked:font-bold cursor-pointer rounded-lg transition-colors text-sm"
+                        >
+                          {r.name} ({r.nim || "-"})
+                        </option>
+                      ))}
+                      {filteredUnassignedResidents.length === 0 && (
+                        <option disabled className="py-3 px-2 text-zinc-500 dark:text-zinc-400 italic text-sm text-center">
+                          Tidak ada santri yang tersedia / cocok
+                        </option>
+                      )}
+                    </select>
+                  </div>
                 )}
               </div>
 

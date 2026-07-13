@@ -1,7 +1,7 @@
-"use client"
+﻿"use client"
 
 import { useState } from "react"
-import { Search, Save, FileText, CheckCircle, Printer, ChevronDown } from "lucide-react"
+import { Search, Save, FileText, CheckCircle, Printer, ChevronDown, Edit3, X, Star } from "lucide-react"
 import { saveMonitoringSatker, type SaveMonitoringSatkerInput } from "@/app/actions/laporan"
 
 interface AssignmentData {
@@ -104,39 +104,39 @@ type ResidentScores = Record<CriteriaKey, number> & {
 }
 
 function calculatePreview(scores: Record<CriteriaKey, number>) {
-  const total = 
-    scores.attendanceScore + 
-    scores.disciplineScore + 
-    scores.responsibilityScore + 
-    scores.workQualityScore + 
-    scores.attitudeScore + 
+  const total =
+    scores.attendanceScore +
+    scores.disciplineScore +
+    scores.responsibilityScore +
+    scores.workQualityScore +
+    scores.attitudeScore +
     scores.teamworkScore
-  
+
   const average = total / 6
 
   let predicate = "-"
   let predicateColor = "text-zinc-500"
   let bgGradient = "from-zinc-500/10 to-transparent"
 
-  if (average >= 4.5) { 
-    predicate = "Sangat Baik"; 
-    predicateColor = "text-emerald-600 dark:text-emerald-400"; 
+  if (average >= 4.5) {
+    predicate = "Sangat Baik";
+    predicateColor = "text-emerald-600 dark:text-emerald-400";
     bgGradient = "from-emerald-500/5 to-transparent";
-  } else if (average >= 3.5) { 
-    predicate = "Baik"; 
-    predicateColor = "text-teal-600 dark:text-teal-400"; 
+  } else if (average >= 3.5) {
+    predicate = "Baik";
+    predicateColor = "text-teal-600 dark:text-teal-400";
     bgGradient = "from-teal-500/5 to-transparent";
-  } else if (average >= 2.5) { 
-    predicate = "Cukup"; 
-    predicateColor = "text-amber-600 dark:text-amber-400"; 
+  } else if (average >= 2.5) {
+    predicate = "Cukup";
+    predicateColor = "text-amber-600 dark:text-amber-400";
     bgGradient = "from-amber-500/5 to-transparent";
-  } else if (average >= 1.5) { 
-    predicate = "Kurang"; 
-    predicateColor = "text-orange-600 dark:text-orange-400"; 
+  } else if (average >= 1.5) {
+    predicate = "Kurang";
+    predicateColor = "text-orange-600 dark:text-orange-400";
     bgGradient = "from-orange-500/5 to-transparent";
-  } else if (average > 0) { 
-    predicate = "Sangat Kurang"; 
-    predicateColor = "text-red-600 dark:text-red-400"; 
+  } else if (average > 0) {
+    predicate = "Sangat Kurang";
+    predicateColor = "text-red-600 dark:text-red-400";
     bgGradient = "from-red-500/5 to-transparent";
   }
 
@@ -150,10 +150,11 @@ export default function MonitoringKepalaSatkerClient({
   currentYear
 }: MonitoringKepalaSatkerClientProps) {
   const [searchTerm, setSearchTerm] = useState("")
+  const [selectedAssignmentId, setSelectedAssignmentId] = useState<string | null>(null)
   const [isSavingDraft, setIsSavingDraft] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [kesimpulan, setKesimpulan] = useState(laporanBulanan?.kesimpulan || "")
-  
+
   const isReadOnly = laporanBulanan?.status === "SUBMITTED"
 
   const [monitoringData, setMonitoringData] = useState<Record<string, ResidentScores>>(() => {
@@ -173,7 +174,7 @@ export default function MonitoringKepalaSatkerClient({
     return initial
   })
 
-  const filteredAssignments = satker.assignments.filter(a => 
+  const filteredAssignments = satker.assignments.filter(a =>
     a.resident.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     (a.resident.nim || "").toLowerCase().includes(searchTerm.toLowerCase())
   )
@@ -258,7 +259,7 @@ export default function MonitoringKepalaSatkerClient({
     if (val === 3) return "border-amber-500/30 focus:border-amber-500 focus:ring-amber-500/20"
     if (val === 2) return "border-orange-500/30 focus:border-orange-500 focus:ring-orange-500/20"
     if (val === 1) return "border-red-500/30 focus:border-red-500 focus:ring-red-500/20"
-    return "border-zinc-200 dark:border-zinc-800 focus:border-blue-500 focus:ring-blue-500/20"
+    return "border-zinc-200 dark:border-zinc-800 focus:border-primary-500 focus:ring-primary-500/20"
   }
 
   return (
@@ -268,12 +269,12 @@ export default function MonitoringKepalaSatkerClient({
         <div>
           <h1 className="text-2xl font-bold text-zinc-900 dark:text-white mb-1">Monitoring Penugasan</h1>
           <div className="flex items-center space-x-4 text-sm font-medium text-zinc-500 dark:text-zinc-400">
-            <span>Satker: <span className="text-blue-600 dark:text-blue-400 font-bold">{satker.name}</span></span>
+            <span>Satker: <span className="text-primary-600 dark:text-primary-400 font-bold">{satker.name}</span></span>
             <span>•</span>
-            <span>Periode: <span className="text-blue-600 dark:text-blue-400 font-bold">{MONTH_NAMES[currentMonth - 1]} {currentYear}</span></span>
+            <span>Periode: <span className="text-primary-600 dark:text-primary-400 font-bold">{MONTH_NAMES[currentMonth - 1]} {currentYear}</span></span>
           </div>
         </div>
-        
+
         <div className="flex items-center space-x-3">
           {laporanBulanan?.status === "SUBMITTED" && (
             <span className="px-3 py-1.5 bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 rounded-lg text-sm font-bold flex items-center space-x-1.5">
@@ -282,7 +283,7 @@ export default function MonitoringKepalaSatkerClient({
             </span>
           )}
           {laporanBulanan?.status === "DRAFT" && (
-            <span className="px-3 py-1.5 bg-blue-500/10 text-blue-600 border border-blue-500/20 rounded-lg text-sm font-bold flex items-center space-x-1.5">
+            <span className="px-3 py-1.5 bg-primary-500/10 text-primary-600 border border-primary-500/20 rounded-lg text-sm font-bold flex items-center space-x-1.5">
               <FileText className="w-4 h-4" />
               <span>Draft Tersimpan</span>
             </span>
@@ -298,86 +299,194 @@ export default function MonitoringKepalaSatkerClient({
           placeholder="Cari santri berdasarkan nama atau NIS..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full pl-10 pr-4 py-3 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500 outline-none transition-shadow"
+          className="w-full pl-10 pr-4 py-3 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-sm focus:ring-2 focus:ring-primary-500 outline-none transition-shadow"
         />
       </div>
 
-      {/* Modern Cards for Monitoring */}
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-        {filteredAssignments.map((assignment) => {
-          const data = monitoringData[assignment.id]
-          const preview = calculatePreview(data)
+      {/* Table of Santri */}
+      <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-sm overflow-hidden print:hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="bg-gradient-to-r from-primary-50/80 to-emerald-50/80 dark:from-primary-900/10 dark:to-emerald-900/10 border-b border-primary-100 dark:border-primary-900/30 text-xs font-bold text-primary-800 dark:text-primary-300 uppercase tracking-widest">
+                <th className="py-4 px-6">Nama Santri & NIS</th>
+                <th className="py-4 px-6 text-center">Status Penilaian</th>
+                <th className="py-4 px-6 text-center">Nilai Rata-rata</th>
+                <th className="py-4 px-6 text-right">Aksi Penilaian</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800/50 text-sm">
+              {filteredAssignments.map((assignment) => {
+                const data = monitoringData[assignment.id]
+                const preview = calculatePreview(data)
+                const isComplete = CRITERIA.every(c => data[c.key] > 0)
 
-          return (
-            <div 
-              key={assignment.id} 
-              className={`bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-300 relative overflow-hidden bg-gradient-to-br ${preview.bgGradient}`}
-            >
-              
-              <div className="flex justify-between items-start mb-6">
-                <div>
-                  <h3 className="text-xl font-bold text-zinc-900 dark:text-white">{assignment.resident.name}</h3>
-                  <p className="text-sm text-zinc-500 dark:text-zinc-400">NIS: {assignment.resident.nim || "-"}</p>
-                </div>
-                
-                <div className="text-right">
-                  <p className="text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Rata-rata</p>
-                  <div className="flex flex-col items-end">
-                    <span className="text-2xl font-black text-zinc-900 dark:text-white">
-                      {preview.average > 0 ? preview.average.toFixed(2) : "-"}
-                    </span>
-                    <span className={`text-sm font-bold ${preview.predicateColor}`}>
-                      {preview.predicate}
-                    </span>
-                  </div>
-                </div>
-              </div>
+                return (
+                  <tr key={assignment.id} className="hover:bg-zinc-50 dark:hover:bg-zinc-800/20 transition-colors">
+                    <td className="py-4 px-6">
+                      <div className="font-bold text-zinc-900 dark:text-white text-base">
+                        {assignment.resident.name}
+                      </div>
+                      <div className="font-mono text-xs text-zinc-500 dark:text-zinc-500 font-medium">
+                        NIS: {assignment.resident.nim || "-"}
+                      </div>
+                    </td>
+                    <td className="py-4 px-6">
+                      <div className="flex justify-center">
+                        {isComplete ? (
+                          <span className="px-3 py-1 bg-emerald-100 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/20 rounded-full text-[11px] font-black uppercase tracking-wider flex items-center space-x-1.5 shadow-sm shadow-emerald-500/10">
+                            <CheckCircle className="w-3.5 h-3.5" />
+                            <span>Lengkap</span>
+                          </span>
+                        ) : (
+                          <span className="px-3 py-1 bg-rose-100 dark:bg-rose-500/10 text-rose-700 dark:text-rose-400 border border-rose-200 dark:border-rose-500/20 rounded-full text-[11px] font-black uppercase tracking-wider shadow-sm shadow-rose-500/10">
+                            Belum Lengkap
+                          </span>
+                        )}
+                      </div>
+                    </td>
+                    <td className="py-4 px-6 text-center">
+                      {preview.average > 0 ? (
+                        <div className="flex flex-col items-center justify-center">
+                          <span className={`text-xl font-black ${preview.predicateColor}`}>
+                            {preview.average.toFixed(2)}
+                          </span>
+                          <span className={`text-[10px] uppercase font-bold tracking-widest ${preview.predicateColor}`}>
+                            {preview.predicate}
+                          </span>
+                        </div>
+                      ) : (
+                        <span className="text-zinc-300 dark:text-zinc-600 font-medium italic">-</span>
+                      )}
+                    </td>
+                    <td className="py-4 px-6 text-right">
+                      <button
+                        onClick={() => setSelectedAssignmentId(assignment.id)}
+                        className="px-4 py-2 bg-gradient-to-tr from-primary-600 to-emerald-500 hover:from-primary-500 hover:to-emerald-400 text-white font-bold rounded-xl text-xs uppercase tracking-wide transition-all shadow-md shadow-primary-500/25 active:scale-95 inline-flex items-center space-x-2"
+                      >
+                        <Edit3 className="w-3.5 h-3.5" />
+                        <span>{isReadOnly ? "Lihat Nilai" : "Beri Nilai"}</span>
+                      </button>
+                    </td>
+                  </tr>
+                )
+              })}
+              {filteredAssignments.length === 0 && (
+                <tr>
+                  <td colSpan={4} className="py-10 text-center text-zinc-500 bg-zinc-50 dark:bg-zinc-800/20 italic">
+                    Tidak ada santri yang ditugaskan di satker ini.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
 
-              {/* Rubric Criteria Dropdown inputs */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4 mb-6">
-                {CRITERIA.map(crit => {
-                  const currentValue = data[crit.key];
-                  const options = OPTIONS_MAP[crit.key];
-                  return (
-                    <div key={crit.key} className="flex flex-col space-y-1.5">
-                      <span className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">{crit.label}</span>
-                      <div className="relative">
-                        <select
-                          value={currentValue || ""}
-                          onChange={(e) => handleScoreChange(assignment.id, crit.key, Number(e.target.value))}
-                          disabled={isReadOnly}
-                          className={`w-full bg-zinc-50 dark:bg-zinc-800/50 border rounded-xl py-3 pl-4 pr-10 text-sm font-medium focus:ring-2 outline-none transition-all appearance-none cursor-pointer disabled:cursor-not-allowed ${getDropdownBorderColor(currentValue)}`}
-                        >
-                          <option value="" disabled className="text-zinc-400">Pilih penilaian...</option>
-                          {options.map(opt => (
-                            <option key={opt.value} value={opt.value} className="text-zinc-800 dark:text-zinc-200">
-                              {opt.label} ({opt.value})
-                            </option>
-                          ))}
-                        </select>
-                        <ChevronDown className="w-4 h-4 absolute right-3.5 top-1/2 transform -translate-y-1/2 text-zinc-400 pointer-events-none" />
+      {/* Modal / Card Form Penilaian overlay */}
+      {selectedAssignmentId && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 print:hidden">
+          {/* Backdrop */}
+          <div
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity"
+            onClick={() => setSelectedAssignmentId(null)}
+          />
+
+          {/* Modal Content */}
+          <div className="relative w-full max-w-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
+
+            {/* Find selected data */}
+            {(() => {
+              const assignment = filteredAssignments.find(a => a.id === selectedAssignmentId);
+              if (!assignment) return null;
+
+              const data = monitoringData[assignment.id];
+              const preview = calculatePreview(data);
+
+              return (
+                <>
+                  <div className={`p-6 border-b border-zinc-100 dark:border-zinc-800 bg-gradient-to-br ${preview.bgGradient}`}>
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h2 className="text-2xl font-black text-zinc-900 dark:text-white capitalize leading-tight">
+                          {assignment.resident.name}
+                        </h2>
+                        <p className="text-sm text-zinc-500 font-mono mt-1">NIS: {assignment.resident.nim || "-"}</p>
+                      </div>
+
+                      <div className="text-right bg-white/50 dark:bg-black/20 backdrop-blur rounded-2xl p-3 border border-zinc-200/50 dark:border-zinc-700/30">
+                        <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-1 flex items-center justify-end space-x-1">
+                          <Star className="w-3 h-3" />
+                          <span>Rata-Rata</span>
+                        </p>
+                        <div className="flex flex-col items-end">
+                          <span className={`text-3xl leading-none font-black ${preview.predicateColor}`}>
+                            {preview.average > 0 ? preview.average.toFixed(2) : "-"}
+                          </span>
+                          <span className={`text-xs font-bold uppercase mt-1 ${preview.predicateColor}`}>
+                            {preview.average > 0 ? preview.predicate : "Belum dinilai"}
+                          </span>
+                        </div>
                       </div>
                     </div>
-                  )
-                })}
-              </div>
+                  </div>
 
-              <div className="mt-4">
-                <label className="block text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-2">Saran Kepala Satker (Opsional)</label>
-                <textarea
-                  value={data.supervisorNotes}
-                  onChange={(e) => handleNotesChange(assignment.id, e.target.value)}
-                  disabled={isReadOnly}
-                  rows={2}
-                  placeholder="Berikan masukan, kritik, atau saran..."
-                  className="w-full bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 rounded-xl py-3 px-4 text-sm focus:ring-2 focus:ring-blue-500 outline-none resize-y transition-colors disabled:opacity-75"
-                />
-              </div>
+                  <div className="p-6 overflow-y-auto custom-scrollbar flex-1">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-5 mb-6">
+                      {CRITERIA.map(crit => {
+                        const currentValue = data[crit.key];
+                        const options = OPTIONS_MAP[crit.key];
+                        return (
+                          <div key={crit.key} className="flex flex-col space-y-2">
+                            <label className="text-[11px] font-bold text-zinc-500 uppercase tracking-wider">{crit.label}</label>
+                            <div className="relative">
+                              <select
+                                value={currentValue || ""}
+                                onChange={(e) => handleScoreChange(assignment.id, crit.key, Number(e.target.value))}
+                                disabled={isReadOnly}
+                                className={`w-full bg-zinc-50 dark:bg-zinc-800/80 border rounded-xl py-3 pl-4 pr-10 text-sm font-medium focus:ring-2 outline-none transition-all appearance-none cursor-pointer disabled:cursor-not-allowed ${getDropdownBorderColor(currentValue)}`}
+                              >
+                                <option value="" disabled className="text-zinc-400">Pilih penilaian...</option>
+                                {options.map(opt => (
+                                  <option key={opt.value} value={opt.value} className="text-zinc-800 dark:text-zinc-200">
+                                    {opt.label} ({opt.value})
+                                  </option>
+                                ))}
+                              </select>
+                              <ChevronDown className="w-4 h-4 absolute right-3.5 top-1/2 transform -translate-y-1/2 text-zinc-400 pointer-events-none" />
+                            </div>
+                          </div>
+                        )
+                      })}
+                    </div>
 
-            </div>
-          )
-        })}
-      </div>
+                    <div className="mt-2">
+                      <label className="text-[11px] font-bold text-zinc-500 uppercase tracking-wider block mb-2">Saran Kepala Satker (Opsional)</label>
+                      <textarea
+                        value={data.supervisorNotes}
+                        onChange={(e) => handleNotesChange(assignment.id, e.target.value)}
+                        disabled={isReadOnly}
+                        rows={3}
+                        placeholder="Berikan masukan, kritik, apresiasi, atau saran untuk performa santri ini..."
+                        className="w-full bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700/80 rounded-xl p-4 text-sm focus:ring-2 focus:ring-primary-500 outline-none resize-none transition-colors disabled:opacity-75"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="p-4 border-t border-zinc-100 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50 flex justify-end">
+                    <button
+                      onClick={() => setSelectedAssignmentId(null)}
+                      className="px-6 py-2.5 bg-primary-600 text-white text-sm font-bold rounded-xl hover:bg-primary-700 shadow-md shadow-primary-500/20 active:scale-95 transition-all w-full sm:w-auto text-center"
+                    >
+                      {isReadOnly ? "Tutup" : "Selesai Penilaian"}
+                    </button>
+                  </div>
+                </>
+              )
+            })()}
+          </div>
+        </div>
+      )}
 
       {/* Kesimpulan */}
       <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-sm p-6">
@@ -388,7 +497,7 @@ export default function MonitoringKepalaSatkerClient({
           disabled={isReadOnly}
           rows={5}
           placeholder="Tuliskan evaluasi menyeluruh kinerja satker bulan ini..."
-          className="w-full bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 rounded-xl p-4 text-sm focus:ring-2 focus:ring-blue-500 outline-none resize-y transition-colors disabled:opacity-75"
+          className="w-full bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 rounded-xl p-4 text-sm focus:ring-2 focus:ring-primary-500 outline-none resize-y transition-colors disabled:opacity-75"
         />
       </div>
 
@@ -401,13 +510,13 @@ export default function MonitoringKepalaSatkerClient({
           <Printer className="w-4 h-4" />
           <span>Cetak PDF</span>
         </button>
-        
+
         {!isReadOnly && (
           <>
             <button
               onClick={() => handleSave("DRAFT")}
               disabled={isSavingDraft || isSubmitting}
-              className="w-full sm:w-auto px-6 py-2.5 bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 font-semibold border border-blue-200 dark:border-blue-500/20 rounded-xl hover:bg-blue-100 dark:hover:bg-blue-500/20 transition-colors flex items-center justify-center space-x-2 disabled:opacity-50"
+              className="w-full sm:w-auto px-6 py-2.5 bg-primary-50 dark:bg-primary-500/10 text-primary-600 dark:text-primary-400 font-semibold border border-primary-200 dark:border-primary-500/20 rounded-xl hover:bg-primary-100 dark:hover:bg-primary-500/20 transition-colors flex items-center justify-center space-x-2 disabled:opacity-50"
             >
               <Save className="w-4 h-4" />
               <span>{isSavingDraft ? "Menyimpan..." : "Simpan Draft"}</span>
@@ -416,7 +525,7 @@ export default function MonitoringKepalaSatkerClient({
             <button
               onClick={() => handleSave("SUBMITTED")}
               disabled={isSavingDraft || isSubmitting}
-              className="w-full sm:w-auto px-6 py-3 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-transform hover:scale-105 active:scale-95 flex items-center justify-center space-x-2 disabled:opacity-50 shadow-lg shadow-blue-500/30"
+              className="w-full sm:w-auto px-6 py-3 bg-primary-600 text-white font-semibold rounded-xl hover:bg-primary-700 transition-transform hover:scale-105 active:scale-95 flex items-center justify-center space-x-2 disabled:opacity-50 shadow-lg shadow-primary-500/30"
             >
               <CheckCircle className="w-4 h-4" />
               <span>{isSubmitting ? "Submit..." : "Submit Laporan"}</span>
@@ -427,3 +536,4 @@ export default function MonitoringKepalaSatkerClient({
     </div>
   )
 }
+

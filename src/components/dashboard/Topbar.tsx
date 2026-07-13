@@ -4,6 +4,7 @@ import { useSyncExternalStore } from "react"
 import { useState, useEffect } from "react"
 import { Menu, User as UserIcon, Sun, Moon } from "lucide-react"
 import NotificationDropdown from "@/components/dashboard/NotificationDropdown"
+import { useSidebar } from "@/components/providers/SidebarProvider"
 
 function getInitialTheme(): "light" | "dark" {
   if (typeof window === "undefined") return "light"
@@ -13,12 +14,13 @@ function getInitialTheme(): "light" | "dark" {
 }
 
 // useSyncExternalStore subscribe noop — used only for client vs server detection
-const subscribe = () => () => {}
+const subscribe = () => () => { }
 
 export default function Topbar({ user }: { user?: { name?: string | null; role?: string } }) {
   // mounted = true only on client side (avoids hydration mismatch)
   const mounted = useSyncExternalStore(subscribe, () => true, () => false)
   const [theme, setTheme] = useState<"light" | "dark">(getInitialTheme)
+  const { toggle: toggleSidebar } = useSidebar()
 
   // Sync DOM class whenever theme changes
   useEffect(() => {
@@ -48,6 +50,7 @@ export default function Topbar({ user }: { user?: { name?: string | null; role?:
       <div className="flex items-center gap-3">
         {/* Mobile hamburger — desktop hidden */}
         <button
+          onClick={toggleSidebar}
           className="md:hidden p-2 text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-white rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
           aria-label="Buka menu"
         >
