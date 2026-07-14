@@ -39,6 +39,7 @@ interface ResidentDetailModalProps {
   resident: Resident | null
   onEdit?: () => void
   permissions?: string[]
+  isSatkerView?: boolean
 }
 
 export const StatusBadge = ({ status }: { status: string }) => {
@@ -371,7 +372,7 @@ function printResidentCard(resident: Resident) {
 
 // ─── Main Modal ───────────────────────────────────────────────────────────────
 export default function ResidentDetailModal({
-  isOpen, onClose, resident, onEdit, permissions = []
+  isOpen, onClose, resident, onEdit, permissions = [], isSatkerView = false
 }: ResidentDetailModalProps) {
   const hasAuditView = permissions.includes(PERMISSIONS.AUDIT_VIEW) || permissions.includes("SUPER_ADMIN")
   const hasUpdateSantri = permissions.includes(PERMISSIONS.SANTRI_UPDATE) || permissions.includes("SUPER_ADMIN")
@@ -533,10 +534,12 @@ export default function ResidentDetailModal({
                   <span>🎓</span>
                   <span className="font-medium text-zinc-800 dark:text-zinc-300">Angkatan {r.angkatan || "-"}</span>
                 </div>
-                <div className="flex items-center gap-1.5 text-zinc-600 dark:text-zinc-400">
-                  <span>📱</span>
-                  <span className="font-medium text-zinc-800 dark:text-zinc-300">{r.phone || "-"}</span>
-                </div>
+                {!isSatkerView && (
+                  <div className="flex items-center gap-1.5 text-zinc-600 dark:text-zinc-400">
+                    <span>📱</span>
+                    <span className="font-medium text-zinc-800 dark:text-zinc-300">{r.phone || "-"}</span>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -562,10 +565,14 @@ export default function ResidentDetailModal({
                 <div className="space-y-6">
                   <div>
                     <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-400 mb-4 border-b pb-2">Identitas Utama</h3>
-                    {[["Nama Lengkap", r.name], ["Jenis Kelamin", r.gender === "LAKI_LAKI" ? "Laki-Laki" : r.gender === "PEREMPUAN" ? "Perempuan" : r.gender || "Laki-Laki"], ["NIK (KTP)", r.nik || "-"]].map(([l, v]) => (
-                      <div key={l} className="grid grid-cols-3 gap-2 mb-3">
+                    {[
+                      ["Nama Lengkap", r.name],
+                      ["Jenis Kelamin", r.gender === "LAKI_LAKI" ? "Laki-Laki" : r.gender === "PEREMPUAN" ? "Perempuan" : r.gender || "Laki-Laki"],
+                      ...(!isSatkerView ? [["NIK (KTP)", r.nik || "-"]] : [])
+                    ].map(([l, v]) => (
+                      <div key={l as string} className="grid grid-cols-3 gap-2 mb-3">
                         <span className="text-sm text-zinc-500">{l}</span>
-                        <span className="col-span-2 text-sm font-semibold text-zinc-800 dark:text-zinc-200">{v}</span>
+                        <span className="col-span-2 text-sm font-semibold text-zinc-800 dark:text-zinc-200">{v as string}</span>
                       </div>
                     ))}
                   </div>

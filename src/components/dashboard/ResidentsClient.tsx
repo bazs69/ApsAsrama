@@ -17,21 +17,22 @@ import { useResidentSelection } from "./residents/useResidentSelection"
 import { useResidentStats } from "./residents/useResidentStats"
 import { downloadResidentImportTemplate, exportResidentsToCSV, printResidentsPDF } from "@/utils/residentExport"
 import { useResidentImport } from "./residents/import/useResidentImport"
-
 export default function ResidentsClient({
   initialResidents,
   areaHierarchy,
   fakultasOptions,
   prodiOptions,
   angkatanOptions,
-  permissions = []
+  permissions = [],
+  isSatkerView = false
 }: {
   initialResidents: Resident[]
   areaHierarchy: WilayahNode[]
-  fakultasOptions: {id: string, name: string}[]
-  prodiOptions: {id: string, name: string, fakultasId: string}[]
-  angkatanOptions: {id: string, name: string, prodiId: string}[]
+  fakultasOptions: { id: string, name: string }[]
+  prodiOptions: { id: string, name: string, fakultasId: string }[]
+  angkatanOptions: { id: string, name: string, prodiId: string }[]
   permissions?: string[]
+  isSatkerView?: boolean
 }) {
   const rooms = areaHierarchy.flatMap(w => w.daerahs.flatMap(d => d.rooms))
   const [residents, setResidents] = useState<Resident[]>(initialResidents)
@@ -63,7 +64,7 @@ export default function ResidentsClient({
     selectedCount,
     toggleSelectionMode
   } = useResidentSelection()
-  
+
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isMoveModalOpen, setIsMoveModalOpen] = useState(false)
   const [editingResident, setEditingResident] = useState<Resident | null>(null)
@@ -97,7 +98,7 @@ export default function ResidentsClient({
     startTransition(async () => {
       const idsArray = Array.from(selectedIds)
       const res = await bulkMoveResidents(idsArray, { roomId: moveRoomId })
-      
+
       if (res.error) {
         setError(res.error)
       } else {
@@ -140,22 +141,24 @@ export default function ResidentsClient({
           <h1 className="text-2xl font-bold text-zinc-900 dark:text-white mb-1">Direktori Santri</h1>
           <p className="text-zinc-550 dark:text-zinc-400 text-sm">Daftarkan santri baru, kelola detail kamar, dan pantau database santri.</p>
         </div>
-        <ResidentsToolbar
-          fileInputRef={fileInputRef}
-          handleFileUpload={handleFileUpload}
-          importing={importing}
-          downloadTemplate={downloadTemplate}
-          exportToCSV={exportToCSV}
-          printPDF={printPDF}
-          isSelectionActive={isSelectionActive}
-          toggleSelectionMode={toggleSelectionMode}
-          selectedIds={selectedIds}
-          onOpenMoveModal={() => {
-            setError("")
-            setIsMoveModalOpen(true)
-          }}
-          handleBulkDelete={handleBulkDelete}
-        />
+        {!isSatkerView && (
+          <ResidentsToolbar
+            fileInputRef={fileInputRef}
+            handleFileUpload={handleFileUpload}
+            importing={importing}
+            downloadTemplate={downloadTemplate}
+            exportToCSV={exportToCSV}
+            printPDF={printPDF}
+            isSelectionActive={isSelectionActive}
+            toggleSelectionMode={toggleSelectionMode}
+            selectedIds={selectedIds}
+            onOpenMoveModal={() => {
+              setError("")
+              setIsMoveModalOpen(true)
+            }}
+            handleBulkDelete={handleBulkDelete}
+          />
+        )}
       </div>
 
       {/* Stats Cards */}
@@ -206,7 +209,7 @@ export default function ResidentsClient({
         handleSelectToggle={handleSelectToggle}
         setViewingResident={setViewingResident}
       />
-      
+
       {/* Modal Pindah Asrama/Kamar */}
       {isMoveModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -221,8 +224,8 @@ export default function ResidentsClient({
                   Memindahkan {selectedIds.size} santri terpilih.
                 </p>
               </div>
-              <button 
-                onClick={() => setIsMoveModalOpen(false)} 
+              <button
+                onClick={() => setIsMoveModalOpen(false)}
                 className="text-zinc-450 dark:text-zinc-500 hover:text-zinc-850 dark:hover:text-white p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-full transition-colors cursor-pointer"
               >
                 <X className="w-5 h-5" />
@@ -320,6 +323,7 @@ export default function ResidentsClient({
           setViewingResident(null)
         }}
         permissions={permissions}
+        isSatkerView={isSatkerView}
       />
     </div>
   )

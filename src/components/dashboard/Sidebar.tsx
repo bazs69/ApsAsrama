@@ -282,7 +282,7 @@ function OpsDropdown({ pathname }: { pathname: string }) {
 
 // ─── Main Sidebar ─────────────────────────────────────────────────────────────
 
-export default function Sidebar({ permissions = [] }: { userRole: string, permissions?: string[] }) {
+export default function Sidebar({ userRole, permissions = [] }: { userRole?: string, permissions?: string[] }) {
   const pathname = usePathname()
 
   const hasPerm = (action: string) => permissions.includes(action.toLowerCase())
@@ -296,6 +296,7 @@ export default function Sidebar({ permissions = [] }: { userRole: string, permis
   const showReferensi = hasPerm("wilayah.view") || hasPerm("area.view") || hasPerm("akademik.view") || hasPerm("kbm.view") || hasPerm("role.view") || hasPerm("satker.view")
   const showPengaturan = hasPerm("pengaturan.view")
   const showAuditLog = hasPerm("audit.view")
+  const showSatkerSantri = userRole === "KEPALA_SATKER"
 
   const isAssignmentActive = pathname === "/dashboard/assignments" || pathname === "/dashboard/monitoring-penugasan"
 
@@ -346,6 +347,19 @@ export default function Sidebar({ permissions = [] }: { userRole: string, permis
         })}
 
         {showDataMaster && <DataMasterDropdown pathname={pathname} />}
+
+        {showSatkerSantri && (
+          <Link
+            href="/dashboard/satker-santri"
+            className={`flex items-center space-x-3 px-4 py-3 rounded-xl transition-all ${pathname === "/dashboard/satker-santri"
+              ? "bg-primary-500/10 text-primary-600 dark:text-primary-400 border border-primary-500/25"
+              : "text-zinc-500 dark:text-zinc-400 hover:bg-zinc-150 dark:hover:bg-zinc-800/50 hover:text-zinc-800 dark:hover:text-zinc-200"
+              }`}
+          >
+            <Users className={`w-5 h-5 ${pathname === "/dashboard/satker-santri" ? "text-primary-600 dark:text-primary-400" : ""}`} />
+            <span className="font-semibold">Data Santri Satker</span>
+          </Link>
+        )}
 
         <div>
           <button

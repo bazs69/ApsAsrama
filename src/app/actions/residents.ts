@@ -44,6 +44,42 @@ export async function getResidents() {
   }
 }
 
+export async function getResidentsBySatker(satkerId: string) {
+  try {
+    const assignments = await prisma.assignment.findMany({
+      where: {
+        satkerId,
+        status: "ACTIVE"
+      },
+      include: {
+        resident: {
+          include: {
+            room: true,
+            assignments: {
+              include: {
+                satker: true
+              }
+            }
+          }
+        }
+      }
+    })
+
+    // Extract unique residents from assignments
+    const residentsMap = new Map()
+    for (const a of assignments) {
+      if (a.resident && !residentsMap.has(a.resident.id)) {
+        residentsMap.set(a.resident.id, a.resident)
+      }
+    }
+
+    return Array.from(residentsMap.values())
+  } catch (error) {
+    logOperationalError({ action: "getResidentsBySatker", error })
+    return []
+  }
+}
+
 export async function getResidentsPaginated(options: { page: number; pageSize: number; search?: string }) {
   try {
     const { page, pageSize, search } = options
