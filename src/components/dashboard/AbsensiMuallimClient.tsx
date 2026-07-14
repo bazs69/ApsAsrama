@@ -216,7 +216,7 @@ export default function AbsensiMuallimClient({
           <div className="flex items-center bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-1 shadow-sm">
             <button
               onClick={exportToCSV}
-              className="p-2 text-zinc-500 hover:text-emerald-600 dark:text-zinc-400 dark:hover:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 rounded-lg transition-all flex items-center justify-center tooltip-trigger relative"
+              className="p-2 text-zinc-500 hover:text-emerald-600 dark:text-zinc-400 dark:hover:text-emerald-400 hover:bg-emerald-50 dark:bg-emerald-900/20 dark:hover:bg-emerald-50 dark:bg-emerald-900/200/10 rounded-lg transition-all flex items-center justify-center tooltip-trigger relative"
               title="Ekspor Data ke CSV"
             >
               <FileText className="w-4 h-4" />
@@ -232,7 +232,7 @@ export default function AbsensiMuallimClient({
           </div>
           <button
             onClick={openAddModal}
-            className="bg-zinc-900 hover:bg-zinc-800 dark:bg-white dark:hover:bg-zinc-200 text-white dark:text-zinc-900 rounded-xl py-2.5 px-4 font-semibold shadow-md flex items-center justify-center space-x-2 transition-all text-sm"
+            className="bg-zinc-900 hover:bg-zinc-800 dark:bg-white dark:bg-zinc-900 dark:hover:bg-zinc-200 text-white dark:text-zinc-900 rounded-xl py-2.5 px-4 font-semibold shadow-md flex items-center justify-center space-x-2 transition-all text-sm"
           >
             <Plus className="w-4 h-4" />
             <span>Isi Absensi</span>
@@ -287,9 +287,9 @@ export default function AbsensiMuallimClient({
                       <div className="flex flex-col items-start space-y-1">
                         <span className={`px-2.5 py-1 rounded-full text-xs font-bold uppercase ${
                           a.status === AbsensiStatus.HADIR
-                            ? "bg-emerald-500/10 text-emerald-650 dark:text-emerald-400 border border-emerald-500/20"
+                            ? "bg-emerald-50 dark:bg-emerald-900/200/10 text-emerald-650 dark:text-emerald-400 border border-emerald-500/20"
                             : a.status === AbsensiStatus.IZIN
-                            ? "bg-amber-500/10 text-amber-650 dark:text-amber-400 border border-amber-500/20"
+                            ? "bg-amber-50 dark:bg-amber-900/100/10 text-amber-650 dark:text-amber-400 border border-amber-500/20"
                             : "bg-blue-500/10 text-blue-650 dark:text-blue-400 border border-blue-500/20"
                         }`}>
                           {a.status}
@@ -304,7 +304,7 @@ export default function AbsensiMuallimClient({
                     <td className="py-4 px-6 text-right">
                       <button
                         onClick={() => handleDelete(a.id)}
-                        className="p-1.5 text-zinc-500 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors inline-block"
+                        className="p-1.5 text-zinc-500 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:bg-red-900/200/10 rounded-lg transition-colors inline-block"
                         title="Hapus Data"
                       >
                         <LogOut className="w-4 h-4" />
@@ -331,7 +331,7 @@ export default function AbsensiMuallimClient({
             </div>
 
             {error && (
-              <div className="p-3 bg-red-500/10 border border-red-500/20 text-red-650 dark:text-red-400 text-xs rounded-xl flex items-center space-x-2">
+              <div className="p-3 bg-red-50 dark:bg-red-900/200/10 border border-red-500/20 text-red-650 dark:text-red-400 text-xs rounded-xl flex items-center space-x-2">
                 <AlertCircle className="w-4 h-4 flex-shrink-0" />
                 <span>{error}</span>
               </div>

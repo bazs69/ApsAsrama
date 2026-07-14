@@ -267,7 +267,7 @@ export default function AuditLogClient({
               {hasFilters && (
                 <button
                   onClick={clearFilters}
-                  className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                  className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:bg-red-900/20 dark:hover:bg-red-900/20 rounded-lg transition-colors"
                 >
                   <X className="w-3.5 h-3.5" /> Reset Filter
                 </button>

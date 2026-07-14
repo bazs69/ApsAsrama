@@ -36,17 +36,17 @@ function typeConfig(type: string) {
     case "SUCCESS":
       return {
         icon: <CheckCircle className="w-4 h-4 text-emerald-500 flex-shrink-0" />,
-        dot: "bg-emerald-500",
+        dot: "bg-emerald-50 dark:bg-emerald-900/200",
       }
     case "WARNING":
       return {
         icon: <AlertTriangle className="w-4 h-4 text-amber-500 flex-shrink-0" />,
-        dot: "bg-amber-500",
+        dot: "bg-amber-50 dark:bg-amber-900/100",
       }
     case "ERROR":
       return {
         icon: <AlertCircle className="w-4 h-4 text-red-500 flex-shrink-0" />,
-        dot: "bg-red-500",
+        dot: "bg-red-50 dark:bg-red-900/200",
       }
     default: // INFO
       return {
@@ -203,7 +203,7 @@ export default function NotificationDropdown() {
 
         {/* Badge */}
         {unreadCount > 0 && (
-          <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] flex items-center justify-center rounded-full bg-red-500 text-white text-[10px] font-bold border-2 border-white dark:border-zinc-950 px-0.5 leading-none">
+          <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] flex items-center justify-center rounded-full bg-red-50 dark:bg-red-900/200 text-white text-[10px] font-bold border-2 border-white dark:border-zinc-950 px-0.5 leading-none">
             {unreadCount > 99 ? "99+" : unreadCount}
           </span>
         )}
@@ -212,7 +212,7 @@ export default function NotificationDropdown() {
       {/* Dropdown panel */}
       {open && (
         <div
-          className="absolute right-0 top-full mt-2 w-80 sm:w-96 max-h-[500px] flex flex-col rounded-2xl border border-zinc-200 dark:border-zinc-700/80 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md shadow-2xl z-50 overflow-hidden"
+          className="absolute right-0 top-full mt-2 w-80 sm:w-96 max-h-[500px] flex flex-col rounded-2xl border border-zinc-200 dark:border-zinc-700/80 bg-white dark:bg-zinc-900/95 dark:bg-zinc-900/95 backdrop-blur-md shadow-2xl z-50 overflow-hidden"
           role="dialog"
           aria-label="Panel Notifikasi"
         >

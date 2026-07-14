@@ -26,10 +26,10 @@ export default function LaporanMonitoring({ data, onOpenDetail }: {
 
   const getStatusBadge = (status: string) => {
     switch(status) {
-      case "Sangat Aktif": return "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20"
+      case "Sangat Aktif": return "bg-emerald-50 dark:bg-emerald-900/200/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20"
       case "Aktif": return "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20"
-      case "Cukup Aktif": return "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20"
-      case "Kurang Aktif": return "bg-red-500/10 text-red-600 dark:text-red-400 border-red-500/20"
+      case "Cukup Aktif": return "bg-amber-50 dark:bg-amber-900/100/10 text-amber-600 dark:text-amber-400 border-amber-500/20"
+      case "Kurang Aktif": return "bg-red-50 dark:bg-red-900/200/10 text-red-600 dark:text-red-400 border-red-500/20"
       default: return "bg-zinc-500/10 text-zinc-600 dark:text-zinc-400 border-zinc-500/20"
     }
   }

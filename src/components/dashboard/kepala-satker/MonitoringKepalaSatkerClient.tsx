@@ -277,7 +277,7 @@ export default function MonitoringKepalaSatkerClient({
 
         <div className="flex items-center space-x-3">
           {laporanBulanan?.status === "SUBMITTED" && (
-            <span className="px-3 py-1.5 bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 rounded-lg text-sm font-bold flex items-center space-x-1.5">
+            <span className="px-3 py-1.5 bg-emerald-50 dark:bg-emerald-900/200/10 text-emerald-600 border border-emerald-500/20 rounded-lg text-sm font-bold flex items-center space-x-1.5">
               <CheckCircle className="w-4 h-4" />
               <span>Sudah Submit</span>
             </span>
@@ -334,7 +334,7 @@ export default function MonitoringKepalaSatkerClient({
                     <td className="py-4 px-6">
                       <div className="flex justify-center">
                         {isComplete ? (
-                          <span className="px-3 py-1 bg-emerald-100 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/20 rounded-full text-[11px] font-black uppercase tracking-wider flex items-center space-x-1.5 shadow-sm shadow-emerald-500/10">
+                          <span className="px-3 py-1 bg-emerald-100 dark:bg-emerald-50 dark:bg-emerald-900/200/10 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/20 rounded-full text-[11px] font-black uppercase tracking-wider flex items-center space-x-1.5 shadow-sm shadow-emerald-500/10">
                             <CheckCircle className="w-3.5 h-3.5" />
                             <span>Lengkap</span>
                           </span>
@@ -414,7 +414,7 @@ export default function MonitoringKepalaSatkerClient({
                         <p className="text-sm text-zinc-500 font-mono mt-1">NIS: {assignment.resident.nim || "-"}</p>
                       </div>
 
-                      <div className="text-right bg-white/50 dark:bg-black/20 backdrop-blur rounded-2xl p-3 border border-zinc-200/50 dark:border-zinc-700/30">
+                      <div className="text-right bg-white dark:bg-zinc-900/50 dark:bg-black/20 backdrop-blur rounded-2xl p-3 border border-zinc-200/50 dark:border-zinc-700/30">
                         <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-1 flex items-center justify-end space-x-1">
                           <Star className="w-3 h-3" />
                           <span>Rata-Rata</span>

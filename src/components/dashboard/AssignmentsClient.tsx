@@ -506,7 +506,7 @@ export default function AssignmentsClient({
           </div>
 
           <div className="glass rounded-2xl p-5 border border-emerald-500/20 flex items-center space-x-4">
-            <div className="w-12 h-12 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-650 dark:text-emerald-400">
+            <div className="w-12 h-12 rounded-xl bg-emerald-50 dark:bg-emerald-900/200/10 flex items-center justify-center text-emerald-650 dark:text-emerald-400">
               <CheckCircle2 className="w-6 h-6" />
             </div>
             <div>
@@ -532,7 +532,7 @@ export default function AssignmentsClient({
           </div>
 
           <div className="glass rounded-2xl p-5 border border-emerald-500/20 flex items-center space-x-4">
-            <div className="w-12 h-12 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-650 dark:text-emerald-400">
+            <div className="w-12 h-12 rounded-xl bg-emerald-50 dark:bg-emerald-900/200/10 flex items-center justify-center text-emerald-650 dark:text-emerald-400">
               <ShieldCheck className="w-6 h-6" />
             </div>
             <div>
@@ -602,7 +602,7 @@ export default function AssignmentsClient({
                       <td className="py-4 px-6">
                         <span className={`px-2 py-0.5 rounded text-xs font-bold ${
                           a.position.toLowerCase() === "ketua"
-                            ? "bg-amber-500/10 text-amber-600 border border-amber-500/20"
+                            ? "bg-amber-50 dark:bg-amber-900/100/10 text-amber-600 border border-amber-500/20"
                             : a.position.toLowerCase() === "sekretaris" || a.position.toLowerCase() === "bendahara"
                             ? "bg-purple-500/10 text-purple-600 border border-purple-500/20"
                             : "bg-zinc-100 dark:bg-zinc-800 text-zinc-750 dark:text-zinc-450 border border-zinc-200 dark:border-zinc-700/50"
@@ -625,9 +625,9 @@ export default function AssignmentsClient({
                       <td className="py-4 px-6">
                         <span className={`px-2.5 py-1 rounded-full text-xs font-bold uppercase ${
                           a.status === "ACTIVE"
-                            ? "bg-emerald-500/10 text-emerald-650 dark:text-emerald-450 border border-emerald-500/20"
+                            ? "bg-emerald-50 dark:bg-emerald-900/200/10 text-emerald-650 dark:text-emerald-450 border border-emerald-500/20"
                             : a.status === "TRANSFERRED"
-                            ? "bg-amber-500/10 text-amber-600 dark:text-amber-450 border border-amber-500/20"
+                            ? "bg-amber-50 dark:bg-amber-900/100/10 text-amber-600 dark:text-amber-450 border border-amber-500/20"
                             : "bg-zinc-100 dark:bg-zinc-800 text-zinc-500 border border-zinc-200 dark:border-zinc-700/50"
                         }`}>
                           {a.status === "ACTIVE" ? "Aktif" : a.status === "TRANSFERRED" ? "Dipindah" : "Selesai"}
@@ -637,7 +637,7 @@ export default function AssignmentsClient({
                         {a.status === "ACTIVE" && (
                           <button
                             onClick={() => openTransferModal(a)}
-                            className="p-1.5 text-zinc-450 hover:text-amber-600 dark:text-zinc-400 dark:hover:text-amber-400 hover:bg-amber-500/10 rounded-lg transition-colors inline-block cursor-pointer"
+                            className="p-1.5 text-zinc-450 hover:text-amber-600 dark:text-zinc-400 dark:hover:text-amber-400 hover:bg-amber-50 dark:bg-amber-900/100/10 rounded-lg transition-colors inline-block cursor-pointer"
                             title="Transfer ke Satker Lain"
                           >
                             <ArrowRightLeft className="w-4 h-4" />
@@ -652,7 +652,7 @@ export default function AssignmentsClient({
                         </button>
                         <button
                           onClick={() => handleDeleteAssignment(a.id, a.resident.name, a.satker.name)}
-                          className="p-1.5 text-zinc-500 hover:text-red-650 dark:hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors inline-block cursor-pointer"
+                          className="p-1.5 text-zinc-500 hover:text-red-650 dark:hover:text-red-400 hover:bg-red-50 dark:bg-red-900/200/10 rounded-lg transition-colors inline-block cursor-pointer"
                           title="Hapus Penugasan"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -685,7 +685,7 @@ export default function AssignmentsClient({
                   <div className="p-2.5 rounded-xl bg-gradient-to-br from-emerald-500/10 to-emerald-500/25 border border-emerald-500/20 text-emerald-600 dark:text-emerald-450">
                     <Briefcase className="w-5 h-5" />
                   </div>
-                  <span className="bg-emerald-500/10 border border-emerald-500/20 text-emerald-650 dark:text-emerald-450 rounded-full px-3 py-1 text-xs font-bold flex items-center space-x-1">
+                  <span className="bg-emerald-50 dark:bg-emerald-900/200/10 border border-emerald-500/20 text-emerald-650 dark:text-emerald-450 rounded-full px-3 py-1 text-xs font-bold flex items-center space-x-1">
                     <Users className="w-3.5 h-3.5" />
                     <span>{s.assignments.filter((a) => {
                       const ass = assignments.find((f) => f.id === a.id)
@@ -721,7 +721,7 @@ export default function AssignmentsClient({
                 </button>
                 <button
                   onClick={() => handleDeleteSatker(s.id, s.name)}
-                  className="p-1.5 text-zinc-550 hover:text-red-655 dark:hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors cursor-pointer"
+                  className="p-1.5 text-zinc-550 hover:text-red-655 dark:hover:text-red-400 hover:bg-red-50 dark:bg-red-900/200/10 rounded-lg transition-colors cursor-pointer"
                   title="Hapus Satker"
                 >
                   <Trash2 className="w-4 h-4" />
@@ -750,7 +750,7 @@ export default function AssignmentsClient({
             </div>
 
             {error && (
-              <div className="p-3 bg-red-500/10 border border-red-500/20 text-red-650 dark:text-red-400 text-xs rounded-xl flex items-center space-x-2">
+              <div className="p-3 bg-red-50 dark:bg-red-900/200/10 border border-red-500/20 text-red-650 dark:text-red-400 text-xs rounded-xl flex items-center space-x-2">
                 <AlertCircle className="w-4 h-4 flex-shrink-0" />
                 <span>{error}</span>
               </div>
@@ -832,7 +832,7 @@ export default function AssignmentsClient({
             </div>
 
             {error && (
-              <div className="p-3 bg-red-500/10 border border-red-500/20 text-red-650 dark:text-red-400 text-xs rounded-xl flex items-center space-x-2">
+              <div className="p-3 bg-red-50 dark:bg-red-900/200/10 border border-red-500/20 text-red-650 dark:text-red-400 text-xs rounded-xl flex items-center space-x-2">
                 <AlertCircle className="w-4 h-4 flex-shrink-0" />
                 <span>{error}</span>
               </div>
@@ -1018,7 +1018,7 @@ export default function AssignmentsClient({
             {/* Header */}
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
-                <div className="p-2 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400">
+                <div className="p-2 rounded-xl bg-amber-50 dark:bg-amber-900/100/10 border border-amber-500/20 text-amber-600 dark:text-amber-400">
                   <ArrowRightLeft className="w-5 h-5" />
                 </div>
                 <h2 className="text-lg font-bold text-zinc-900 dark:text-white">Transfer Penugasan</h2>
@@ -1035,7 +1035,7 @@ export default function AssignmentsClient({
             {/* Success state */}
             {transferSuccess ? (
               <div className="flex flex-col items-center justify-center py-8 space-y-3">
-                <div className="p-4 rounded-full bg-emerald-500/10 border border-emerald-500/20">
+                <div className="p-4 rounded-full bg-emerald-50 dark:bg-emerald-900/200/10 border border-emerald-500/20">
                   <CheckCircle className="w-10 h-10 text-emerald-500" />
                 </div>
                 <p className="text-emerald-700 dark:text-emerald-400 font-bold text-base">Transfer Berhasil!</p>
@@ -1047,7 +1047,7 @@ export default function AssignmentsClient({
               <form onSubmit={handleTransfer} className="space-y-4">
                 {/* Error */}
                 {transferError && (
-                  <div className="p-3 bg-red-500/10 border border-red-500/20 text-red-650 dark:text-red-400 text-xs rounded-xl flex items-center space-x-2">
+                  <div className="p-3 bg-red-50 dark:bg-red-900/200/10 border border-red-500/20 text-red-650 dark:text-red-400 text-xs rounded-xl flex items-center space-x-2">
                     <AlertCircle className="w-4 h-4 flex-shrink-0" />
                     <span>{transferError}</span>
                   </div>
@@ -1127,7 +1127,7 @@ export default function AssignmentsClient({
                 </div>
 
                 {/* Ringkasan proses */}
-                <div className="p-3 bg-amber-500/8 dark:bg-amber-500/10 border border-amber-500/20 rounded-xl text-xs text-amber-700 dark:text-amber-400 space-y-1.5">
+                <div className="p-3 bg-amber-50 dark:bg-amber-900/100/8 dark:bg-amber-50 dark:bg-amber-900/100/10 border border-amber-500/20 rounded-xl text-xs text-amber-700 dark:text-amber-400 space-y-1.5">
                   <p className="font-bold flex items-center space-x-1.5">
                     <AlertCircle className="w-3.5 h-3.5" />
                     <span>Yang akan terjadi setelah Transfer:</span>

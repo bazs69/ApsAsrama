@@ -151,7 +151,7 @@ export default function RoleUserClient({ initialRoles, allPermissions }: { initi
         {roles.map(role => (
           <div key={role.id} className="bg-white dark:bg-zinc-900 rounded-2xl p-6 border border-zinc-200 dark:border-zinc-800 shadow-sm relative overflow-hidden group">
             {role.isSystem && (
-              <div className="absolute top-0 right-0 bg-amber-500 text-white text-xs font-bold px-3 py-1 rounded-bl-xl">
+              <div className="absolute top-0 right-0 bg-amber-50 dark:bg-amber-900/100 text-white text-xs font-bold px-3 py-1 rounded-bl-xl">
                 Sistem
               </div>
             )}
@@ -176,7 +176,7 @@ export default function RoleUserClient({ initialRoles, allPermissions }: { initi
                 {!role.isSystem && (
                   <button
                     onClick={() => handleDelete(role.id)}
-                    className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                    className="p-2 text-red-600 hover:bg-red-50 dark:bg-red-900/20 dark:hover:bg-red-900/20 rounded-lg transition-colors"
                     title="Hapus Role"
                   >
                     <Trash2 className="w-4 h-4" />

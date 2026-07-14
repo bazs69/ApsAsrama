@@ -11,7 +11,7 @@ export default function RiwayatLaporanKepalaSatker({ data }: { data: { id: strin
   const getStatusBadge = (status: string) => {
     if (status === "SUBMITTED") {
       return (
-        <span className="inline-flex items-center space-x-1.5 px-2.5 py-1 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 rounded-lg text-xs font-bold">
+        <span className="inline-flex items-center space-x-1.5 px-2.5 py-1 bg-emerald-50 dark:bg-emerald-900/200/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 rounded-lg text-xs font-bold">
           <CheckCircle className="w-3.5 h-3.5" />
           <span>Terkirim</span>
         </span>

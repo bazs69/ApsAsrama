@@ -99,7 +99,7 @@ export default function MasterDataClient({
         <div className="flex flex-wrap items-center gap-3">
           <button
             onClick={openAddModal}
-            className="bg-zinc-900 hover:bg-zinc-800 dark:bg-white dark:hover:bg-zinc-200 text-white dark:text-zinc-900 rounded-xl py-2.5 px-5 font-semibold shadow-md flex items-center justify-center space-x-2 transition-all text-sm cursor-pointer"
+            className="bg-zinc-900 hover:bg-zinc-800 dark:bg-white dark:bg-zinc-900 dark:hover:bg-zinc-200 text-white dark:text-zinc-900 rounded-xl py-2.5 px-5 font-semibold shadow-md flex items-center justify-center space-x-2 transition-all text-sm cursor-pointer"
           >
             <Plus className="w-4 h-4" />
             <span className="hidden sm:inline">Tambah Data</span>
@@ -152,7 +152,7 @@ export default function MasterDataClient({
                       </button>
                       <button
                         onClick={() => handleDelete(item.id)}
-                        className="p-1.5 text-zinc-500 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors inline-block"
+                        className="p-1.5 text-zinc-500 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:bg-red-900/200/10 rounded-lg transition-colors inline-block"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -184,7 +184,7 @@ export default function MasterDataClient({
             </div>
 
             {error && (
-              <div className="p-3.5 bg-red-500/10 border border-red-500/20 text-red-650 dark:text-red-400 text-xs rounded-xl flex items-start space-x-2">
+              <div className="p-3.5 bg-red-50 dark:bg-red-900/200/10 border border-red-500/20 text-red-650 dark:text-red-400 text-xs rounded-xl flex items-start space-x-2">
                 <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
                 <span>{error}</span>
               </div>

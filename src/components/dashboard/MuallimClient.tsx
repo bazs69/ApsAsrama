@@ -132,7 +132,7 @@ export default function MuallimClient({
         </div>
 
         <div className="glass rounded-2xl p-5 border border-emerald-500/20 flex items-center space-x-4">
-          <div className="w-12 h-12 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-650 dark:text-emerald-400">
+          <div className="w-12 h-12 rounded-xl bg-emerald-50 dark:bg-emerald-900/200/10 flex items-center justify-center text-emerald-650 dark:text-emerald-400">
             <CheckCircle2 className="w-6 h-6" />
           </div>
           <div>
@@ -142,7 +142,7 @@ export default function MuallimClient({
         </div>
 
         <div className="glass rounded-2xl p-5 border border-red-500/20 flex items-center space-x-4">
-          <div className="w-12 h-12 rounded-xl bg-red-500/10 flex items-center justify-center text-red-500 dark:text-red-400">
+          <div className="w-12 h-12 rounded-xl bg-red-50 dark:bg-red-900/200/10 flex items-center justify-center text-red-500 dark:text-red-400">
             <UserX className="w-6 h-6" />
           </div>
           <div>
@@ -189,7 +189,7 @@ export default function MuallimClient({
                     <td className="py-4 px-6">
                       <span className={`px-2.5 py-1 rounded-full text-xs font-bold uppercase ${
                         m.status === MuallimStatus.ACTIVE
-                          ? "bg-emerald-500/10 text-emerald-650 dark:text-emerald-400 border border-emerald-500/20"
+                          ? "bg-emerald-50 dark:bg-emerald-900/200/10 text-emerald-650 dark:text-emerald-400 border border-emerald-500/20"
                           : "bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-500 border border-zinc-200 dark:border-zinc-700/50"
                       }`}>
                         {m.status === MuallimStatus.ACTIVE ? "Aktif" : "Tidak Aktif"}
@@ -205,7 +205,7 @@ export default function MuallimClient({
                       </button>
                       <button
                         onClick={() => handleDelete(m.id)}
-                        className="p-1.5 text-zinc-500 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors inline-block"
+                        className="p-1.5 text-zinc-500 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:bg-red-900/200/10 rounded-lg transition-colors inline-block"
                         title="Hapus Data"
                       >
                         <LogOut className="w-4 h-4" />
@@ -232,7 +232,7 @@ export default function MuallimClient({
             </div>
 
             {error && (
-              <div className="p-3 bg-red-500/10 border border-red-500/20 text-red-650 dark:text-red-400 text-xs rounded-xl flex items-center space-x-2">
+              <div className="p-3 bg-red-50 dark:bg-red-900/200/10 border border-red-500/20 text-red-650 dark:text-red-400 text-xs rounded-xl flex items-center space-x-2">
                 <AlertCircle className="w-4 h-4 flex-shrink-0" />
                 <span>{error}</span>
               </div>

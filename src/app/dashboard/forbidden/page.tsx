@@ -8,7 +8,7 @@ export const metadata = {
 export default function ForbiddenPage() {
   return (
     <div className="flex flex-col items-center justify-center min-h-[70vh] text-center px-4">
-      <div className="w-24 h-24 bg-red-500/10 rounded-full flex items-center justify-center mb-6">
+      <div className="w-24 h-24 bg-red-50 dark:bg-red-900/200/10 rounded-full flex items-center justify-center mb-6">
         <ShieldAlert className="w-12 h-12 text-red-500" />
       </div>
       <h1 className="text-3xl font-bold text-zinc-900 dark:text-zinc-100 mb-2">Akses Ditolak</h1>

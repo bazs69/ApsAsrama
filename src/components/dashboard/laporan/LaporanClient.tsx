@@ -235,14 +235,14 @@ export default function LaporanClient({
         <div className="flex items-center gap-3 print:hidden">
           <button 
             onClick={handleExportExcel}
-            className="flex items-center gap-2 px-4 py-2 bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/20 rounded-xl font-semibold hover:bg-emerald-100 dark:hover:bg-emerald-500/20 transition-all text-sm shadow-sm"
+            className="flex items-center gap-2 px-4 py-2 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:bg-emerald-50 dark:bg-emerald-900/200/10 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/20 rounded-xl font-semibold hover:bg-emerald-100 dark:hover:bg-emerald-50 dark:bg-emerald-900/200/20 transition-all text-sm shadow-sm"
           >
             <FileSpreadsheet className="w-4 h-4" />
             <span>Export Excel</span>
           </button>
           <button 
             onClick={handleExportPDF}
-            className="flex items-center gap-2 px-4 py-2 bg-red-50 text-red-600 dark:bg-red-500/10 dark:text-red-400 border border-red-200 dark:border-red-500/20 rounded-xl font-semibold hover:bg-red-100 dark:hover:bg-red-500/20 transition-all text-sm shadow-sm"
+            className="flex items-center gap-2 px-4 py-2 bg-red-50 dark:bg-red-900/20 text-red-600 dark:bg-red-50 dark:bg-red-900/200/10 dark:text-red-400 border border-red-200 dark:border-red-500/20 rounded-xl font-semibold hover:bg-red-100 dark:hover:bg-red-50 dark:bg-red-900/200/20 transition-all text-sm shadow-sm"
           >
             <Printer className="w-4 h-4" />
             <span>Cetak PDF</span>
@@ -272,7 +272,7 @@ export default function LaporanClient({
             </div>
           </div>
           <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-5 shadow-sm flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+            <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-emerald-50 dark:bg-emerald-50 dark:bg-emerald-900/200/10 text-emerald-600 dark:text-emerald-400">
               <CheckCircle2 className="w-6 h-6" />
             </div>
             <div>
@@ -281,7 +281,7 @@ export default function LaporanClient({
             </div>
           </div>
           <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-5 shadow-sm flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400">
+            <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-amber-50 dark:bg-amber-50 dark:bg-amber-900/100/10 text-amber-600 dark:text-amber-400">
               <TrendingUp className="w-6 h-6" />
             </div>
             <div>

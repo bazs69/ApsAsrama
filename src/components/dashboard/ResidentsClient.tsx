@@ -233,7 +233,7 @@ export default function ResidentsClient({
             </div>
 
             {error && (
-              <div className="p-3.5 bg-red-500/10 border border-red-500/20 text-red-650 dark:text-red-400 text-xs rounded-xl flex items-start space-x-2">
+              <div className="p-3.5 bg-red-50 dark:bg-red-900/200/10 border border-red-500/20 text-red-650 dark:text-red-400 text-xs rounded-xl flex items-start space-x-2">
                 <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
                 <span>{error}</span>
               </div>
@@ -292,7 +292,7 @@ export default function ResidentsClient({
             <div className="max-w-4xl mx-auto relative">
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="absolute -top-8 right-0 text-white/70 hover:text-white p-1.5 hover:bg-white/10 rounded-full transition-colors z-10"
+                className="absolute -top-8 right-0 text-white/70 hover:text-white p-1.5 hover:bg-white dark:bg-zinc-900/10 rounded-full transition-colors z-10"
               >
                 <X className="w-5 h-5" />
               </button>

@@ -275,7 +275,7 @@ export default function SantriWizard({
       {showExitConfirm && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setShowExitConfirm(false)} />
-          <div className="bg-white rounded-xl shadow-xl border border-zinc-200 w-full max-w-sm relative z-10 p-6 space-y-4 animate-in zoom-in-95 duration-200">
+          <div className="bg-white dark:bg-zinc-900 rounded-xl shadow-xl border border-zinc-200 w-full max-w-sm relative z-10 p-6 space-y-4 animate-in zoom-in-95 duration-200">
             <h3 className="font-bold text-lg text-zinc-900">Perubahan belum disimpan</h3>
             <p className="text-zinc-500 text-sm">Keluar tanpa menyimpan?</p>
             <div className="flex justify-end gap-3 pt-4">
@@ -287,11 +287,11 @@ export default function SantriWizard({
       )}
 
       {/* Header & Progress */}
-      <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
-        <h1 className="text-2xl font-bold text-slate-800 mb-2">
+      <div className="bg-white dark:bg-zinc-900 rounded-2xl p-6 border border-slate-200 dark:border-zinc-700/80 shadow-sm">
+        <h1 className="text-2xl font-bold text-slate-800 dark:text-zinc-100 mb-2">
           {mode === "create" ? "Formulir Pendaftaran Santri" : "Edit Data Santri"}
         </h1>
-        <p className="text-slate-500 text-sm mb-6">
+        <p className="text-slate-500 dark:text-zinc-400 text-sm mb-6">
           {mode === "create" ? "Pendaftaran santri baru terintegrasi wilayah dan akademik." : "Perbarui informasi santri. Klik tab langsung untuk melompat."}
         </p>
         
@@ -304,17 +304,17 @@ export default function SantriWizard({
             >
               <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm transition-all
                 ${currentStep > s.id 
-                  ? "bg-emerald-500 text-white" 
+                  ? "bg-emerald-50 dark:bg-emerald-900/200 text-white" 
                   : currentStep === s.id 
                     ? "bg-blue-600 text-white ring-4 ring-blue-100" 
-                    : "bg-slate-100 text-slate-400"}`}
+                    : "bg-slate-100 dark:bg-zinc-800 text-slate-400 dark:text-zinc-500"}`}
               >
                 {currentStep > s.id ? <Check className="w-4 h-4" /> : s.id}
               </div>
-              <span className={`text-xs mt-2 font-semibold absolute top-10 text-center w-24 ${currentStep >= s.id || mode === 'edit' ? "text-slate-700" : "text-slate-400"}`}>{s.title}</span>
+              <span className={`text-xs mt-2 font-semibold absolute top-10 text-center w-24 ${currentStep >= s.id || mode === 'edit' ? "text-slate-700 dark:text-zinc-200" : "text-slate-400 dark:text-zinc-500"}`}>{s.title}</span>
             </div>
           ))}
-          <div className="absolute top-4 left-0 w-full h-1 bg-slate-100 -z-0">
+          <div className="absolute top-4 left-0 w-full h-1 bg-slate-100 dark:bg-zinc-800 -z-0">
             <div className="h-full bg-blue-500 transition-all duration-300" style={{ width: `${((currentStep - 1) / (STEPS.length - 1)) * 100}%` }}></div>
           </div>
         </div>
@@ -322,21 +322,21 @@ export default function SantriWizard({
       </div>
 
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-600 p-4 rounded-xl flex items-center gap-3 text-sm">
+        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 text-red-600 p-4 rounded-xl flex items-center gap-3 text-sm">
           <AlertCircle className="w-5 h-5 flex-shrink-0" />
           <p>{error}</p>
         </div>
       )}
 
       {success && (
-        <div className="bg-emerald-50 border border-emerald-200 text-emerald-600 p-4 rounded-xl flex items-center gap-3 text-sm">
+        <div className="bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800/30 text-emerald-600 p-4 rounded-xl flex items-center gap-3 text-sm">
           <CheckCircle2 className="w-5 h-5 flex-shrink-0" />
           <p>{mode === "create" ? "Santri berhasil didaftarkan ke sistem." : "Perubahan berhasil disimpan."}</p>
         </div>
       )}
 
       {/* Step Content */}
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 min-h-[400px]">
+      <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200 dark:border-zinc-700/80 shadow-sm p-6 min-h-[400px]">
         {currentStep === 1 && <Step1Biodata formData={formData} setFormData={setFormData} photoFile={photoFile} setPhotoFile={setPhotoFile} />}
         {currentStep === 2 && <Step2Domisili formData={formData} setFormData={setFormData} />}
         {currentStep === 3 && <Step3Pendidikan formData={formData} setFormData={setFormData} fakultasOptions={fakultasOptions} prodiOptions={prodiOptions} angkatanOptions={angkatanOptions} />}
@@ -345,18 +345,18 @@ export default function SantriWizard({
       </div>
 
       {/* Navigation Footer */}
-      <div className="flex flex-wrap justify-between items-center gap-4 bg-white p-4 rounded-2xl border border-slate-200 shadow-sm sticky bottom-4 z-40">
+      <div className="flex flex-wrap justify-between items-center gap-4 bg-white dark:bg-zinc-900 p-4 rounded-2xl border border-slate-200 dark:border-zinc-700/80 shadow-sm sticky bottom-4 z-40">
         
         <div className="flex gap-2">
           {mode === "edit" && onCancel && (
-            <button onClick={handleCancelClick} className="px-5 py-2.5 rounded-xl font-bold text-slate-600 bg-white border border-slate-300 hover:bg-slate-50 transition-all flex items-center gap-2">
+            <button onClick={handleCancelClick} className="px-5 py-2.5 rounded-xl font-bold text-slate-600 dark:text-zinc-300 bg-white dark:bg-zinc-900 border border-slate-300 dark:border-zinc-600 hover:bg-slate-50 dark:bg-zinc-800/80 transition-all flex items-center gap-2">
               <LogOut className="w-4 h-4" /> Batal
             </button>
           )}
           <button 
             onClick={prevStep}
             disabled={currentStep === 1 || isPending}
-            className="px-5 py-2.5 rounded-xl font-bold text-slate-600 bg-white border border-slate-300 hover:bg-slate-50 disabled:opacity-50 transition-all flex items-center gap-2"
+            className="px-5 py-2.5 rounded-xl font-bold text-slate-600 dark:text-zinc-300 bg-white dark:bg-zinc-900 border border-slate-300 dark:border-zinc-600 hover:bg-slate-50 dark:bg-zinc-800/80 disabled:opacity-50 transition-all flex items-center gap-2"
           >
             <ChevronLeft className="w-4 h-4" /> Prev
           </button>
@@ -366,7 +366,7 @@ export default function SantriWizard({
           {currentStep < STEPS.length && (
             <button 
               onClick={goNext}
-              className="px-6 py-2.5 rounded-xl font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 shadow-sm transition-all flex items-center gap-2"
+              className="px-6 py-2.5 rounded-xl font-bold text-slate-700 dark:text-zinc-200 bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 shadow-sm transition-all flex items-center gap-2"
             >
               Lanjut <ChevronRight className="w-4 h-4" />
             </button>
@@ -406,58 +406,58 @@ function Step1Biodata({ formData, setFormData, setPhotoFile }: Step1Props) {
 
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
-      <h2 className="text-lg font-bold text-slate-800 border-b border-slate-100 pb-2">Informasi Pribadi</h2>
+      <h2 className="text-lg font-bold text-slate-800 dark:text-zinc-100 border-b border-slate-100 dark:border-zinc-800 pb-2">Informasi Pribadi</h2>
       
       <div className="flex flex-col sm:flex-row gap-6">
         <div className="flex flex-col gap-3">
-          <label className="text-xs font-bold text-slate-500 uppercase">Foto Santri</label>
-          <div className="w-32 h-32 rounded-xl border-2 border-dashed border-slate-300 bg-slate-50 flex flex-col items-center justify-center overflow-hidden relative cursor-pointer hover:bg-slate-100 transition-colors">
+          <label className="text-xs font-bold text-slate-500 dark:text-zinc-400 uppercase">Foto Santri</label>
+          <div className="w-32 h-32 rounded-xl border-2 border-dashed border-slate-300 dark:border-zinc-600 bg-slate-50 dark:bg-zinc-800/80 flex flex-col items-center justify-center overflow-hidden relative cursor-pointer hover:bg-slate-100 dark:bg-zinc-800 transition-colors">
             {formData.photoUrl ? (
               <Image src={formData.photoUrl} alt="Preview" fill className="object-cover" unoptimized />
             ) : (
-              <User className="w-8 h-8 text-slate-400" />
+              <User className="w-8 h-8 text-slate-400 dark:text-zinc-500" />
             )}
             <input type="file" accept="image/*" onChange={handlePhoto} className="absolute inset-0 opacity-0 cursor-pointer" />
           </div>
-          <p className="text-[10px] text-slate-400 text-center max-w-[8rem]">Klik untuk upload foto</p>
+          <p className="text-[10px] text-slate-400 dark:text-zinc-500 text-center max-w-[8rem]">Klik untuk upload foto</p>
         </div>
 
         <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="text-xs font-bold text-slate-500 uppercase block mb-1.5">Nama Lengkap <span className="text-red-500">*</span></label>
-            <input type="text" required value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="w-full bg-slate-50 border border-slate-200 rounded-lg py-2.5 px-4 text-sm focus:ring-2 focus:ring-blue-500" placeholder="Ahmad Fulan" />
+            <label className="text-xs font-bold text-slate-500 dark:text-zinc-400 uppercase block mb-1.5">Nama Lengkap <span className="text-red-500">*</span></label>
+            <input type="text" required value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="w-full bg-slate-50 dark:bg-zinc-800/80 border border-slate-200 dark:border-zinc-700/80 rounded-lg py-2.5 px-4 text-sm focus:ring-2 focus:ring-blue-500" placeholder="Ahmad Fulan" />
           </div>
           <div>
-            <label className="text-xs font-bold text-slate-500 uppercase block mb-1.5">NIM</label>
-            <input type="text" value={formData.nim} onChange={e => setFormData({...formData, nim: e.target.value})} className="w-full bg-slate-50 border border-slate-200 rounded-lg py-2.5 px-4 text-sm focus:ring-2 focus:ring-blue-500" placeholder="Opsional" />
+            <label className="text-xs font-bold text-slate-500 dark:text-zinc-400 uppercase block mb-1.5">NIM</label>
+            <input type="text" value={formData.nim} onChange={e => setFormData({...formData, nim: e.target.value})} className="w-full bg-slate-50 dark:bg-zinc-800/80 border border-slate-200 dark:border-zinc-700/80 rounded-lg py-2.5 px-4 text-sm focus:ring-2 focus:ring-blue-500" placeholder="Opsional" />
           </div>
           <div>
-            <label className="text-xs font-bold text-slate-500 uppercase block mb-1.5">NIUP</label>
-            <input type="text" value={formData.niup} onChange={e => setFormData({...formData, niup: e.target.value})} className="w-full bg-slate-50 border border-slate-200 rounded-lg py-2.5 px-4 text-sm focus:ring-2 focus:ring-blue-500" placeholder="Nomor Induk Pesantren" />
+            <label className="text-xs font-bold text-slate-500 dark:text-zinc-400 uppercase block mb-1.5">NIUP</label>
+            <input type="text" value={formData.niup} onChange={e => setFormData({...formData, niup: e.target.value})} className="w-full bg-slate-50 dark:bg-zinc-800/80 border border-slate-200 dark:border-zinc-700/80 rounded-lg py-2.5 px-4 text-sm focus:ring-2 focus:ring-blue-500" placeholder="Nomor Induk Pesantren" />
           </div>
           <div>
-            <label className="text-xs font-bold text-slate-500 uppercase block mb-1.5">NIK (KTP)</label>
-            <input type="text" value={formData.nik} onChange={e => setFormData({...formData, nik: e.target.value})} className="w-full bg-slate-50 border border-slate-200 rounded-lg py-2.5 px-4 text-sm focus:ring-2 focus:ring-blue-500" placeholder="Nomor Induk Kependudukan" />
+            <label className="text-xs font-bold text-slate-500 dark:text-zinc-400 uppercase block mb-1.5">NIK (KTP)</label>
+            <input type="text" value={formData.nik} onChange={e => setFormData({...formData, nik: e.target.value})} className="w-full bg-slate-50 dark:bg-zinc-800/80 border border-slate-200 dark:border-zinc-700/80 rounded-lg py-2.5 px-4 text-sm focus:ring-2 focus:ring-blue-500" placeholder="Nomor Induk Kependudukan" />
           </div>
           <div>
-            <label className="text-xs font-bold text-slate-500 uppercase block mb-1.5">Nomor Telepon</label>
-            <input type="tel" value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} className="w-full bg-slate-50 border border-slate-200 rounded-lg py-2.5 px-4 text-sm focus:ring-2 focus:ring-blue-500" placeholder="081234..." />
+            <label className="text-xs font-bold text-slate-500 dark:text-zinc-400 uppercase block mb-1.5">Nomor Telepon</label>
+            <input type="tel" value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} className="w-full bg-slate-50 dark:bg-zinc-800/80 border border-slate-200 dark:border-zinc-700/80 rounded-lg py-2.5 px-4 text-sm focus:ring-2 focus:ring-blue-500" placeholder="081234..." />
           </div>
           <div>
-            <label className="text-xs font-bold text-slate-500 uppercase block mb-1.5">Jenis Kelamin <span className="text-red-500">*</span></label>
-            <select required value={formData.gender} onChange={e => setFormData({...formData, gender: e.target.value})} className="w-full bg-slate-50 border border-slate-200 rounded-lg py-2.5 px-4 text-sm focus:ring-2 focus:ring-blue-500">
+            <label className="text-xs font-bold text-slate-500 dark:text-zinc-400 uppercase block mb-1.5">Jenis Kelamin <span className="text-red-500">*</span></label>
+            <select required value={formData.gender} onChange={e => setFormData({...formData, gender: e.target.value})} className="w-full bg-slate-50 dark:bg-zinc-800/80 border border-slate-200 dark:border-zinc-700/80 rounded-lg py-2.5 px-4 text-sm focus:ring-2 focus:ring-blue-500">
               <option value="">Pilih...</option>
               <option value="LAKI_LAKI">Laki-Laki</option>
               <option value="PEREMPUAN">Perempuan</option>
             </select>
           </div>
           <div>
-            <label className="text-xs font-bold text-slate-500 uppercase block mb-1.5">Tempat Lahir <span className="text-red-500">*</span></label>
-            <input type="text" required value={formData.tempatLahir} onChange={e => setFormData({...formData, tempatLahir: e.target.value})} className="w-full bg-slate-50 border border-slate-200 rounded-lg py-2.5 px-4 text-sm focus:ring-2 focus:ring-blue-500" placeholder="Kota Kelahiran" />
+            <label className="text-xs font-bold text-slate-500 dark:text-zinc-400 uppercase block mb-1.5">Tempat Lahir <span className="text-red-500">*</span></label>
+            <input type="text" required value={formData.tempatLahir} onChange={e => setFormData({...formData, tempatLahir: e.target.value})} className="w-full bg-slate-50 dark:bg-zinc-800/80 border border-slate-200 dark:border-zinc-700/80 rounded-lg py-2.5 px-4 text-sm focus:ring-2 focus:ring-blue-500" placeholder="Kota Kelahiran" />
           </div>
           <div>
-            <label className="text-xs font-bold text-slate-500 uppercase block mb-1.5">Tanggal Lahir <span className="text-red-500">*</span></label>
-            <input type="date" required value={formData.tanggalLahir} onChange={e => setFormData({...formData, tanggalLahir: e.target.value})} className="w-full bg-slate-50 border border-slate-200 rounded-lg py-2.5 px-4 text-sm focus:ring-2 focus:ring-blue-500" />
+            <label className="text-xs font-bold text-slate-500 dark:text-zinc-400 uppercase block mb-1.5">Tanggal Lahir <span className="text-red-500">*</span></label>
+            <input type="date" required value={formData.tanggalLahir} onChange={e => setFormData({...formData, tanggalLahir: e.target.value})} className="w-full bg-slate-50 dark:bg-zinc-800/80 border border-slate-200 dark:border-zinc-700/80 rounded-lg py-2.5 px-4 text-sm focus:ring-2 focus:ring-blue-500" />
           </div>
         </div>
       </div>
@@ -513,61 +513,61 @@ function Step2Domisili({ formData, setFormData }: Step2Props) {
 
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
-      <h2 className="text-lg font-bold text-slate-800 border-b border-slate-100 pb-2">Domisili & Wilayah Asal</h2>
+      <h2 className="text-lg font-bold text-slate-800 dark:text-zinc-100 border-b border-slate-100 dark:border-zinc-800 pb-2">Domisili & Wilayah Asal</h2>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="text-xs font-bold text-slate-500 uppercase flex items-center justify-between mb-1.5">
+          <label className="text-xs font-bold text-slate-500 dark:text-zinc-400 uppercase flex items-center justify-between mb-1.5">
             Negara Asal {loading === "negara" && <Loader2 className="w-3 h-3 animate-spin" />}
           </label>
-          <select value={formData.asalCountryId} onChange={e => setFormData({...formData, asalCountryId: e.target.value, asalProvinceId: "", asalRegencyId: "", asalDistrictId: "", asalVillageId: ""})} className="w-full bg-slate-50 border border-slate-200 rounded-lg py-2.5 px-4 text-sm focus:ring-2 focus:ring-blue-500">
+          <select value={formData.asalCountryId} onChange={e => setFormData({...formData, asalCountryId: e.target.value, asalProvinceId: "", asalRegencyId: "", asalDistrictId: "", asalVillageId: ""})} className="w-full bg-slate-50 dark:bg-zinc-800/80 border border-slate-200 dark:border-zinc-700/80 rounded-lg py-2.5 px-4 text-sm focus:ring-2 focus:ring-blue-500">
             <option value="">Pilih Negara...</option>
             {countries.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
           </select>
         </div>
         <div>
-          <label className="text-xs font-bold text-slate-500 uppercase flex items-center justify-between mb-1.5">
+          <label className="text-xs font-bold text-slate-500 dark:text-zinc-400 uppercase flex items-center justify-between mb-1.5">
             Provinsi {loading === "prov" && <Loader2 className="w-3 h-3 animate-spin" />}
           </label>
-          <select value={formData.asalProvinceId} disabled={!formData.asalCountryId} onChange={e => setFormData({...formData, asalProvinceId: e.target.value, asalRegencyId: "", asalDistrictId: "", asalVillageId: ""})} className="w-full bg-slate-50 border border-slate-200 rounded-lg py-2.5 px-4 text-sm focus:ring-2 focus:ring-blue-500 disabled:opacity-50">
+          <select value={formData.asalProvinceId} disabled={!formData.asalCountryId} onChange={e => setFormData({...formData, asalProvinceId: e.target.value, asalRegencyId: "", asalDistrictId: "", asalVillageId: ""})} className="w-full bg-slate-50 dark:bg-zinc-800/80 border border-slate-200 dark:border-zinc-700/80 rounded-lg py-2.5 px-4 text-sm focus:ring-2 focus:ring-blue-500 disabled:opacity-50">
             <option value="">Pilih Provinsi...</option>
             {provinces.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
           </select>
         </div>
         <div>
-          <label className="text-xs font-bold text-slate-500 uppercase flex items-center justify-between mb-1.5">
+          <label className="text-xs font-bold text-slate-500 dark:text-zinc-400 uppercase flex items-center justify-between mb-1.5">
             Kabupaten/Kota {loading === "kab" && <Loader2 className="w-3 h-3 animate-spin" />}
           </label>
-          <select value={formData.asalRegencyId} disabled={!formData.asalProvinceId} onChange={e => setFormData({...formData, asalRegencyId: e.target.value, asalDistrictId: "", asalVillageId: ""})} className="w-full bg-slate-50 border border-slate-200 rounded-lg py-2.5 px-4 text-sm focus:ring-2 focus:ring-blue-500 disabled:opacity-50">
+          <select value={formData.asalRegencyId} disabled={!formData.asalProvinceId} onChange={e => setFormData({...formData, asalRegencyId: e.target.value, asalDistrictId: "", asalVillageId: ""})} className="w-full bg-slate-50 dark:bg-zinc-800/80 border border-slate-200 dark:border-zinc-700/80 rounded-lg py-2.5 px-4 text-sm focus:ring-2 focus:ring-blue-500 disabled:opacity-50">
             <option value="">Pilih Kabupaten/Kota...</option>
             {regencies.map(r => <option key={r.id} value={r.id}>{r.name}</option>)}
           </select>
         </div>
         <div>
-          <label className="text-xs font-bold text-slate-500 uppercase flex items-center justify-between mb-1.5">
+          <label className="text-xs font-bold text-slate-500 dark:text-zinc-400 uppercase flex items-center justify-between mb-1.5">
             Kecamatan {loading === "kec" && <Loader2 className="w-3 h-3 animate-spin" />}
           </label>
-          <select value={formData.asalDistrictId} disabled={!formData.asalRegencyId} onChange={e => setFormData({...formData, asalDistrictId: e.target.value, asalVillageId: ""})} className="w-full bg-slate-50 border border-slate-200 rounded-lg py-2.5 px-4 text-sm focus:ring-2 focus:ring-blue-500 disabled:opacity-50">
+          <select value={formData.asalDistrictId} disabled={!formData.asalRegencyId} onChange={e => setFormData({...formData, asalDistrictId: e.target.value, asalVillageId: ""})} className="w-full bg-slate-50 dark:bg-zinc-800/80 border border-slate-200 dark:border-zinc-700/80 rounded-lg py-2.5 px-4 text-sm focus:ring-2 focus:ring-blue-500 disabled:opacity-50">
             <option value="">Pilih Kecamatan...</option>
             {districts.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
           </select>
         </div>
         <div>
-          <label className="text-xs font-bold text-slate-500 uppercase flex items-center justify-between mb-1.5">
+          <label className="text-xs font-bold text-slate-500 dark:text-zinc-400 uppercase flex items-center justify-between mb-1.5">
             Desa/Kelurahan {loading === "desa" && <Loader2 className="w-3 h-3 animate-spin" />}
           </label>
-          <select value={formData.asalVillageId} disabled={!formData.asalDistrictId} onChange={e => setFormData({...formData, asalVillageId: e.target.value})} className="w-full bg-slate-50 border border-slate-200 rounded-lg py-2.5 px-4 text-sm focus:ring-2 focus:ring-blue-500 disabled:opacity-50">
+          <select value={formData.asalVillageId} disabled={!formData.asalDistrictId} onChange={e => setFormData({...formData, asalVillageId: e.target.value})} className="w-full bg-slate-50 dark:bg-zinc-800/80 border border-slate-200 dark:border-zinc-700/80 rounded-lg py-2.5 px-4 text-sm focus:ring-2 focus:ring-blue-500 disabled:opacity-50">
             <option value="">Pilih Desa/Kelurahan...</option>
             {villages.map(v => <option key={v.id} value={v.id}>{v.name}</option>)}
           </select>
         </div>
         <div>
-          <label className="text-xs font-bold text-slate-500 uppercase block mb-1.5">Kode Pos</label>
-          <input type="text" value={formData.kodePos} onChange={e => setFormData({...formData, kodePos: e.target.value})} className="w-full bg-slate-50 border border-slate-200 rounded-lg py-2.5 px-4 text-sm focus:ring-2 focus:ring-blue-500" placeholder="Kode Pos" />
+          <label className="text-xs font-bold text-slate-500 dark:text-zinc-400 uppercase block mb-1.5">Kode Pos</label>
+          <input type="text" value={formData.kodePos} onChange={e => setFormData({...formData, kodePos: e.target.value})} className="w-full bg-slate-50 dark:bg-zinc-800/80 border border-slate-200 dark:border-zinc-700/80 rounded-lg py-2.5 px-4 text-sm focus:ring-2 focus:ring-blue-500" placeholder="Kode Pos" />
         </div>
         <div className="md:col-span-2">
-          <label className="text-xs font-bold text-slate-500 uppercase block mb-1.5">Alamat Lengkap</label>
-          <textarea value={formData.alamatLengkap} onChange={e => setFormData({...formData, alamatLengkap: e.target.value})} className="w-full bg-slate-50 border border-slate-200 rounded-lg py-2.5 px-4 text-sm focus:ring-2 focus:ring-blue-500 min-h-[80px]" placeholder="Nama Jalan, RT/RW, Perumahan..."></textarea>
+          <label className="text-xs font-bold text-slate-500 dark:text-zinc-400 uppercase block mb-1.5">Alamat Lengkap</label>
+          <textarea value={formData.alamatLengkap} onChange={e => setFormData({...formData, alamatLengkap: e.target.value})} className="w-full bg-slate-50 dark:bg-zinc-800/80 border border-slate-200 dark:border-zinc-700/80 rounded-lg py-2.5 px-4 text-sm focus:ring-2 focus:ring-blue-500 min-h-[80px]" placeholder="Nama Jalan, RT/RW, Perumahan..."></textarea>
         </div>
       </div>
     </div>
@@ -588,36 +588,36 @@ function Step3Pendidikan({ formData, setFormData, fakultasOptions, prodiOptions,
 
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
-      <h2 className="text-lg font-bold text-slate-800 border-b border-slate-100 pb-2">Informasi Pendidikan Akademik</h2>
+      <h2 className="text-lg font-bold text-slate-800 dark:text-zinc-100 border-b border-slate-100 dark:border-zinc-800 pb-2">Informasi Pendidikan Akademik</h2>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="text-xs font-bold text-slate-500 uppercase block mb-1.5">Fakultas</label>
+          <label className="text-xs font-bold text-slate-500 dark:text-zinc-400 uppercase block mb-1.5">Fakultas</label>
           <select value={formData.fakultasId} onChange={e => {
             const f = fakultasOptions.find(x => x.id === e.target.value);
             setFormData({...formData, fakultasId: e.target.value, fakultas: f?.name || "", prodiId: "", prodi: "", angkatanId: "", angkatan: ""})
-          }} className="w-full bg-slate-50 border border-slate-200 rounded-lg py-2.5 px-4 text-sm focus:ring-2 focus:ring-blue-500">
+          }} className="w-full bg-slate-50 dark:bg-zinc-800/80 border border-slate-200 dark:border-zinc-700/80 rounded-lg py-2.5 px-4 text-sm focus:ring-2 focus:ring-blue-500">
             <option value="">Pilih Fakultas...</option>
             {fakultasOptions.map(f => <option key={f.id} value={f.id}>{f.name}</option>)}
           </select>
         </div>
         <div>
-          <label className="text-xs font-bold text-slate-500 uppercase block mb-1.5">Program Studi <span className="text-red-500">*</span></label>
+          <label className="text-xs font-bold text-slate-500 dark:text-zinc-400 uppercase block mb-1.5">Program Studi <span className="text-red-500">*</span></label>
           <select required value={formData.prodiId} onChange={e => {
             const p = prodiOptions.find(x => x.id === e.target.value);
             const f = fakultasOptions.find(x => x.id === p?.fakultasId)
             setFormData({...formData, prodiId: e.target.value, prodi: p?.name || "", fakultasId: formData.fakultasId || p?.fakultasId || "", fakultas: formData.fakultas || f?.name || "", angkatanId: "", angkatan: ""})
-          }} className="w-full bg-slate-50 border border-slate-200 rounded-lg py-2.5 px-4 text-sm focus:ring-2 focus:ring-blue-500">
+          }} className="w-full bg-slate-50 dark:bg-zinc-800/80 border border-slate-200 dark:border-zinc-700/80 rounded-lg py-2.5 px-4 text-sm focus:ring-2 focus:ring-blue-500">
             <option value="">Pilih Prodi...</option>
             {availableProdi.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
           </select>
         </div>
         <div>
-          <label className="text-xs font-bold text-slate-500 uppercase block mb-1.5">Angkatan <span className="text-red-500">*</span></label>
+          <label className="text-xs font-bold text-slate-500 dark:text-zinc-400 uppercase block mb-1.5">Angkatan <span className="text-red-500">*</span></label>
           <select required disabled={!formData.prodiId} value={formData.angkatanId} onChange={e => {
             const a = angkatanOptions.find(x => x.id === e.target.value);
             setFormData({...formData, angkatanId: e.target.value, angkatan: a?.name || ""})
-          }} className="w-full bg-slate-50 border border-slate-200 rounded-lg py-2.5 px-4 text-sm focus:ring-2 focus:ring-blue-500 disabled:opacity-50">
+          }} className="w-full bg-slate-50 dark:bg-zinc-800/80 border border-slate-200 dark:border-zinc-700/80 rounded-lg py-2.5 px-4 text-sm focus:ring-2 focus:ring-blue-500 disabled:opacity-50">
             <option value="">Pilih Angkatan...</option>
             {availableAngkatan.map(a => <option key={a.id} value={a.id}>{a.name}</option>)}
           </select>
@@ -640,12 +640,12 @@ function Step4Asrama({ formData, setFormData, areaHierarchy }: Step4Props) {
 
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
-      <h2 className="text-lg font-bold text-slate-800 border-b border-slate-100 pb-2">Status & Penempatan Asrama</h2>
+      <h2 className="text-lg font-bold text-slate-800 dark:text-zinc-100 border-b border-slate-100 dark:border-zinc-800 pb-2">Status & Penempatan Asrama</h2>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="text-xs font-bold text-slate-500 uppercase block mb-1.5">Status Santri</label>
-          <select value={formData.status} onChange={e => setFormData({...formData, status: e.target.value as ResidentStatus})} className="w-full bg-slate-50 border border-slate-200 rounded-lg py-2.5 px-4 text-sm focus:ring-2 focus:ring-blue-500 font-bold">
+          <label className="text-xs font-bold text-slate-500 dark:text-zinc-400 uppercase block mb-1.5">Status Santri</label>
+          <select value={formData.status} onChange={e => setFormData({...formData, status: e.target.value as ResidentStatus})} className="w-full bg-slate-50 dark:bg-zinc-800/80 border border-slate-200 dark:border-zinc-700/80 rounded-lg py-2.5 px-4 text-sm focus:ring-2 focus:ring-blue-500 font-bold">
             <option value={ResidentStatus.ACTIVE}>Aktif</option>
             <option value={ResidentStatus.INACTIVE}>Keluar</option>
             <option value="CUTI">Cuti</option>
@@ -653,34 +653,34 @@ function Step4Asrama({ formData, setFormData, areaHierarchy }: Step4Props) {
           </select>
         </div>
 
-        <div className="md:col-span-2 mt-4"><h3 className="font-bold text-sm text-slate-600 mb-2">Pilih Penempatan</h3></div>
+        <div className="md:col-span-2 mt-4"><h3 className="font-bold text-sm text-slate-600 dark:text-zinc-300 mb-2">Pilih Penempatan</h3></div>
 
         <div>
-          <label className="text-xs font-bold text-slate-500 uppercase block mb-1.5">Wilayah Asrama</label>
+          <label className="text-xs font-bold text-slate-500 dark:text-zinc-400 uppercase block mb-1.5">Wilayah Asrama</label>
           <select value={formData.wilayahId} onChange={e => {
             const w = areaHierarchy.find(x => x.id === e.target.value);
             setFormData({...formData, wilayahId: e.target.value, wilayah: w?.name || "", daerahId: "", daerah: "", roomId: "", roomNumber: ""})
-          }} className="w-full bg-slate-50 border border-slate-200 rounded-lg py-2.5 px-4 text-sm focus:ring-2 focus:ring-blue-500">
+          }} className="w-full bg-slate-50 dark:bg-zinc-800/80 border border-slate-200 dark:border-zinc-700/80 rounded-lg py-2.5 px-4 text-sm focus:ring-2 focus:ring-blue-500">
             <option value="">Pilih Wilayah...</option>
             {areaHierarchy.map(w => <option key={w.id} value={w.id}>{w.name}</option>)}
           </select>
         </div>
         <div>
-          <label className="text-xs font-bold text-slate-500 uppercase block mb-1.5">Daerah Asrama</label>
+          <label className="text-xs font-bold text-slate-500 dark:text-zinc-400 uppercase block mb-1.5">Daerah Asrama</label>
           <select disabled={!formData.wilayahId} value={formData.daerahId} onChange={e => {
             const d = availableDaerahs.find(x => x.id === e.target.value);
             setFormData({...formData, daerahId: e.target.value, daerah: d?.name || "", roomId: "", roomNumber: ""})
-          }} className="w-full bg-slate-50 border border-slate-200 rounded-lg py-2.5 px-4 text-sm focus:ring-2 focus:ring-blue-500 disabled:opacity-50">
+          }} className="w-full bg-slate-50 dark:bg-zinc-800/80 border border-slate-200 dark:border-zinc-700/80 rounded-lg py-2.5 px-4 text-sm focus:ring-2 focus:ring-blue-500 disabled:opacity-50">
             <option value="">Pilih Daerah...</option>
             {availableDaerahs.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
           </select>
         </div>
         <div>
-          <label className="text-xs font-bold text-slate-500 uppercase block mb-1.5">Kamar (Aktif)</label>
+          <label className="text-xs font-bold text-slate-500 dark:text-zinc-400 uppercase block mb-1.5">Kamar (Aktif)</label>
           <select disabled={!formData.daerahId} value={formData.roomId} onChange={e => {
             const r = availableRooms.find(x => x.id === e.target.value);
             setFormData({...formData, roomId: e.target.value, roomNumber: r?.number || ""})
-          }} className="w-full bg-slate-50 border border-slate-200 rounded-lg py-2.5 px-4 text-sm focus:ring-2 focus:ring-blue-500 disabled:opacity-50">
+          }} className="w-full bg-slate-50 dark:bg-zinc-800/80 border border-slate-200 dark:border-zinc-700/80 rounded-lg py-2.5 px-4 text-sm focus:ring-2 focus:ring-blue-500 disabled:opacity-50">
             <option value="">Pilih Kamar...</option>
             {availableRooms.map(r => (
               <option key={r.id} value={r.id}>Kamar {r.number}</option>
@@ -708,47 +708,47 @@ function Step5Ringkasan({ formData, photoFile: _photoFile, mode, originalData }:
 
     return (
       <div className="mb-3 border-l-2 border-amber-400 pl-3">
-        <p className="text-xs font-bold text-slate-500">{label}</p>
-        <p className="text-sm"><span className="text-slate-400 line-through mr-2">{oldVal || "-"}</span> <span className="font-bold text-amber-700">{newVal || "-"}</span></p>
+        <p className="text-xs font-bold text-slate-500 dark:text-zinc-400">{label}</p>
+        <p className="text-sm"><span className="text-slate-400 dark:text-zinc-500 line-through mr-2">{oldVal || "-"}</span> <span className="font-bold text-amber-700">{newVal || "-"}</span></p>
       </div>
     )
   }
 
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
-      <h2 className="text-lg font-bold text-slate-800 border-b border-slate-100 pb-2 flex items-center gap-2">
+      <h2 className="text-lg font-bold text-slate-800 dark:text-zinc-100 border-b border-slate-100 dark:border-zinc-800 pb-2 flex items-center gap-2">
         <FileText className="w-5 h-5 text-blue-600" /> {mode === "edit" ? "Ringkasan Perubahan" : "Ringkasan Pendaftaran"}
       </h2>
       
       {mode === "create" ? (
-        <div className="bg-slate-50 border border-slate-200 rounded-xl p-5 grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="bg-slate-50 dark:bg-zinc-800/80 border border-slate-200 dark:border-zinc-700/80 rounded-xl p-5 grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-4">
             <div>
-              <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Data Santri</h3>
+              <h3 className="text-xs font-bold text-slate-400 dark:text-zinc-500 uppercase tracking-wider mb-2">Data Santri</h3>
               <div className="space-y-1.5">
-                <p className="text-sm"><span className="text-slate-500 w-24 inline-block">Nama:</span> <span className="font-bold text-slate-800">{formData.name || "-"}</span></p>
-                <p className="text-sm"><span className="text-slate-500 w-24 inline-block">NIM:</span> <span className="font-bold text-slate-800">{formData.nim || "-"}</span></p>
-                <p className="text-sm"><span className="text-slate-500 w-24 inline-block">No. HP:</span> <span className="font-bold text-slate-800">{formData.phone || "-"}</span></p>
+                <p className="text-sm"><span className="text-slate-500 dark:text-zinc-400 w-24 inline-block">Nama:</span> <span className="font-bold text-slate-800 dark:text-zinc-100">{formData.name || "-"}</span></p>
+                <p className="text-sm"><span className="text-slate-500 dark:text-zinc-400 w-24 inline-block">NIM:</span> <span className="font-bold text-slate-800 dark:text-zinc-100">{formData.nim || "-"}</span></p>
+                <p className="text-sm"><span className="text-slate-500 dark:text-zinc-400 w-24 inline-block">No. HP:</span> <span className="font-bold text-slate-800 dark:text-zinc-100">{formData.phone || "-"}</span></p>
               </div>
             </div>
             <div>
-              <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Pendidikan</h3>
+              <h3 className="text-xs font-bold text-slate-400 dark:text-zinc-500 uppercase tracking-wider mb-2">Pendidikan</h3>
               <div className="space-y-1.5">
-                <p className="text-sm"><span className="text-slate-500 w-24 inline-block">Prodi:</span> <span className="font-bold text-slate-800">{formData.prodi || "-"}</span></p>
+                <p className="text-sm"><span className="text-slate-500 dark:text-zinc-400 w-24 inline-block">Prodi:</span> <span className="font-bold text-slate-800 dark:text-zinc-100">{formData.prodi || "-"}</span></p>
               </div>
             </div>
           </div>
           <div className="space-y-4">
             <div>
-              <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Penempatan</h3>
+              <h3 className="text-xs font-bold text-slate-400 dark:text-zinc-500 uppercase tracking-wider mb-2">Penempatan</h3>
               <div className="space-y-1.5">
-                <p className="text-sm"><span className="text-slate-500 w-24 inline-block">Kamar:</span> <span className="font-bold text-slate-800">{formData.roomNumber || "-"}</span></p>
+                <p className="text-sm"><span className="text-slate-500 dark:text-zinc-400 w-24 inline-block">Kamar:</span> <span className="font-bold text-slate-800 dark:text-zinc-100">{formData.roomNumber || "-"}</span></p>
               </div>
             </div>
           </div>
         </div>
       ) : (
-        <div className="bg-amber-50/50 border border-amber-200 rounded-xl p-5">
+        <div className="bg-amber-50/50 dark:bg-amber-900/10 border border-amber-200 rounded-xl p-5">
           <h3 className="text-xs font-bold text-amber-600 uppercase tracking-wider mb-4">Review Perubahan Field</h3>
           
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -763,7 +763,7 @@ function Step5Ringkasan({ formData, photoFile: _photoFile, mode, originalData }:
           </div>
 
           {JSON.stringify(formData) === JSON.stringify(originalData) && !_photoFile && (
-            <p className="text-sm text-slate-500 italic">Tidak ada perubahan data.</p>
+            <p className="text-sm text-slate-500 dark:text-zinc-400 italic">Tidak ada perubahan data.</p>
           )}
         </div>
       )}

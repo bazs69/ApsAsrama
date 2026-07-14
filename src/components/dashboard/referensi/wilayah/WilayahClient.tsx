@@ -196,21 +196,21 @@ export default function WilayahClient({
       </div>
 
       {/* Header */}
-      <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div className="bg-white dark:bg-zinc-900 rounded-2xl p-6 border border-slate-200 dark:border-zinc-700 shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div className="flex items-center gap-4">
           <div className="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center text-blue-600">
             <MapPin className="w-6 h-6" />
           </div>
           <div>
-            <h1 className="text-2xl font-black text-slate-800">Wilayah Administratif</h1>
-            <p className="text-sm font-medium text-slate-500 mt-1">Kelola data hierarki wilayah untuk referensi sistem.</p>
+            <h1 className="text-2xl font-black text-slate-800 dark:text-zinc-100">Wilayah Administratif</h1>
+            <p className="text-sm font-medium text-slate-500 dark:text-zinc-400 mt-1">Kelola data hierarki wilayah untuk referensi sistem.</p>
           </div>
         </div>
         
         {canCreate && (
           <button 
             onClick={() => setIsImportOpen(true)}
-            className="w-full sm:w-auto bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 px-5 py-2.5 rounded-lg text-sm font-bold flex items-center justify-center gap-2 transition-all shadow-sm"
+            className="w-full sm:w-auto bg-white dark:bg-zinc-900 border border-slate-300 dark:border-zinc-600 hover:bg-slate-50 dark:bg-zinc-800/80 text-slate-700 dark:text-zinc-200 px-5 py-2.5 rounded-lg text-sm font-bold flex items-center justify-center gap-2 transition-all shadow-sm"
           >
             <UploadCloud className="w-4 h-4 text-blue-600" />
             Import XLSX
@@ -219,7 +219,7 @@ export default function WilayahClient({
       </div>
 
       <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
-        <div className="bg-white p-2 rounded-xl border border-slate-200 shadow-sm overflow-x-auto">
+        <div className="bg-white dark:bg-zinc-900 p-2 rounded-xl border border-slate-200 dark:border-zinc-700 shadow-sm overflow-x-auto">
           <TabsList className="bg-transparent h-auto p-0 flex space-x-2">
             <TabsTrigger value="negara" className="px-6 py-2.5 rounded-lg data-[state=active]:bg-blue-50 data-[state=active]:text-blue-600 data-[state=active]:font-bold transition-all border border-transparent data-[state=active]:border-blue-100">
               Negara
@@ -239,19 +239,19 @@ export default function WilayahClient({
           </TabsList>
         </div>
 
-        <div className="mt-6 bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
+        <div className="mt-6 bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200 dark:border-zinc-700 shadow-sm overflow-hidden flex flex-col">
           {/* Action Bar */}
-          <div className="p-4 border-b border-slate-200 flex flex-col lg:flex-row gap-4 justify-between items-center bg-slate-50/50">
+          <div className="p-4 border-b border-slate-200 dark:border-zinc-700 flex flex-col lg:flex-row gap-4 justify-between items-center bg-slate-50 dark:bg-zinc-800/80/50">
             <div className="flex flex-col sm:flex-row w-full lg:w-auto gap-4">
               {/* Search */}
               <form onSubmit={handleSearch} className="relative w-full sm:w-72">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-zinc-500" />
                 <input 
                   type="text" 
                   value={searchInput}
                   onChange={(e) => setSearchInput(e.target.value)}
                   placeholder="Cari nama atau kode wilayah..."
-                  className="w-full bg-white border border-slate-300 rounded-lg pl-10 pr-4 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all shadow-sm"
+                  className="w-full bg-white dark:bg-zinc-900 border border-slate-300 dark:border-zinc-600 rounded-lg pl-10 pr-4 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all shadow-sm"
                 />
               </form>
               
@@ -260,7 +260,7 @@ export default function WilayahClient({
                 <select 
                   value={parentId}
                   onChange={handleParentFilterChange}
-                  className="w-full sm:w-64 bg-white border border-slate-300 rounded-lg px-4 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all shadow-sm"
+                  className="w-full sm:w-64 bg-white dark:bg-zinc-900 border border-slate-300 dark:border-zinc-600 rounded-lg px-4 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all shadow-sm"
                 >
                   <option value="">-- Semua Induk Wilayah --</option>
                   {activeTab === "provinsi" && dropdowns.countries.map((d) => (
@@ -294,7 +294,7 @@ export default function WilayahClient({
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-white text-xs font-bold text-slate-500 uppercase tracking-wider border-b border-slate-200">
+                <tr className="bg-white dark:bg-zinc-900 text-xs font-bold text-slate-500 dark:text-zinc-400 uppercase tracking-wider border-b border-slate-200 dark:border-zinc-700">
                   <th className="py-4 px-6 text-center w-16">No</th>
                   <th className="py-4 px-6">Kode</th>
                   <th className="py-4 px-6">Nama Wilayah</th>
@@ -309,38 +309,38 @@ export default function WilayahClient({
                 {data.length === 0 ? (
                   <tr>
                     <td colSpan={6} className="py-12 text-center">
-                      <div className="flex flex-col items-center justify-center text-slate-400">
+                      <div className="flex flex-col items-center justify-center text-slate-400 dark:text-zinc-500">
                         <MapPin className="w-12 h-12 mb-3 text-slate-300" />
-                        <p className="font-semibold text-slate-500">Tidak ada data ditemukan</p>
+                        <p className="font-semibold text-slate-500 dark:text-zinc-400">Tidak ada data ditemukan</p>
                       </div>
                     </td>
                   </tr>
                 ) : (
                   data.map((item, index: number) => (
-                    <tr key={item.id} className="hover:bg-slate-50/80 transition-colors">
-                      <td className="py-4 px-6 text-center text-slate-500 font-medium">
+                    <tr key={item.id} className="hover:bg-slate-50 dark:bg-zinc-800/80/80 transition-colors">
+                      <td className="py-4 px-6 text-center text-slate-500 dark:text-zinc-400 font-medium">
                         {(page - 1) * 10 + index + 1}
                       </td>
                       <td className="py-4 px-6">
-                        <span className="inline-flex px-2.5 py-1 rounded-md bg-slate-100 border border-slate-200 text-slate-700 font-mono text-xs font-bold">
+                        <span className="inline-flex px-2.5 py-1 rounded-md bg-slate-100 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 text-slate-700 dark:text-zinc-200 font-mono text-xs font-bold">
                           {item.code}
                         </span>
                       </td>
-                      <td className="py-4 px-6 font-bold text-slate-800">
+                      <td className="py-4 px-6 font-bold text-slate-800 dark:text-zinc-100">
                         {item.name}
                       </td>
                       
-                      {activeTab === "provinsi" && <td className="py-4 px-6 text-slate-600 font-medium">{item.country?.name}</td>}
-                      {activeTab === "kabupaten" && <td className="py-4 px-6 text-slate-600 font-medium">{item.province?.name}</td>}
-                      {activeTab === "kecamatan" && <td className="py-4 px-6 text-slate-600 font-medium">{item.regency?.name}</td>}
-                      {activeTab === "desa" && <td className="py-4 px-6 text-slate-600 font-medium">{item.district?.name}</td>}
+                      {activeTab === "provinsi" && <td className="py-4 px-6 text-slate-600 dark:text-zinc-300 font-medium">{item.country?.name}</td>}
+                      {activeTab === "kabupaten" && <td className="py-4 px-6 text-slate-600 dark:text-zinc-300 font-medium">{item.province?.name}</td>}
+                      {activeTab === "kecamatan" && <td className="py-4 px-6 text-slate-600 dark:text-zinc-300 font-medium">{item.regency?.name}</td>}
+                      {activeTab === "desa" && <td className="py-4 px-6 text-slate-600 dark:text-zinc-300 font-medium">{item.district?.name}</td>}
                       
                       <td className="py-4 px-6 text-center">
                         <div className="flex items-center justify-center gap-2">
                           {canUpdate && (
                             <button 
                               onClick={() => openEditModal(item)}
-                              className="p-2 rounded-lg bg-emerald-50 text-emerald-600 hover:bg-emerald-100 hover:text-emerald-700 transition-colors"
+                              className="p-2 rounded-lg bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 hover:bg-emerald-100 hover:text-emerald-700 transition-colors"
                               title="Edit"
                             >
                               <Edit className="w-4 h-4" />
@@ -349,7 +349,7 @@ export default function WilayahClient({
                           {canDelete && (
                             <button 
                               onClick={() => handleDelete(item.id)}
-                              className="p-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 transition-colors"
+                              className="p-2 rounded-lg bg-red-50 dark:bg-red-900/20 text-red-600 hover:bg-red-100 hover:text-red-700 transition-colors"
                               title="Hapus"
                             >
                               <Trash2 className="w-4 h-4" />
@@ -366,28 +366,28 @@ export default function WilayahClient({
 
           {/* Pagination */}
           {totalPages > 0 && (
-            <div className="p-4 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4 bg-slate-50/50">
-              <span className="text-sm font-medium text-slate-500">
-                Menampilkan <span className="font-bold text-slate-700">{data.length}</span> dari <span className="font-bold text-slate-700">{total}</span> data
+            <div className="p-4 border-t border-slate-200 dark:border-zinc-700 flex flex-col sm:flex-row items-center justify-between gap-4 bg-slate-50 dark:bg-zinc-800/80/50">
+              <span className="text-sm font-medium text-slate-500 dark:text-zinc-400">
+                Menampilkan <span className="font-bold text-slate-700 dark:text-zinc-200">{data.length}</span> dari <span className="font-bold text-slate-700 dark:text-zinc-200">{total}</span> data
               </span>
               
               <div className="flex items-center gap-2">
                 <button 
                   onClick={() => handlePageChange(page - 1)}
                   disabled={page <= 1}
-                  className="p-2 rounded-lg border border-slate-300 text-slate-600 hover:bg-slate-100 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm"
+                  className="p-2 rounded-lg border border-slate-300 dark:border-zinc-600 text-slate-600 dark:text-zinc-300 hover:bg-slate-100 dark:bg-zinc-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm"
                 >
                   <ChevronLeft className="w-4 h-4" />
                 </button>
                 
-                <span className="text-sm font-bold text-slate-700 px-4 py-2 bg-white border border-slate-300 rounded-lg shadow-sm">
+                <span className="text-sm font-bold text-slate-700 dark:text-zinc-200 px-4 py-2 bg-white dark:bg-zinc-900 border border-slate-300 dark:border-zinc-600 rounded-lg shadow-sm">
                   {page} / {totalPages}
                 </span>
 
                 <button 
                   onClick={() => handlePageChange(page + 1)}
                   disabled={page >= totalPages}
-                  className="p-2 rounded-lg border border-slate-300 text-slate-600 hover:bg-slate-100 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm"
+                  className="p-2 rounded-lg border border-slate-300 dark:border-zinc-600 text-slate-600 dark:text-zinc-300 hover:bg-slate-100 dark:bg-zinc-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm"
                 >
                   <ChevronRight className="w-4 h-4" />
                 </button>
@@ -400,14 +400,14 @@ export default function WilayahClient({
       {/* Modal CRUD */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm overflow-y-auto">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md my-8">
-            <div className="flex items-center justify-between p-5 border-b border-slate-100">
-              <h3 className="text-lg font-bold text-slate-800">
+          <div className="bg-white dark:bg-zinc-900 rounded-2xl shadow-xl w-full max-w-md my-8">
+            <div className="flex items-center justify-between p-5 border-b border-slate-100 dark:border-zinc-800">
+              <h3 className="text-lg font-bold text-slate-800 dark:text-zinc-100">
                 {modalMode === "create" ? "Tambah Data" : "Edit Data"} <span className="capitalize">{activeTab}</span>
               </h3>
               <button 
                 onClick={() => setIsModalOpen(false)}
-                className="text-slate-400 hover:text-slate-600 hover:bg-slate-100 p-1.5 rounded-lg transition-colors"
+                className="text-slate-400 dark:text-zinc-500 hover:text-slate-600 dark:text-zinc-300 hover:bg-slate-100 dark:bg-zinc-800 p-1.5 rounded-lg transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -415,24 +415,24 @@ export default function WilayahClient({
             
             <form onSubmit={handleSave} className="p-5 space-y-4">
               <div>
-                <label className="block text-sm font-bold text-slate-700 mb-1.5">Kode Wilayah</label>
+                <label className="block text-sm font-bold text-slate-700 dark:text-zinc-200 mb-1.5">Kode Wilayah</label>
                 <input 
                   type="text" 
                   value={formCode}
                   onChange={(e) => setFormCode(e.target.value)}
-                  className="w-full bg-white border border-slate-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all font-mono"
+                  className="w-full bg-white dark:bg-zinc-900 border border-slate-300 dark:border-zinc-600 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all font-mono"
                   placeholder="Misal: 35.12.01"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-bold text-slate-700 mb-1.5">Nama Wilayah</label>
+                <label className="block text-sm font-bold text-slate-700 dark:text-zinc-200 mb-1.5">Nama Wilayah</label>
                 <input 
                   type="text" 
                   value={formName}
                   onChange={(e) => setFormName(e.target.value)}
-                  className="w-full bg-white border border-slate-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                  className="w-full bg-white dark:bg-zinc-900 border border-slate-300 dark:border-zinc-600 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                   placeholder="Masukkan nama wilayah..."
                   required
                 />
@@ -440,7 +440,7 @@ export default function WilayahClient({
 
               {activeTab !== "negara" && (
                 <div>
-                  <label className="block text-sm font-bold text-slate-700 mb-1.5">
+                  <label className="block text-sm font-bold text-slate-700 dark:text-zinc-200 mb-1.5">
                     Induk Wilayah ({
                       activeTab === "provinsi" ? "Negara" : 
                       activeTab === "kabupaten" ? "Provinsi" : 
@@ -450,7 +450,7 @@ export default function WilayahClient({
                   <select 
                     value={formParentId}
                     onChange={(e) => setFormParentId(e.target.value)}
-                    className="w-full bg-white border border-slate-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                    className="w-full bg-white dark:bg-zinc-900 border border-slate-300 dark:border-zinc-600 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                     required
                   >
                     <option value="">-- Pilih Induk Wilayah --</option>
@@ -470,11 +470,11 @@ export default function WilayahClient({
                 </div>
               )}
 
-              <div className="pt-4 border-t border-slate-100 flex gap-3">
+              <div className="pt-4 border-t border-slate-100 dark:border-zinc-800 flex gap-3">
                 <button 
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="flex-1 px-4 py-2.5 border border-slate-300 text-slate-700 bg-white rounded-lg font-bold hover:bg-slate-50 transition-colors text-sm"
+                  className="flex-1 px-4 py-2.5 border border-slate-300 dark:border-zinc-600 text-slate-700 dark:text-zinc-200 bg-white dark:bg-zinc-900 rounded-lg font-bold hover:bg-slate-50 dark:bg-zinc-800/80 transition-colors text-sm"
                 >
                   Batal
                 </button>
@@ -520,13 +520,13 @@ function MetricCard({ title, value, icon: Icon, color }: MetricCardProps) {
   }
   
   return (
-    <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center gap-4 hover:shadow-md transition-all">
+    <div className="bg-white dark:bg-zinc-900 p-4 rounded-xl border border-slate-200 dark:border-zinc-700 shadow-sm flex items-center gap-4 hover:shadow-md transition-all">
       <div className={`w-12 h-12 rounded-lg flex items-center justify-center border ${bgColors[color]}`}>
         <Icon className="w-6 h-6" />
       </div>
       <div>
-        <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-0.5">{title}</p>
-        <p className="text-2xl font-black text-slate-800">{value.toLocaleString()}</p>
+        <p className="text-xs font-bold text-slate-500 dark:text-zinc-400 uppercase tracking-wider mb-0.5">{title}</p>
+        <p className="text-2xl font-black text-slate-800 dark:text-zinc-100">{value.toLocaleString()}</p>
       </div>
     </div>
   )

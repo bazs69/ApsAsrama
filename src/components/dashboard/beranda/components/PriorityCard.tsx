@@ -53,8 +53,8 @@ export default function PriorityCard({ action }: PriorityCardProps) {
   const Icon = action.icon
 
   return (
-    <div 
-      className={`relative overflow-hidden rounded-2xl p-6 border transition-all hover:-translate-y-1 hover:shadow-xl duration-200 bg-white dark:bg-zinc-900/60 shadow-md border-zinc-200/80 dark:border-zinc-800/80 group`}
+    <div
+      className={`relative overflow-hidden rounded-2xl p-6 border transition-all hover:-translate-y-1 hover:shadow-xl hover:shadow-${style.text.split('-')[1]}-500/10 duration-300 bg-gradient-to-br from-white to-zinc-50/50 dark:from-zinc-900/90 dark:to-zinc-800/60 shadow-md border-zinc-200/80 dark:border-zinc-700/60 hover:border-${style.text.split('-')[1]}-300 dark:hover:border-${style.text.split('-')[1]}-800/60 group`}
       tabIndex={0}
       aria-label={`Tugas Prioritas: ${action.title}`}
     >
@@ -72,11 +72,11 @@ export default function PriorityCard({ action }: PriorityCardProps) {
             </span>
           )}
         </div>
-        
+
         <div className="flex-1">
           <h3 className={`font-extrabold text-lg mb-1.5 text-zinc-900 dark:text-white group-hover:${style.text.split(' ')[0]} transition-colors`}>{action.title}</h3>
           <p className="text-sm text-zinc-500 dark:text-zinc-400 mb-4 line-clamp-2 leading-relaxed">{action.description}</p>
-          
+
           {(action.count !== undefined || action.dueAt) && (
             <div className="flex items-center gap-4 mb-5 p-3.5 rounded-xl bg-zinc-50/50 dark:bg-zinc-900/30 border border-zinc-100 dark:border-zinc-800/50">
               {action.count !== undefined && (
@@ -102,7 +102,7 @@ export default function PriorityCard({ action }: PriorityCardProps) {
 
         {action.actionHref && (
           <div className="mt-auto pt-2">
-            <Link 
+            <Link
               href={action.actionHref}
               className={`inline-flex items-center justify-center w-full gap-2 py-2.5 px-4 text-sm font-bold transition-all hover:opacity-80 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 rounded-xl ${style.bg} ${style.text} border border-current/10 group-hover:shadow-sm`}
               aria-label={`Tindak lanjuti ${action.title}`}

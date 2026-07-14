@@ -44,7 +44,7 @@ export default function Topbar({ user }: { user?: { name?: string | null; role?:
   }
 
   return (
-    <header className="h-16 px-4 md:px-8 flex items-center justify-between bg-white/90 dark:bg-zinc-950/80 backdrop-blur-md border-b border-zinc-200 dark:border-zinc-800/80 z-10 sticky top-0 transition-colors duration-300">
+    <header className="h-16 px-4 md:px-8 flex items-center justify-between bg-white dark:bg-zinc-900/90 dark:bg-zinc-950/80 backdrop-blur-md border-b border-zinc-200 dark:border-zinc-800/80 z-10 sticky top-0 transition-colors duration-300">
 
       {/* ── Left: Mobile menu ── */}
       <div className="flex items-center gap-3">

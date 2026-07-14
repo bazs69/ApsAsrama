@@ -64,11 +64,11 @@ export default function DetailSantriModal({
 
   const getStatusBadge = (status: string) => {
     switch(status) {
-      case "Sangat Aktif": return "bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
+      case "Sangat Aktif": return "bg-emerald-50 dark:bg-emerald-900/200/10 text-emerald-600 border-emerald-500/20"
       case "Aktif": return "bg-blue-500/10 text-blue-600 border-blue-500/20"
-      case "Cukup Aktif": return "bg-amber-500/10 text-amber-600 border-amber-500/20"
-      case "Kurang Aktif": return "bg-red-500/10 text-red-600 border-red-500/20"
-      case "ACTIVE": return "bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
+      case "Cukup Aktif": return "bg-amber-50 dark:bg-amber-900/100/10 text-amber-600 border-amber-500/20"
+      case "Kurang Aktif": return "bg-red-50 dark:bg-red-900/200/10 text-red-600 border-red-500/20"
+      case "ACTIVE": return "bg-emerald-50 dark:bg-emerald-900/200/10 text-emerald-600 border-emerald-500/20"
       case "COMPLETED": return "bg-blue-500/10 text-blue-600 border-blue-500/20"
       default: return "bg-zinc-500/10 text-zinc-600 border-zinc-500/20"
     }
@@ -152,7 +152,7 @@ export default function DetailSantriModal({
                       </div>
                       <div>
                         <p className="text-xs text-zinc-500 font-medium mb-1">Status</p>
-                        <span className={`inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-bold border ${data.profil.status === 'ACTIVE' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : 'bg-red-500/10 text-red-600 border-red-500/20'}`}>
+                        <span className={`inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-bold border ${data.profil.status === 'ACTIVE' ? 'bg-emerald-50 dark:bg-emerald-900/200/10 text-emerald-600 border-emerald-500/20' : 'bg-red-50 dark:bg-red-900/200/10 text-red-600 border-red-500/20'}`}>
                           {data.profil.status === 'ACTIVE' ? 'Aktif' : 'Tidak Aktif'}
                         </span>
                       </div>

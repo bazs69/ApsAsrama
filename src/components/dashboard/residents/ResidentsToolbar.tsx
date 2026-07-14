@@ -56,7 +56,7 @@ export default function ResidentsToolbar({
         <div className="w-px h-5 bg-zinc-200 dark:bg-zinc-800 mx-1"></div>
         <button
           onClick={exportToCSV}
-          className="p-2 text-zinc-500 hover:text-emerald-600 dark:text-zinc-400 dark:hover:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 rounded-lg transition-all flex items-center justify-center"
+          className="p-2 text-zinc-500 hover:text-emerald-600 dark:text-zinc-400 dark:hover:text-emerald-400 hover:bg-emerald-50 dark:bg-emerald-900/20 dark:hover:bg-emerald-50 dark:bg-emerald-900/200/10 rounded-lg transition-all flex items-center justify-center"
           title="Ekspor Data ke CSV"
         >
           <FileText className="w-4 h-4" />

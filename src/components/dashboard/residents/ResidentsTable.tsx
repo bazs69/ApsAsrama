@@ -95,7 +95,7 @@ export default function ResidentsTable({
                       <span>{res.room.number}</span>
                     </span>
                   ) : (
-                    <span className="text-amber-600 bg-amber-500/10 border border-amber-500/20 rounded-lg px-2 py-1 text-xs font-semibold">-</span>
+                    <span className="text-amber-600 bg-amber-50 dark:bg-amber-900/100/10 border border-amber-500/20 rounded-lg px-2 py-1 text-xs font-semibold">-</span>
                   )}
                 </td>
                 <td className="py-4 px-4 text-zinc-600 dark:text-zinc-300 text-sm">{res.daerah || <span className="text-zinc-400 dark:text-zinc-650">-</span>}</td>

@@ -452,7 +452,7 @@ export default function Sidebar({ userRole, permissions = [] }: { userRole?: str
       <div className="px-4 mt-auto pt-4">
         <button
           onClick={() => signOut({ callbackUrl: "/login" })}
-          className="w-full flex items-center space-x-3 px-4 py-3 text-zinc-500 dark:text-zinc-400 hover:bg-red-500/10 hover:text-red-600 dark:hover:text-red-400 rounded-xl transition-all border border-transparent"
+          className="w-full flex items-center space-x-3 px-4 py-3 text-zinc-500 dark:text-zinc-400 hover:bg-red-50 dark:bg-red-900/200/10 hover:text-red-600 dark:hover:text-red-400 rounded-xl transition-all border border-transparent"
         >
           <LogOut className="w-5 h-5" />
           <span className="font-semibold">Keluar (Sign Out)</span>

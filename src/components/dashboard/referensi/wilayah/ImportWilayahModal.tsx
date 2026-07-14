@@ -79,15 +79,15 @@ export default function ImportWilayahModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm overflow-y-auto">
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl my-8">
-        <div className="flex items-center justify-between p-5 border-b border-slate-100">
-          <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2">
+      <div className="bg-white dark:bg-zinc-900 rounded-2xl shadow-xl w-full max-w-2xl my-8">
+        <div className="flex items-center justify-between p-5 border-b border-slate-100 dark:border-zinc-800">
+          <h3 className="text-lg font-bold text-slate-800 dark:text-zinc-100 flex items-center gap-2">
             <Upload className="w-5 h-5 text-blue-600" />
             Import Data <span className="capitalize">{activeTab}</span>
           </h3>
           <button 
             onClick={onClose}
-            className="text-slate-400 hover:text-slate-600 hover:bg-slate-100 p-1.5 rounded-lg transition-colors"
+            className="text-slate-400 dark:text-zinc-500 hover:text-slate-600 dark:text-zinc-300 hover:bg-slate-100 dark:bg-zinc-800 p-1.5 rounded-lg transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -108,7 +108,7 @@ export default function ImportWilayahModal({
 
           {activeTab !== "negara" && (
             <div>
-              <label className="block text-sm font-bold text-slate-700 mb-1.5">
+              <label className="block text-sm font-bold text-slate-700 dark:text-zinc-200 mb-1.5">
                 Pilih Induk Wilayah ({
                   activeTab === "provinsi" ? "Negara" : 
                   activeTab === "kabupaten" ? "Provinsi" : 
@@ -118,7 +118,7 @@ export default function ImportWilayahModal({
               <select 
                 value={parentId}
                 onChange={(e) => setParentId(e.target.value)}
-                className="w-full bg-white border border-slate-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                className="w-full bg-white dark:bg-zinc-900 border border-slate-300 dark:border-zinc-600 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
               >
                 <option value="">-- Pilih Induk Wilayah --</option>
                 {activeTab === "provinsi" && dropdowns.countries?.map((d) => (
@@ -138,15 +138,15 @@ export default function ImportWilayahModal({
           )}
 
           <div>
-            <label className="block text-sm font-bold text-slate-700 mb-1.5">Pilih File Excel (.xlsx)</label>
+            <label className="block text-sm font-bold text-slate-700 dark:text-zinc-200 mb-1.5">Pilih File Excel (.xlsx)</label>
             <div className="flex items-center justify-center w-full">
-              <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-slate-300 border-dashed rounded-xl cursor-pointer bg-slate-50 hover:bg-slate-100 transition-colors">
+              <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-slate-300 dark:border-zinc-600 border-dashed rounded-xl cursor-pointer bg-slate-50 dark:bg-zinc-800/80 hover:bg-slate-100 dark:bg-zinc-800 transition-colors">
                 <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                  <FileSpreadsheet className="w-8 h-8 text-slate-400 mb-2" />
-                  <p className="text-sm text-slate-500">
+                  <FileSpreadsheet className="w-8 h-8 text-slate-400 dark:text-zinc-500 mb-2" />
+                  <p className="text-sm text-slate-500 dark:text-zinc-400">
                     <span className="font-semibold text-blue-600">Klik untuk upload</span> atau drag & drop
                   </p>
-                  <p className="text-xs text-slate-400 mt-1">XLSX (MAX. 10MB)</p>
+                  <p className="text-xs text-slate-400 dark:text-zinc-500 mt-1">XLSX (MAX. 10MB)</p>
                 </div>
                 <input type="file" className="hidden" accept=".xlsx, .xls" onChange={handleFileUpload} />
               </label>
@@ -156,14 +156,14 @@ export default function ImportWilayahModal({
           {previewData.length > 0 && (
             <div>
               <div className="flex items-center justify-between mb-2">
-                <h4 className="text-sm font-bold text-slate-700">Preview Data ({previewData.length} baris)</h4>
+                <h4 className="text-sm font-bold text-slate-700 dark:text-zinc-200">Preview Data ({previewData.length} baris)</h4>
               </div>
-              <div className="bg-slate-50 border border-slate-200 rounded-xl max-h-48 overflow-y-auto">
+              <div className="bg-slate-50 dark:bg-zinc-800/80 border border-slate-200 dark:border-zinc-700 rounded-xl max-h-48 overflow-y-auto">
                 <table className="w-full text-left text-sm">
-                  <thead className="bg-slate-100 sticky top-0">
+                  <thead className="bg-slate-100 dark:bg-zinc-800 sticky top-0">
                     <tr>
-                      <th className="px-4 py-2 font-semibold text-slate-600">Kode</th>
-                      <th className="px-4 py-2 font-semibold text-slate-600">Nama</th>
+                      <th className="px-4 py-2 font-semibold text-slate-600 dark:text-zinc-300">Kode</th>
+                      <th className="px-4 py-2 font-semibold text-slate-600 dark:text-zinc-300">Nama</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-200">
@@ -176,7 +176,7 @@ export default function ImportWilayahModal({
                   </tbody>
                 </table>
                 {previewData.length > 100 && (
-                  <div className="p-2 text-center text-xs text-slate-500 bg-slate-100 font-medium">
+                  <div className="p-2 text-center text-xs text-slate-500 dark:text-zinc-400 bg-slate-100 dark:bg-zinc-800 font-medium">
                     Menampilkan 100 baris pertama dari {previewData.length} total baris
                   </div>
                 )}
@@ -186,11 +186,11 @@ export default function ImportWilayahModal({
 
         </div>
 
-        <div className="p-5 border-t border-slate-100 flex gap-3 justify-end bg-slate-50 rounded-b-2xl">
+        <div className="p-5 border-t border-slate-100 dark:border-zinc-800 flex gap-3 justify-end bg-slate-50 dark:bg-zinc-800/80 rounded-b-2xl">
           <button 
             type="button"
             onClick={onClose}
-            className="px-5 py-2.5 border border-slate-300 text-slate-700 bg-white rounded-lg font-bold hover:bg-slate-100 transition-colors text-sm"
+            className="px-5 py-2.5 border border-slate-300 dark:border-zinc-600 text-slate-700 dark:text-zinc-200 bg-white dark:bg-zinc-900 rounded-lg font-bold hover:bg-slate-100 dark:bg-zinc-800 transition-colors text-sm"
           >
             Batal
           </button>

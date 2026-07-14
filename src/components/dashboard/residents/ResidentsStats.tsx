@@ -25,7 +25,7 @@ export default function ResidentsStats({
       value: activeResidents,
       icon: CheckCircle2,
       borderClass: "border-emerald-500/20",
-      iconClass: "bg-emerald-500/10 text-emerald-650 dark:text-emerald-400",
+      iconClass: "bg-emerald-50 dark:bg-emerald-900/200/10 text-emerald-650 dark:text-emerald-400",
       valueClass: "text-emerald-655 dark:text-emerald-400"
     },
     {
@@ -33,7 +33,7 @@ export default function ResidentsStats({
       value: inactiveResidents,
       icon: UserX,
       borderClass: "border-red-500/20",
-      iconClass: "bg-red-500/10 text-red-500 dark:text-red-400",
+      iconClass: "bg-red-50 dark:bg-red-900/200/10 text-red-500 dark:text-red-400",
       valueClass: "text-red-600 dark:text-red-400"
     }
   ]

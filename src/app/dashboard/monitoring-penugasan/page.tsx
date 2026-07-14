@@ -57,7 +57,7 @@ export default async function MonitoringPenugasanPage({ searchParams }: { search
     }
 
     return (
-      <div className="p-6 max-w-full mx-auto bg-slate-50 dark:bg-slate-900 min-h-screen">
+      <div className="p-6 max-w-full mx-auto bg-slate-50 dark:bg-zinc-800/80 dark:bg-slate-900 min-h-screen">
         <MonitoringKepalaSatkerClient 
           satker={satker as unknown as ComponentProps<typeof MonitoringKepalaSatkerClient>["satker"]}
           laporanBulanan={laporanBulanan}
@@ -169,7 +169,7 @@ export default async function MonitoringPenugasanPage({ searchParams }: { search
   }
 
   return (
-    <div className="p-6 max-w-full mx-auto bg-slate-50 dark:bg-slate-900 min-h-screen">
+    <div className="p-6 max-w-full mx-auto bg-slate-50 dark:bg-zinc-800/80 dark:bg-slate-900 min-h-screen">
       <MonitoringPenugasanClient 
         user={(session?.user || null) as unknown as ComponentProps<typeof MonitoringPenugasanClient>["user"]} 
         satkerList={satkerList as unknown as ComponentProps<typeof MonitoringPenugasanClient>["satkerList"]} 

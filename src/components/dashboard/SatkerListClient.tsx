@@ -172,7 +172,7 @@ export default function SatkerListClient({
         </div>
 
         <div className="glass rounded-2xl p-5 border border-emerald-500/20 flex items-center space-x-4">
-          <div className="w-12 h-12 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-650 dark:text-emerald-400">
+          <div className="w-12 h-12 rounded-xl bg-emerald-50 dark:bg-emerald-900/200/10 flex items-center justify-center text-emerald-650 dark:text-emerald-400">
             <ShieldCheck className="w-6 h-6" />
           </div>
           <div>
@@ -217,7 +217,7 @@ export default function SatkerListClient({
                   <div className="p-2.5 rounded-xl bg-gradient-to-br from-emerald-500/10 to-emerald-500/25 border border-emerald-500/20 text-emerald-600 dark:text-emerald-450">
                     <Briefcase className="w-5 h-5" />
                   </div>
-                  <span className="bg-emerald-500/10 border border-emerald-500/20 text-emerald-650 dark:text-emerald-450 rounded-full px-3 py-1 text-xs font-bold flex items-center space-x-1">
+                  <span className="bg-emerald-50 dark:bg-emerald-900/200/10 border border-emerald-500/20 text-emerald-650 dark:text-emerald-450 rounded-full px-3 py-1 text-xs font-bold flex items-center space-x-1">
                     <Users className="w-3.5 h-3.5" />
                     <span>{s.assignments.length} Anggota</span>
                   </span>
@@ -250,7 +250,7 @@ export default function SatkerListClient({
                 </button>
                 <button
                   onClick={() => handleDelete(s.id, s.name)}
-                  className="p-1.5 text-zinc-550 hover:text-red-655 dark:hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors cursor-pointer"
+                  className="p-1.5 text-zinc-550 hover:text-red-655 dark:hover:text-red-400 hover:bg-red-50 dark:bg-red-900/200/10 rounded-lg transition-colors cursor-pointer"
                   title="Hapus Satker"
                 >
                   <Trash2 className="w-4 h-4" />
@@ -279,7 +279,7 @@ export default function SatkerListClient({
             </div>
 
             {error && (
-              <div className="p-3 bg-red-500/10 border border-red-500/20 text-red-650 dark:text-red-400 text-xs rounded-xl flex items-center space-x-2">
+              <div className="p-3 bg-red-50 dark:bg-red-900/200/10 border border-red-500/20 text-red-650 dark:text-red-400 text-xs rounded-xl flex items-center space-x-2">
                 <AlertCircle className="w-4 h-4 flex-shrink-0" />
                 <span>{error}</span>
               </div>

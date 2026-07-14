@@ -44,7 +44,7 @@ interface ResidentDetailModalProps {
 
 export const StatusBadge = ({ status }: { status: string }) => {
   const map: Record<string, { label: string; className: string }> = {
-    ACTIVE: { label: "Aktif", className: "bg-emerald-100 text-emerald-700 border border-emerald-200" },
+    ACTIVE: { label: "Aktif", className: "bg-emerald-100 text-emerald-700 border border-emerald-200 dark:border-emerald-800/30" },
     INACTIVE: { label: "Keluar", className: "bg-red-100 text-red-700 border border-red-200" },
     CUTI: { label: "Cuti", className: "bg-yellow-100 text-yellow-700 border border-yellow-200" },
     ALUMNI: { label: "Alumni", className: "bg-blue-100 text-blue-700 border border-blue-200" },
@@ -174,7 +174,7 @@ function RoomTransferModal({
 
         {/* Footer */}
         <div className="p-4 border-t border-zinc-200 dark:border-zinc-800 flex justify-end gap-3 bg-zinc-50 dark:bg-zinc-900/50">
-          <button onClick={onClose} className="px-4 py-2 text-sm font-semibold text-zinc-600 bg-white border border-zinc-300 rounded-xl hover:bg-zinc-50 dark:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-300">
+          <button onClick={onClose} className="px-4 py-2 text-sm font-semibold text-zinc-600 bg-white dark:bg-zinc-900 border border-zinc-300 rounded-xl hover:bg-zinc-50 dark:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-300">
             Batal
           </button>
           <button
@@ -587,7 +587,7 @@ export default function ResidentDetailModal({
                   </div>
                 </div>
                 <div className="flex justify-center items-center">
-                  <div className="w-36 h-36 p-2 bg-white border border-zinc-200 rounded-xl shadow-sm">
+                  <div className="w-36 h-36 p-2 bg-white dark:bg-zinc-900 border border-zinc-200 rounded-xl shadow-sm">
                     <Image
                       src={`https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(identityValue)}&color=1e293b`}
                       alt="QR Code" width={160} height={160} unoptimized className="w-full h-full object-contain"
@@ -608,7 +608,7 @@ export default function ResidentDetailModal({
                     <div className="relative border-l-2 border-zinc-200 dark:border-zinc-700 ml-4 py-2 space-y-6">
                       {roomHistory.map((h) => (
                         <div key={h.id} className="relative pl-6">
-                          <div className="absolute w-4 h-4 rounded-full bg-amber-500 border-4 border-white dark:border-zinc-900 -left-[9px] top-1"></div>
+                          <div className="absolute w-4 h-4 rounded-full bg-amber-50 dark:bg-amber-900/100 border-4 border-white dark:border-zinc-900 -left-[9px] top-1"></div>
                           <div className="text-sm text-zinc-500 font-medium mb-1">
                             {new Date(h.createdAt).toLocaleDateString("id-ID", { day: "2-digit", month: "long", year: "numeric" })}
                           </div>
@@ -627,7 +627,7 @@ export default function ResidentDetailModal({
 
                       {/* Registration event */}
                       <div className="relative pl-6">
-                        <div className="absolute w-4 h-4 rounded-full bg-emerald-500 border-4 border-white dark:border-zinc-900 -left-[9px] top-1"></div>
+                        <div className="absolute w-4 h-4 rounded-full bg-emerald-50 dark:bg-emerald-900/200 border-4 border-white dark:border-zinc-900 -left-[9px] top-1"></div>
                         <div className="text-sm text-zinc-500 font-medium mb-1">{createdDateStr}</div>
                         <div className="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg p-4 shadow-sm">
                           <p className="font-semibold text-zinc-800 dark:text-zinc-200">Santri Didaftarkan</p>
@@ -798,7 +798,7 @@ export default function ResidentDetailModal({
             <button
               type="button"
               onClick={() => printResidentCard(r)}
-              className="px-4 py-2.5 text-sm font-semibold text-zinc-700 bg-white border border-zinc-300 rounded-xl hover:bg-zinc-50 dark:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-700 transition-colors flex items-center gap-2"
+              className="px-4 py-2.5 text-sm font-semibold text-zinc-700 bg-white dark:bg-zinc-900 border border-zinc-300 rounded-xl hover:bg-zinc-50 dark:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-700 transition-colors flex items-center gap-2"
             >
               <Printer className="w-4 h-4" />
               <span className="hidden sm:inline">Cetak</span>
@@ -809,7 +809,7 @@ export default function ResidentDetailModal({
                 <button
                   type="button"
                   onClick={() => setShowRoomTransfer(true)}
-                  className="px-4 py-2.5 text-sm font-semibold text-amber-700 bg-amber-50 border border-amber-200 rounded-xl hover:bg-amber-100 dark:bg-amber-900/20 dark:border-amber-900/50 dark:text-amber-400 transition-colors flex items-center gap-2"
+                  className="px-4 py-2.5 text-sm font-semibold text-amber-700 bg-amber-50 dark:bg-amber-900/10 border border-amber-200 rounded-xl hover:bg-amber-100 dark:bg-amber-900/20 dark:border-amber-900/50 dark:text-amber-400 transition-colors flex items-center gap-2"
                 >
                   <MoveRight className="w-4 h-4" />
                   <span className="hidden sm:inline">Pindah Kamar</span>

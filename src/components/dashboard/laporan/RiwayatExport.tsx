@@ -92,7 +92,7 @@ export default function RiwayatExport({ data }: {
                       <button 
                         onClick={() => handleDelete(row.id)}
                         disabled={isDeleting === row.id}
-                        className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-xl transition-colors disabled:opacity-50"
+                        className="p-2 text-red-600 hover:bg-red-50 dark:bg-red-900/20 dark:hover:bg-red-50 dark:bg-red-900/200/10 rounded-xl transition-colors disabled:opacity-50"
                         title="Hapus Riwayat"
                       >
                         <Trash2 className="w-4 h-4" />

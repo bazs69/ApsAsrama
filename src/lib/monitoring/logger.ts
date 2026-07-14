@@ -14,7 +14,8 @@ const formatLog = (level: string, event: MonitoringEvent | string, context?: Rec
   const timestamp = new Date().toISOString()
   const eventId = typeof event === "string" ? event : event.eventId
   const category = typeof event === "string" ? "GENERAL" : event.category
-  return { timestamp, level, eventId, category, ...context }
+  const eventData = typeof event === "string" ? {} : event
+  return { timestamp, level, eventId, category, ...eventData, ...context }
 }
 
 export const monitoringLogger = {

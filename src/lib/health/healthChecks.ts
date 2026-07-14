@@ -28,10 +28,11 @@ function result(
 export async function checkDatabase(): Promise<HealthCheckResult> {
   const start = Date.now()
   const name = HEALTH_CONSTANTS.CHECK_NAMES.DATABASE
+  let timer: NodeJS.Timeout | undefined
   try {
-    const timeoutPromise = new Promise<never>((_, reject) =>
-      setTimeout(() => reject(new Error("DB health check timeout")), HEALTH_CONSTANTS.THRESHOLDS.DB_TIMEOUT_MS),
-    )
+    const timeoutPromise = new Promise<never>((_, reject) => {
+      timer = setTimeout(() => reject(new Error("DB health check timeout")), HEALTH_CONSTANTS.THRESHOLDS.DB_TIMEOUT_MS)
+    })
     await Promise.race([
       prisma.$queryRaw`SELECT 1`,
       timeoutPromise,
@@ -40,6 +41,8 @@ export async function checkDatabase(): Promise<HealthCheckResult> {
   } catch (err) {
     const msg = err instanceof Error ? err.message : "Unknown database error"
     return result(name, "UNHEALTHY", msg, start)
+  } finally {
+    if (timer) clearTimeout(timer)
   }
 }
 

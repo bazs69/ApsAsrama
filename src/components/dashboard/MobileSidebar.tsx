@@ -32,7 +32,7 @@ export default function MobileSidebar({
             />
 
             {/* Sidebar Panel */}
-            <div className="relative flex w-72 flex-col glass bg-white/95 dark:bg-zinc-950/95 h-full transform transition-transform duration-300">
+            <div className="relative flex w-72 flex-col glass bg-white dark:bg-zinc-900/95 dark:bg-zinc-950/95 h-full transform transition-transform duration-300">
                 <button
                     onClick={() => setIsOpen(false)}
                     className="absolute top-4 right-4 p-2 z-50 rounded-lg bg-zinc-200 dark:bg-zinc-800 text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-white"

@@ -182,7 +182,7 @@ export default function RoomsClient({ initialRooms }: { initialRooms: Room[] }) 
         </div>
 
         <div className="glass rounded-2xl p-5 border border-emerald-500/20 flex items-center space-x-4">
-          <div className="w-12 h-12 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
+          <div className="w-12 h-12 rounded-xl bg-emerald-50 dark:bg-emerald-900/200/10 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
             <CheckCircle2 className="w-6 h-6" />
           </div>
           <div>
@@ -202,7 +202,7 @@ export default function RoomsClient({ initialRooms }: { initialRooms: Room[] }) 
         </div>
 
         <div className="glass rounded-2xl p-5 border border-amber-500/20 flex items-center space-x-4">
-          <div className="w-12 h-12 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-600 dark:text-amber-400">
+          <div className="w-12 h-12 rounded-xl bg-amber-50 dark:bg-amber-900/100/10 flex items-center justify-center text-amber-600 dark:text-amber-400">
             <Hammer className="w-6 h-6" />
           </div>
           <div>
@@ -250,9 +250,9 @@ export default function RoomsClient({ initialRooms }: { initialRooms: Room[] }) 
                         </h3>
                         <p className="text-zinc-500 dark:text-zinc-400 text-xs mt-1">Kapasitas Kamar: {room.capacity}</p>
                       </div>
-                      <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${room.status === RoomStatus.AVAILABLE ? "bg-emerald-500/10 text-emerald-650 dark:text-emerald-400 border border-emerald-500/20" :
+                      <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${room.status === RoomStatus.AVAILABLE ? "bg-emerald-50 dark:bg-emerald-900/200/10 text-emerald-650 dark:text-emerald-400 border border-emerald-500/20" :
                           room.status === RoomStatus.OCCUPIED ? "bg-primary-500/10 text-primary-600 dark:text-primary-400 border border-primary-500/20" :
-                            "bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20"
+                            "bg-amber-50 dark:bg-amber-900/100/10 text-amber-600 dark:text-amber-400 border border-amber-500/20"
                         }`}>
                         {room.status === RoomStatus.AVAILABLE ? "Tersedia" :
                           room.status === RoomStatus.OCCUPIED ? "Penuh" : "Perbaikan"}
@@ -304,7 +304,7 @@ export default function RoomsClient({ initialRooms }: { initialRooms: Room[] }) 
                       <button
                         onClick={() => handleDelete(room.id)}
                         disabled={room.residents.length > 0}
-                        className="p-1.5 text-zinc-400 hover:text-red-650 dark:text-zinc-500 dark:hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                        className="p-1.5 text-zinc-400 hover:text-red-650 dark:text-zinc-500 dark:hover:text-red-400 hover:bg-red-50 dark:bg-red-900/200/10 rounded-lg transition-all disabled:opacity-30 disabled:cursor-not-allowed"
                         title="Hapus Kamar"
                       >
                         <Trash2 className="w-4 h-4" />
@@ -331,7 +331,7 @@ export default function RoomsClient({ initialRooms }: { initialRooms: Room[] }) 
             </div>
 
             {error && (
-              <div className="p-3 bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400 text-xs rounded-xl flex items-center space-x-2">
+              <div className="p-3 bg-red-50 dark:bg-red-900/200/10 border border-red-500/20 text-red-600 dark:text-red-400 text-xs rounded-xl flex items-center space-x-2">
                 <AlertCircle className="w-4 h-4 flex-shrink-0" />
                 <span>{error}</span>
               </div>
@@ -413,9 +413,9 @@ export default function RoomsClient({ initialRooms }: { initialRooms: Room[] }) 
               <div>
                 <h2 className="text-2xl font-black text-zinc-900 dark:text-white flex items-center space-x-3">
                   <span>Kamar {selectedRoom.number}</span>
-                  <span className={`text-[10px] uppercase font-bold tracking-widest px-2.5 py-1 rounded-full ${selectedRoom.status === RoomStatus.AVAILABLE ? "bg-emerald-500/10 text-emerald-600 border border-emerald-500/20" :
+                  <span className={`text-[10px] uppercase font-bold tracking-widest px-2.5 py-1 rounded-full ${selectedRoom.status === RoomStatus.AVAILABLE ? "bg-emerald-50 dark:bg-emerald-900/200/10 text-emerald-600 border border-emerald-500/20" :
                       selectedRoom.status === RoomStatus.OCCUPIED ? "bg-primary-500/10 text-primary-600 border border-primary-500/20" :
-                        "bg-amber-500/10 text-amber-600 border border-amber-500/20"
+                        "bg-amber-50 dark:bg-amber-900/100/10 text-amber-600 border border-amber-500/20"
                     }`}>
                     {selectedRoom.status === RoomStatus.AVAILABLE ? "Tersedia" :
                       selectedRoom.status === RoomStatus.OCCUPIED ? "Penuh" : "Perbaikan"}

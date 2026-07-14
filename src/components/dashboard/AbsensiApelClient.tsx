@@ -334,11 +334,11 @@ export default function AbsensiApelClient({
   const renderStatusBadge = (status: KehadiranApel) => {
     switch (status) {
       case "HADIR":
-        return <span className="px-3 py-1 bg-emerald-500/10 text-emerald-650 dark:text-emerald-400 border border-emerald-500/20 rounded-lg text-xs font-bold uppercase flex items-center space-x-1.5"><CheckCircle className="w-3.5 h-3.5"/><span>Hadir</span></span>
+        return <span className="px-3 py-1 bg-emerald-50 dark:bg-emerald-900/200/10 text-emerald-650 dark:text-emerald-400 border border-emerald-500/20 rounded-lg text-xs font-bold uppercase flex items-center space-x-1.5"><CheckCircle className="w-3.5 h-3.5"/><span>Hadir</span></span>
       case "ALPA":
-        return <span className="px-3 py-1 bg-red-500/10 text-red-650 dark:text-red-400 border border-red-500/20 rounded-lg text-xs font-bold uppercase flex items-center space-x-1.5"><XCircle className="w-3.5 h-3.5"/><span>Alpa</span></span>
+        return <span className="px-3 py-1 bg-red-50 dark:bg-red-900/200/10 text-red-650 dark:text-red-400 border border-red-500/20 rounded-lg text-xs font-bold uppercase flex items-center space-x-1.5"><XCircle className="w-3.5 h-3.5"/><span>Alpa</span></span>
       case "IZIN":
-        return <span className="px-3 py-1 bg-amber-500/10 text-amber-650 dark:text-amber-400 border border-amber-500/20 rounded-lg text-xs font-bold uppercase flex items-center space-x-1.5"><Clock className="w-3.5 h-3.5"/><span>Izin</span></span>
+        return <span className="px-3 py-1 bg-amber-50 dark:bg-amber-900/100/10 text-amber-650 dark:text-amber-400 border border-amber-500/20 rounded-lg text-xs font-bold uppercase flex items-center space-x-1.5"><Clock className="w-3.5 h-3.5"/><span>Izin</span></span>
     }
   }
 
@@ -354,7 +354,7 @@ export default function AbsensiApelClient({
           <div className="flex items-center bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-1 shadow-sm">
             <button
               onClick={handleExportDetail}
-              className="p-2 text-zinc-500 hover:text-emerald-600 dark:text-zinc-400 dark:hover:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 rounded-lg transition-all flex items-center justify-center tooltip-trigger relative"
+              className="p-2 text-zinc-500 hover:text-emerald-600 dark:text-zinc-400 dark:hover:text-emerald-400 hover:bg-emerald-50 dark:bg-emerald-900/20 dark:hover:bg-emerald-50 dark:bg-emerald-900/200/10 rounded-lg transition-all flex items-center justify-center tooltip-trigger relative"
               title="Ekspor Data ke Excel"
             >
               <FileText className="w-4 h-4" />
@@ -370,7 +370,7 @@ export default function AbsensiApelClient({
           </div>
           <button
             onClick={openCreateModal}
-            className="bg-zinc-900 hover:bg-zinc-800 dark:bg-white dark:hover:bg-zinc-200 text-white dark:text-zinc-900 rounded-xl py-2.5 px-4 font-semibold shadow-md flex items-center justify-center space-x-2 transition-all text-sm"
+            className="bg-zinc-900 hover:bg-zinc-800 dark:bg-white dark:bg-zinc-900 dark:hover:bg-zinc-200 text-white dark:text-zinc-900 rounded-xl py-2.5 px-4 font-semibold shadow-md flex items-center justify-center space-x-2 transition-all text-sm"
           >
             <Plus className="w-4 h-4" />
             <span>Buat Apel</span>
@@ -382,7 +382,7 @@ export default function AbsensiApelClient({
       <div className="flex flex-wrap items-center gap-3 mb-8">
         {/* Date Filters */}
         <div className="flex items-center bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-1 shadow-sm transition-all hover:border-zinc-300 dark:hover:border-zinc-700">
-          <div className="text-emerald-500 bg-emerald-50 dark:bg-emerald-500/10 p-1.5 rounded-lg ml-1 mr-2 flex items-center justify-center">
+          <div className="text-emerald-500 bg-emerald-50 dark:bg-emerald-50 dark:bg-emerald-900/200/10 p-1.5 rounded-lg ml-1 mr-2 flex items-center justify-center">
             <Calendar className="w-4 h-4" />
           </div>
           <input 
@@ -417,7 +417,7 @@ export default function AbsensiApelClient({
               className="glass rounded-2xl border border-zinc-200 dark:border-zinc-800 p-6 flex flex-col hover:border-emerald-500/50 hover:shadow-lg hover:shadow-emerald-500/10 cursor-pointer transition-all group"
             >
               <div className="flex justify-between items-start mb-4">
-                <div className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 p-3 rounded-xl flex items-center justify-center">
+                <div className="bg-emerald-50 dark:bg-emerald-900/200/10 text-emerald-600 dark:text-emerald-400 p-3 rounded-xl flex items-center justify-center">
                   <CalendarCheck className="w-6 h-6" />
                 </div>
                 <div className="flex gap-1">
@@ -430,7 +430,7 @@ export default function AbsensiApelClient({
                   </button>
                   <button
                     onClick={(e) => handleDelete(e, k.id)}
-                    className="p-2 text-zinc-400 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-colors"
+                    className="p-2 text-zinc-400 hover:text-red-500 hover:bg-red-50 dark:bg-red-900/200/10 rounded-lg transition-colors"
                     title="Hapus Apel"
                   >
                     <Trash2 className="w-4 h-4" />
@@ -471,7 +471,7 @@ export default function AbsensiApelClient({
             </div>
 
             {error && (
-              <div className="p-3 bg-red-500/10 border border-red-500/20 text-red-650 dark:text-red-400 text-xs rounded-xl flex items-center space-x-2">
+              <div className="p-3 bg-red-50 dark:bg-red-900/200/10 border border-red-500/20 text-red-650 dark:text-red-400 text-xs rounded-xl flex items-center space-x-2">
                 <AlertCircle className="w-4 h-4 flex-shrink-0" />
                 <span>{error}</span>
               </div>
@@ -500,7 +500,7 @@ export default function AbsensiApelClient({
                 />
               </div>
 
-              <div className="bg-emerald-500/10 border border-emerald-500/20 p-4 rounded-xl flex space-x-3 mt-4">
+              <div className="bg-emerald-50 dark:bg-emerald-900/200/10 border border-emerald-500/20 p-4 rounded-xl flex space-x-3 mt-4">
                 <Info className="w-5 h-5 text-emerald-600 flex-shrink-0 mt-0.5" />
                 <p className="text-sm text-emerald-800 dark:text-emerald-300 leading-relaxed">
                   Saat Anda menyimpan apel ini, sistem otomatis mendaftarkan <strong>seluruh santri aktif</strong> dengan status awal <strong>Hadir</strong>.
@@ -536,7 +536,7 @@ export default function AbsensiApelClient({
             </div>
 
             {editError && (
-              <div className="p-3 bg-red-500/10 border border-red-500/20 text-red-650 dark:text-red-400 text-xs rounded-xl flex items-center space-x-2">
+              <div className="p-3 bg-red-50 dark:bg-red-900/200/10 border border-red-500/20 text-red-650 dark:text-red-400 text-xs rounded-xl flex items-center space-x-2">
                 <AlertCircle className="w-4 h-4 flex-shrink-0" />
                 <span>{editError}</span>
               </div>
@@ -585,7 +585,7 @@ export default function AbsensiApelClient({
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setDetailModalOpen(false)} />
           <div className="w-full max-w-3xl glass rounded-2xl border border-zinc-200 dark:border-zinc-800 overflow-hidden relative z-10 flex flex-col max-h-[90vh]">
-            <div className="flex items-center justify-between p-6 border-b border-zinc-200 dark:border-zinc-800 bg-white/50 dark:bg-zinc-900/50">
+            <div className="flex items-center justify-between p-6 border-b border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 dark:bg-zinc-900/50">
               <div>
                 <h2 className="text-xl font-bold text-zinc-900 dark:text-white">
                   Absensi Apel - {selectedApelTanggal ? selectedApelTanggal.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) : ''}
@@ -640,10 +640,10 @@ export default function AbsensiApelClient({
               )}
             </div>
             
-            <div className="p-4 border-t border-zinc-200 dark:border-zinc-800 bg-white/50 dark:bg-zinc-900/50 flex justify-end">
+            <div className="p-4 border-t border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 dark:bg-zinc-900/50 flex justify-end">
               <button 
                 onClick={() => setDetailModalOpen(false)}
-                className="px-6 py-2 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 font-bold rounded-xl hover:opacity-90 transition-opacity"
+                className="px-6 py-2 bg-zinc-900 dark:bg-white dark:bg-zinc-900 text-white dark:text-zinc-900 font-bold rounded-xl hover:opacity-90 transition-opacity"
               >
                 Selesai
               </button>

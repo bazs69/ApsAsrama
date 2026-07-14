@@ -181,7 +181,7 @@ export default function AreaClient({ initialHierarchy }: { initialHierarchy: Wil
               <div key={w.id} className="glass rounded-2xl border border-zinc-200/60 dark:border-zinc-800 overflow-hidden shadow-sm hover:shadow-md transition-all">
                 {/* Wilayah Header */}
                 <div 
-                  className="flex items-center justify-between p-4 bg-white/50 dark:bg-zinc-900/50 cursor-pointer"
+                  className="flex items-center justify-between p-4 bg-white dark:bg-zinc-900/50 dark:bg-zinc-900/50 cursor-pointer"
                 >
                   <div className="flex items-center space-x-3 flex-1" onClick={() => toggleWilayah(w.id)}>
                     <div className={`p-2 rounded-xl transition-colors ${isWExpanded ? 'bg-primary-500/10 text-primary-600 dark:text-primary-400' : 'bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400'}`}>
@@ -203,7 +203,7 @@ export default function AreaClient({ initialHierarchy }: { initialHierarchy: Wil
                     <button onClick={(e) => { e.stopPropagation(); openEditWilayah(w) }} className="p-2 text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-800 dark:hover:text-white rounded-lg">
                       <Edit2 className="w-4 h-4" />
                     </button>
-                    <button onClick={(e) => { e.stopPropagation(); handleDeleteWilayah(w.id) }} className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg">
+                    <button onClick={(e) => { e.stopPropagation(); handleDeleteWilayah(w.id) }} className="p-2 text-red-500 hover:bg-red-50 dark:bg-red-900/20 dark:hover:bg-red-50 dark:bg-red-900/200/10 rounded-lg">
                       <Trash2 className="w-4 h-4" />
                     </button>
                   </div>
@@ -227,13 +227,13 @@ export default function AreaClient({ initialHierarchy }: { initialHierarchy: Wil
                                 <span className="text-xs text-zinc-500 bg-zinc-200/50 dark:bg-zinc-700/50 px-2 py-0.5 rounded-full">{d.rooms.length} Kamar</span>
                               </div>
                               <div className="flex items-center space-x-1 pr-1">
-                                <button onClick={(e) => { e.stopPropagation(); openCreateRoom(d.id) }} className="p-1.5 text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 rounded-md">
+                                <button onClick={(e) => { e.stopPropagation(); openCreateRoom(d.id) }} className="p-1.5 text-emerald-600 hover:bg-emerald-50 dark:bg-emerald-900/20 dark:hover:bg-emerald-50 dark:bg-emerald-900/200/10 rounded-md">
                                   <Plus className="w-4 h-4" />
                                 </button>
                                 <button onClick={(e) => { e.stopPropagation(); openEditDaerah(d, w.id) }} className="p-1.5 text-zinc-400 hover:text-zinc-700 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-700 rounded-md">
                                   <Edit2 className="w-3.5 h-3.5" />
                                 </button>
-                                <button onClick={(e) => { e.stopPropagation(); handleDeleteDaerah(d.id) }} className="p-1.5 text-red-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-md">
+                                <button onClick={(e) => { e.stopPropagation(); handleDeleteDaerah(d.id) }} className="p-1.5 text-red-400 hover:text-red-600 hover:bg-red-50 dark:bg-red-900/20 dark:hover:bg-red-50 dark:bg-red-900/200/10 rounded-md">
                                   <Trash2 className="w-3.5 h-3.5" />
                                 </button>
                                 <ChevronRight className={`w-4 h-4 text-zinc-400 transition-transform ${isDExpanded ? 'rotate-90' : ''} ml-2`} />
@@ -300,7 +300,7 @@ export default function AreaClient({ initialHierarchy }: { initialHierarchy: Wil
             </h2>
 
             {error && (
-              <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 text-red-650 dark:text-red-400 text-xs rounded-xl flex items-start space-x-2">
+              <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/200/10 border border-red-500/20 text-red-650 dark:text-red-400 text-xs rounded-xl flex items-start space-x-2">
                 <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
                 <span>{error}</span>
               </div>

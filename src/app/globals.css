@@ -65,12 +65,15 @@
 @layer base {
   :root {
     --background: #ffffff;
-    --foreground: #18181b; /* zinc-900 */
+    --foreground: #18181b;
+    /* zinc-900 */
   }
 
   :root.dark {
-    --background: #09090b; /* zinc-950 */
-    --foreground: #fafafa; /* zinc-50 */
+    --background: #09090b;
+    /* zinc-950 */
+    --foreground: #fafafa;
+    /* zinc-50 */
   }
 
   body {
@@ -79,7 +82,7 @@
     background-image: radial-gradient(var(--color-zinc-200) 1px, transparent 1px);
     background-size: 24px 24px;
   }
-  
+
   :root.dark body {
     background-image: radial-gradient(var(--color-zinc-800) 1px, transparent 1px);
   }
@@ -87,11 +90,11 @@
 
 @layer utilities {
   .glass {
-    @apply bg-white/75 dark:bg-black/45 backdrop-blur-md border border-zinc-200/50 dark:border-zinc-800/80 shadow-lg shadow-zinc-200/30 dark:shadow-none;
+    @apply bg-gradient-to-br from-white/95 to-slate-50/80 dark:from-zinc-900/90 dark:to-zinc-950/80 backdrop-blur-md border border-zinc-200/80 dark:border-zinc-800/80 shadow-lg shadow-zinc-200/30 dark:shadow-none transition-all duration-300;
   }
 
   /* Beranda Card Consistency */
   .beranda-card {
-    @apply bg-white dark:bg-zinc-900/80 backdrop-blur-md border border-zinc-200/60 dark:border-zinc-800/80 shadow-sm rounded-2xl p-6 transition-all duration-300 hover:shadow-md;
+    @apply bg-gradient-to-br from-white to-primary-50/40 dark:from-zinc-900/95 dark:to-primary-950/30 backdrop-blur-xl border border-zinc-200/60 dark:border-primary-900/40 shadow-md rounded-2xl p-6 transition-all duration-300 hover:shadow-xl hover:shadow-primary-500/10 hover:border-primary-300/50 dark:hover:shadow-primary-500/10 dark:hover:border-primary-700/50 relative overflow-hidden;
   }
 }

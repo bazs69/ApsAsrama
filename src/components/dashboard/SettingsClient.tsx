@@ -374,7 +374,7 @@ export default function SettingsClient({
               <p className="text-zinc-500 dark:text-zinc-400 text-sm">{currentUser.email}</p>
               <span className={`inline-flex items-center gap-1 mt-2 px-3 py-1 rounded-full text-xs font-bold ${
                 ["ADMIN", "SUPER_ADMIN"].includes(userRoleStr)
-                  ? "bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20"
+                  ? "bg-amber-50 dark:bg-amber-900/100/10 text-amber-600 dark:text-amber-400 border border-amber-500/20"
                   : "bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20"
               }`}>
                 {["ADMIN", "SUPER_ADMIN"].includes(userRoleStr) ? <Crown className="w-3 h-3" /> : <Shield className="w-3 h-3" />}
@@ -390,8 +390,8 @@ export default function SettingsClient({
             {profileMsg && (
               <div className={`mb-4 p-3 rounded-xl text-sm flex items-center gap-2 border ${
                 profileMsg.type === "success"
-                  ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-700 dark:text-emerald-400"
-                  : "bg-red-500/10 border-red-500/20 text-red-700 dark:text-red-400"
+                  ? "bg-emerald-50 dark:bg-emerald-900/200/10 border-emerald-500/20 text-emerald-700 dark:text-emerald-400"
+                  : "bg-red-50 dark:bg-red-900/200/10 border-red-500/20 text-red-700 dark:text-red-400"
               }`}>
                 {profileMsg.type === "success" ? <CheckCircle className="w-4 h-4 flex-shrink-0" /> : <AlertCircle className="w-4 h-4 flex-shrink-0" />}
                 {profileMsg.text}
@@ -583,7 +583,7 @@ export default function SettingsClient({
                         <td className="px-5 py-4">
                           <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold ${
                             ["ADMIN", "SUPER_ADMIN"].includes(u.role?.name || "")
-                              ? "bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20"
+                              ? "bg-amber-50 dark:bg-amber-900/100/10 text-amber-600 dark:text-amber-400 border border-amber-500/20"
                               : "bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20"
                           }`}>
                             {["ADMIN", "SUPER_ADMIN"].includes(u.role?.name || "") ? <Crown className="w-3 h-3" /> : <Shield className="w-3 h-3" />}
@@ -647,7 +647,7 @@ export default function SettingsClient({
             </div>
 
             {formError && (
-              <div className="p-3 bg-red-500/10 border border-red-500/20 text-red-700 dark:text-red-400 text-xs rounded-xl flex items-center gap-2">
+              <div className="p-3 bg-red-50 dark:bg-red-900/200/10 border border-red-500/20 text-red-700 dark:text-red-400 text-xs rounded-xl flex items-center gap-2">
                 <AlertCircle className="w-4 h-4 flex-shrink-0" />
                 {formError}
               </div>
@@ -688,7 +688,7 @@ export default function SettingsClient({
                       className={`py-2.5 rounded-xl text-sm font-semibold border transition-all flex items-center justify-center gap-2 ${
                         newRoleId === r.id
                           ? r.name === "SUPER_ADMIN"
-                            ? "bg-amber-500/10 border-amber-500/40 text-amber-600 dark:text-amber-400"
+                            ? "bg-amber-50 dark:bg-amber-900/100/10 border-amber-500/40 text-amber-600 dark:text-amber-400"
                             : "bg-blue-500/10 border-blue-500/40 text-blue-600 dark:text-blue-400"
                           : "border-zinc-200 dark:border-zinc-800 text-zinc-400 hover:border-zinc-300"
                       }`}>
@@ -739,7 +739,7 @@ export default function SettingsClient({
             </div>
 
             {formError && (
-              <div className="p-3 bg-red-500/10 border border-red-500/20 text-red-700 dark:text-red-400 text-xs rounded-xl flex items-center gap-2">
+              <div className="p-3 bg-red-50 dark:bg-red-900/200/10 border border-red-500/20 text-red-700 dark:text-red-400 text-xs rounded-xl flex items-center gap-2">
                 <AlertCircle className="w-4 h-4 flex-shrink-0" />
                 {formError}
               </div>
@@ -760,7 +760,7 @@ export default function SettingsClient({
                       className={`py-2.5 rounded-xl text-sm font-semibold border transition-all flex items-center justify-center gap-2 ${
                         editRoleId === r.id
                           ? r.name === "SUPER_ADMIN"
-                            ? "bg-amber-500/10 border-amber-500/40 text-amber-600 dark:text-amber-400"
+                            ? "bg-amber-50 dark:bg-amber-900/100/10 border-amber-500/40 text-amber-600 dark:text-amber-400"
                             : "bg-blue-500/10 border-blue-500/40 text-blue-600 dark:text-blue-400"
                           : "border-zinc-200 dark:border-zinc-800 text-zinc-400 hover:border-zinc-300"
                       }`}>

@@ -58,7 +58,7 @@ export default function DashboardKepalaSatkerClient({ stats }: DashboardKepalaSa
     switch (stats.statusLaporan) {
       case "SUBMITTED":
         return (
-          <span className="flex items-center space-x-1.5 px-3 py-1 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 rounded-full text-xs font-bold">
+          <span className="flex items-center space-x-1.5 px-3 py-1 bg-emerald-50 dark:bg-emerald-900/200/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 rounded-full text-xs font-bold">
             <CheckCircle className="w-3.5 h-3.5" />
             <span>Sudah Lapor</span>
           </span>
@@ -72,7 +72,7 @@ export default function DashboardKepalaSatkerClient({ stats }: DashboardKepalaSa
         )
       default:
         return (
-          <span className="flex items-center space-x-1.5 px-3 py-1 bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 rounded-full text-xs font-bold">
+          <span className="flex items-center space-x-1.5 px-3 py-1 bg-amber-50 dark:bg-amber-900/100/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 rounded-full text-xs font-bold">
             <AlertTriangle className="w-3.5 h-3.5" />
             <span>Belum Lapor</span>
           </span>
@@ -137,7 +137,7 @@ export default function DashboardKepalaSatkerClient({ stats }: DashboardKepalaSa
 
         <div className="glass rounded-2xl p-5 border border-emerald-500/20 transition-all hover:scale-[1.02] duration-300 flex flex-col justify-between">
           <div className="flex items-center space-x-3 mb-3">
-             <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+             <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-emerald-50 dark:bg-emerald-900/200/10 text-emerald-600 dark:text-emerald-400">
               <TrendingUp className="w-5 h-5" />
             </div>
           </div>
@@ -161,7 +161,7 @@ export default function DashboardKepalaSatkerClient({ stats }: DashboardKepalaSa
 
         <div className="glass rounded-2xl p-5 border border-amber-500/20 transition-all hover:scale-[1.02] duration-300 flex flex-col justify-between">
           <div className="flex items-center space-x-3 mb-3">
-             <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-amber-500/10 text-amber-600 dark:text-amber-400">
+             <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-amber-50 dark:bg-amber-900/100/10 text-amber-600 dark:text-amber-400">
               <Activity className="w-5 h-5" />
             </div>
           </div>
@@ -173,7 +173,7 @@ export default function DashboardKepalaSatkerClient({ stats }: DashboardKepalaSa
 
         <div className="glass rounded-2xl p-5 border border-red-500/20 transition-all hover:scale-[1.02] duration-300 flex flex-col justify-between">
           <div className="flex items-center space-x-3 mb-3">
-             <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-red-500/10 text-red-600 dark:text-red-400">
+             <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-red-50 dark:bg-red-900/200/10 text-red-600 dark:text-red-400">
               <AlertTriangle className="w-5 h-5" />
             </div>
           </div>

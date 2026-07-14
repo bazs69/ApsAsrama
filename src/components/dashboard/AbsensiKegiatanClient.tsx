@@ -365,13 +365,13 @@ export default function AbsensiKegiatanClient({
   const renderStatusBadge = (status: KehadiranStatus) => {
     switch (status) {
       case "HADIR":
-        return <span className="px-3 py-1 bg-emerald-500/10 text-emerald-650 dark:text-emerald-400 border border-emerald-500/20 rounded-lg text-xs font-bold uppercase flex items-center space-x-1.5"><CheckCircle className="w-3.5 h-3.5"/><span>Hadir</span></span>
+        return <span className="px-3 py-1 bg-emerald-50 dark:bg-emerald-900/200/10 text-emerald-650 dark:text-emerald-400 border border-emerald-500/20 rounded-lg text-xs font-bold uppercase flex items-center space-x-1.5"><CheckCircle className="w-3.5 h-3.5"/><span>Hadir</span></span>
       case "ALPA":
-        return <span className="px-3 py-1 bg-red-500/10 text-red-650 dark:text-red-400 border border-red-500/20 rounded-lg text-xs font-bold uppercase flex items-center space-x-1.5"><XCircle className="w-3.5 h-3.5"/><span>Alpa</span></span>
+        return <span className="px-3 py-1 bg-red-50 dark:bg-red-900/200/10 text-red-650 dark:text-red-400 border border-red-500/20 rounded-lg text-xs font-bold uppercase flex items-center space-x-1.5"><XCircle className="w-3.5 h-3.5"/><span>Alpa</span></span>
       case "SAKIT":
         return <span className="px-3 py-1 bg-blue-500/10 text-blue-650 dark:text-blue-400 border border-blue-500/20 rounded-lg text-xs font-bold uppercase flex items-center space-x-1.5"><Info className="w-3.5 h-3.5"/><span>Sakit</span></span>
       case "IZIN":
-        return <span className="px-3 py-1 bg-amber-500/10 text-amber-650 dark:text-amber-400 border border-amber-500/20 rounded-lg text-xs font-bold uppercase flex items-center space-x-1.5"><Clock className="w-3.5 h-3.5"/><span>Izin</span></span>
+        return <span className="px-3 py-1 bg-amber-50 dark:bg-amber-900/100/10 text-amber-650 dark:text-amber-400 border border-amber-500/20 rounded-lg text-xs font-bold uppercase flex items-center space-x-1.5"><Clock className="w-3.5 h-3.5"/><span>Izin</span></span>
     }
   }
 
@@ -387,7 +387,7 @@ export default function AbsensiKegiatanClient({
           <div className="flex items-center bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-1 shadow-sm">
             <button
               onClick={handleExportDetail}
-              className="p-2 text-zinc-500 hover:text-emerald-600 dark:text-zinc-400 dark:hover:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 rounded-lg transition-all flex items-center justify-center"
+              className="p-2 text-zinc-500 hover:text-emerald-600 dark:text-zinc-400 dark:hover:text-emerald-400 hover:bg-emerald-50 dark:bg-emerald-900/20 dark:hover:bg-emerald-50 dark:bg-emerald-900/200/10 rounded-lg transition-all flex items-center justify-center"
               title="Ekspor Data ke Excel"
             >
               <FileText className="w-4 h-4" />
@@ -403,7 +403,7 @@ export default function AbsensiKegiatanClient({
           </div>
           <button
             onClick={openCreateModal}
-            className="bg-zinc-900 hover:bg-zinc-800 dark:bg-white dark:hover:bg-zinc-200 text-white dark:text-zinc-900 rounded-xl py-2.5 px-4 font-semibold shadow-md flex items-center justify-center space-x-2 transition-all text-sm"
+            className="bg-zinc-900 hover:bg-zinc-800 dark:bg-white dark:bg-zinc-900 dark:hover:bg-zinc-200 text-white dark:text-zinc-900 rounded-xl py-2.5 px-4 font-semibold shadow-md flex items-center justify-center space-x-2 transition-all text-sm"
           >
             <Plus className="w-4 h-4" />
             <span>Kegiatan Baru</span>
@@ -492,7 +492,7 @@ export default function AbsensiKegiatanClient({
                   </button>
                   <button
                     onClick={(e) => handleDelete(e, k.id)}
-                    className="p-2 text-zinc-400 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-colors"
+                    className="p-2 text-zinc-400 hover:text-red-500 hover:bg-red-50 dark:bg-red-900/200/10 rounded-lg transition-colors"
                     title="Hapus Kegiatan"
                   >
                     <Trash2 className="w-4 h-4" />
@@ -528,7 +528,7 @@ export default function AbsensiKegiatanClient({
             </div>
 
             {error && (
-              <div className="p-3 bg-red-500/10 border border-red-500/20 text-red-650 dark:text-red-400 text-xs rounded-xl flex items-center space-x-2">
+              <div className="p-3 bg-red-50 dark:bg-red-900/200/10 border border-red-500/20 text-red-650 dark:text-red-400 text-xs rounded-xl flex items-center space-x-2">
                 <AlertCircle className="w-4 h-4 flex-shrink-0" />
                 <span>{error}</span>
               </div>
@@ -607,7 +607,7 @@ export default function AbsensiKegiatanClient({
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setDetailModalOpen(false)} />
           <div className="w-full max-w-3xl glass rounded-2xl border border-zinc-200 dark:border-zinc-800 overflow-hidden relative z-10 flex flex-col max-h-[90vh]">
-            <div className="flex items-center justify-between p-6 border-b border-zinc-200 dark:border-zinc-800 bg-white/50 dark:bg-zinc-900/50">
+            <div className="flex items-center justify-between p-6 border-b border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 dark:bg-zinc-900/50">
               <div>
                 <h2 className="text-xl font-bold text-zinc-900 dark:text-white">{selectedKegiatanNama}</h2>
                 <p className="text-sm text-zinc-500">Klik status kehadiran untuk mengubahnya secara cepat.</p>
@@ -660,10 +660,10 @@ export default function AbsensiKegiatanClient({
               )}
             </div>
             
-            <div className="p-4 border-t border-zinc-200 dark:border-zinc-800 bg-white/50 dark:bg-zinc-900/50 flex justify-end">
+            <div className="p-4 border-t border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 dark:bg-zinc-900/50 flex justify-end">
               <button 
                 onClick={() => setDetailModalOpen(false)}
-                className="px-6 py-2 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 font-bold rounded-xl hover:opacity-90 transition-opacity"
+                className="px-6 py-2 bg-zinc-900 dark:bg-white dark:bg-zinc-900 text-white dark:text-zinc-900 font-bold rounded-xl hover:opacity-90 transition-opacity"
               >
                 Selesai
               </button>
@@ -685,7 +685,7 @@ export default function AbsensiKegiatanClient({
             </div>
 
             {editError && (
-              <div className="p-3 bg-red-500/10 border border-red-500/20 text-red-650 dark:text-red-400 text-xs rounded-xl flex items-center space-x-2">
+              <div className="p-3 bg-red-50 dark:bg-red-900/200/10 border border-red-500/20 text-red-650 dark:text-red-400 text-xs rounded-xl flex items-center space-x-2">
                 <AlertCircle className="w-4 h-4 flex-shrink-0" />
                 <span>{editError}</span>
               </div>

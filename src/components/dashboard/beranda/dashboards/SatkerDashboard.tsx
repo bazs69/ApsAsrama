@@ -35,7 +35,7 @@ export default function SatkerDashboard({ user }: DashboardProps) {
     return (
       <div className="flex flex-col items-center justify-center p-12 min-h-[400px]">
         <Loader2 className="w-8 h-8 text-primary-500 animate-spin mb-4" />
-        <p className="text-zinc-500 font-medium">Memuat data Dashboard Satuan Kerja...</p>
+        <p className="text-zinc-500 dark:text-zinc-400 font-medium">Memuat data Dashboard Satuan Kerja...</p>
       </div>
     )
   }
@@ -46,7 +46,7 @@ export default function SatkerDashboard({ user }: DashboardProps) {
         <WelcomeHeader user={user} />
         <div className="glass p-8 rounded-2xl border border-rose-500/20 text-center">
           <h3 className="text-rose-600 dark:text-rose-400 font-semibold mb-2">Akun Belum Terkait Satuan Kerja</h3>
-          <p className="text-zinc-500">Anda masuk sebagai Kepala Satker, namun akun Anda belum dikaitkan dengan Satker manapun. Hubungi Administrator.</p>
+          <p className="text-zinc-500 dark:text-zinc-400">Anda masuk sebagai Kepala Satker, namun akun Anda belum dikaitkan dengan Satker manapun. Hubungi Administrator.</p>
         </div>
       </div>
     )
@@ -98,9 +98,9 @@ export default function SatkerDashboard({ user }: DashboardProps) {
             <div className="p-5 border-b border-zinc-200 dark:border-zinc-800 flex justify-between items-center">
               <div>
                 <h3 className="font-semibold text-lg text-zinc-800 dark:text-zinc-100">Data Santri Satuan Kerja</h3>
-                <p className="text-sm text-zinc-500">Daftar santri yang ditugaskan pada satker ini (informasi terbatas)</p>
+                <p className="text-sm text-zinc-500 dark:text-zinc-400">Daftar santri yang ditugaskan pada satker ini (informasi terbatas)</p>
               </div>
-              <Link href="/dashboard/assignments" className="text-sm font-medium text-primary-600 hover:text-primary-700 flex items-center space-x-1">
+              <Link href="/dashboard/assignments" className="text-sm font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 flex items-center space-x-1">
                 <span>Kelola Penugasan</span>
                 <ArrowRight className="w-4 h-4" />
               </Link>
@@ -132,7 +132,7 @@ export default function SatkerDashboard({ user }: DashboardProps) {
                     ))
                   ) : (
                     <tr>
-                      <td colSpan={4} className="px-5 py-8 text-center text-zinc-500">
+                      <td colSpan={4} className="px-5 py-8 text-center text-zinc-500 dark:text-zinc-400">
                         Belum ada santri yang ditugaskan di satker ini.
                       </td>
                     </tr>
@@ -154,19 +154,19 @@ export default function SatkerDashboard({ user }: DashboardProps) {
                     <div className="w-2 h-2 rounded-full bg-blue-500 mt-2 flex-shrink-0" />
                     <div>
                       <p className="text-sm font-medium text-zinc-800 dark:text-zinc-200">Evaluasi: {task.residentName}</p>
-                      <p className="text-xs text-zinc-500 mt-1">Status: {task.status} • Predikat: {task.predicate || "-"}</p>
-                      <p className="text-xs text-zinc-400 mt-1">{new Date(task.tanggal).toLocaleDateString("id-ID")}</p>
+                      <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">Status: {task.status} • Predikat: {task.predicate || "-"}</p>
+                      <p className="text-xs text-zinc-400 dark:text-zinc-300 mt-1">{new Date(task.tanggal).toLocaleDateString("id-ID")}</p>
                     </div>
                   </div>
                 ))}
               </div>
             ) : (
-              <div className="text-center py-6 text-sm text-zinc-500">
+              <div className="text-center py-6 text-sm text-zinc-500 dark:text-zinc-400">
                 Belum ada aktivitas monitoring tercatat.
               </div>
             )}
             <div className="mt-4 pt-4 border-t border-zinc-200 dark:border-zinc-800">
-              <Link href="/dashboard/monitoring-penugasan" className="text-sm font-medium text-primary-600 hover:text-primary-700 flex items-center justify-center space-x-1">
+              <Link href="/dashboard/monitoring-penugasan" className="text-sm font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 flex items-center justify-center space-x-1">
                 <span>Lihat Semua Monitoring</span>
                 <ArrowRight className="w-4 h-4" />
               </Link>
