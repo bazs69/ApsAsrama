@@ -37,7 +37,7 @@ export default function ResidentsToolbar({
         onChange={handleFileUpload} 
       />
       
-      <div className="flex items-center bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-1 shadow-sm">
+      <div className="flex items-center bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50 border border-zinc-200 dark:border-zinc-800 rounded-xl p-1 shadow-sm">
         <button
           onClick={downloadTemplate}
           className="p-2 text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-all tooltip-trigger relative group flex items-center justify-center"
@@ -72,7 +72,7 @@ export default function ResidentsToolbar({
 
       <button
         onClick={toggleSelectionMode}
-        className={`border ${isSelectionActive ? 'border-primary-500 bg-primary-50 text-primary-700 dark:bg-primary-500/10 dark:text-primary-400' : 'border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800'} rounded-xl py-2.5 px-4 font-semibold shadow-sm flex items-center justify-center space-x-2 transition-all text-sm cursor-pointer`}
+        className={`border ${isSelectionActive ? 'border-primary-500 bg-primary-50 text-primary-700 dark:bg-primary-500/10 dark:text-primary-400' : 'border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800'} rounded-xl py-2.5 px-4 font-semibold shadow-sm flex items-center justify-center space-x-2 transition-all text-sm cursor-pointer`}
       >
         <CheckSquare className="w-4 h-4" />
         <span>{isSelectionActive ? "Nonaktifkan Memilih" : "Aktifkan Memilih"}</span>

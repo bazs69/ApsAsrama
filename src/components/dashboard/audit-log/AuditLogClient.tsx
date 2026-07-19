@@ -167,7 +167,7 @@ export default function AuditLogClient({
   return (
     <div className="p-6 max-w-7xl mx-auto space-y-6">
       {/* Header */}
-      <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm p-6">
+      <div className="bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm p-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 bg-violet-500/10 dark:bg-violet-500/20 rounded-xl flex items-center justify-center flex-shrink-0">
@@ -286,7 +286,7 @@ export default function AuditLogClient({
       </div>
 
       {/* Table */}
-      <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden">
+      <div className="bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden">
         {isPending ? (
           <div className="flex items-center justify-center p-16">
             <div className="flex flex-col items-center gap-3">

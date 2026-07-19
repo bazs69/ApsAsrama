@@ -8,7 +8,7 @@ function processString(content) {
         // Add dark modes only if not already present
         function replace(regex, replacement) {
             if (newClasses.match(regex)) {
-                const darkStr = \replacement.split(' ')[1]\;
+                const darkStr = replacement.split(' ')[1];
                 if (!newClasses.includes(darkStr) && !newClasses.includes('dark:bg-') && !newClasses.includes('dark:border-') && !newClasses.includes('dark:text-')) {
                     newClasses = newClasses.replace(regex, replacement);
                 } else if (!newClasses.includes('dark:bg-') || !newClasses.includes('dark:text-')) {
@@ -35,7 +35,7 @@ function processString(content) {
         // deduplicate slightly
         const dedup = Array.from(new Set(newClasses.split(/\s+/))).join(' ').trim();
 
-        return \className =\${ quote } \${ dedup } \${ quote } \;
+        return `className=${quote}${dedup}${quote}`;
     });
 }
 

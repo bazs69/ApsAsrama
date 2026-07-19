@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useTransition } from "react"
+import { useRouter } from "next/navigation"
 import { Plus, Edit2, Trash2, Building, BookOpen, GraduationCap, ChevronDown, ChevronRight, AlertCircle, Loader2 } from "lucide-react"
 import { createFakultas, updateFakultas, deleteFakultas, createProdi, updateProdi, deleteProdi, createAngkatan, updateAngkatan, deleteAngkatan } from "@/app/actions/masterData"
 
@@ -9,8 +10,9 @@ type Prodi = { id: string, name: string, fakultasId: string, angkatans: Angkatan
 type Fakultas = { id: string, name: string, prodis: Prodi[] }
 
 export default function AkademikClient({ initialHierarchy }: { initialHierarchy: Fakultas[] }) {
+  const router = useRouter()
   const [hierarchy] = useState<Fakultas[]>(initialHierarchy)
-  
+
   // Expanded states
   const [expandedFakultas, setExpandedFakultas] = useState<Set<string>>(new Set())
   const [expandedProdis, setExpandedProdis] = useState<Set<string>>(new Set())
@@ -109,15 +111,15 @@ export default function AkademikClient({ initialHierarchy }: { initialHierarchy:
       if (modalType === "fakultas") {
         const res = modalMode === "create" ? await createFakultas(name) : await updateFakultas(id, name)
         if (res.error) setError(res.error)
-        else window.location.reload()
+        else router.refresh()
       } else if (modalType === "prodi") {
         const res = modalMode === "create" ? await createProdi(name, fakultasId) : await updateProdi(id, name, fakultasId)
         if (res.error) setError(res.error)
-        else window.location.reload()
+        else router.refresh()
       } else if (modalType === "angkatan") {
         const res = modalMode === "create" ? await createAngkatan(name, prodiId) : await updateAngkatan(id, name, prodiId)
         if (res.error) setError(res.error)
-        else window.location.reload()
+        else router.refresh()
       }
     })
   }
@@ -126,26 +128,26 @@ export default function AkademikClient({ initialHierarchy }: { initialHierarchy:
     if (!confirm("Hapus Fakultas ini? Semua Prodi dan Angkatan di dalamnya akan terhapus.")) return
     const res = await deleteFakultas(id)
     if (res.error) alert(res.error)
-    else window.location.reload()
+    else router.refresh()
   }
 
   const handleDeleteProdi = async (id: string) => {
     if (!confirm("Hapus Prodi ini? Semua Angkatan di dalamnya akan terhapus.")) return
     const res = await deleteProdi(id)
     if (res.error) alert(res.error)
-    else window.location.reload()
+    else router.refresh()
   }
 
   const handleDeleteAngkatan = async (id: string) => {
     if (!confirm("Hapus Angkatan ini?")) return
     const res = await deleteAngkatan(id)
     if (res.error) alert(res.error)
-    else window.location.reload()
+    else router.refresh()
   }
 
   return (
     <div className="space-y-6">
-      
+
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-zinc-900 dark:text-white mb-1">Menu Akademik</h1>
@@ -173,8 +175,8 @@ export default function AkademikClient({ initialHierarchy }: { initialHierarchy:
             return (
               <div key={f.id} className="glass rounded-2xl border border-zinc-200/60 dark:border-zinc-800 overflow-hidden shadow-sm hover:shadow-md transition-all">
                 {/* Fakultas Header */}
-                <div 
-                  className="flex items-center justify-between p-4 bg-white dark:bg-zinc-900/50 dark:bg-zinc-900/50 cursor-pointer"
+                <div
+                  className="flex items-center justify-between p-4 bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50/50 dark:bg-zinc-900/50 cursor-pointer"
                 >
                   <div className="flex items-center space-x-3 flex-1" onClick={() => toggleFakultas(f.id)}>
                     <div className={`p-2 rounded-xl transition-colors ${isFExpanded ? 'bg-primary-500/10 text-primary-600 dark:text-primary-400' : 'bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400'}`}>
@@ -188,7 +190,7 @@ export default function AkademikClient({ initialHierarchy }: { initialHierarchy:
                       <p className="text-xs text-zinc-500">{f.prodis.length} Prodi terdaftar</p>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center space-x-2">
                     <button onClick={(e) => { e.stopPropagation(); openCreateProdi(f.id) }} className="p-2 text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-500/10 rounded-lg tooltip-trigger" title="Tambah Prodi">
                       <Plus className="w-4 h-4" />
@@ -235,7 +237,7 @@ export default function AkademikClient({ initialHierarchy }: { initialHierarchy:
 
                             {/* Angkatan List */}
                             {isPExpanded && (
-                              <div className="p-3 border-t border-zinc-200/50 dark:border-zinc-700/50 bg-white dark:bg-zinc-900/40">
+                              <div className="p-3 border-t border-zinc-200/50 dark:border-zinc-700/50 bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50/40">
                                 {p.angkatans.length === 0 ? (
                                   <p className="text-xs text-zinc-400 italic pl-4">Belum ada angkatan.</p>
                                 ) : (

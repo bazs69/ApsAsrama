@@ -93,7 +93,7 @@ export default function DashboardKepalaSatkerClient({ stats }: DashboardKepalaSa
           </p>
         </div>
         
-        <div className="flex items-center space-x-4 bg-white dark:bg-zinc-950/60 border border-zinc-200 dark:border-zinc-800/80 rounded-xl py-3 px-5 min-w-[290px] shadow-sm">
+        <div className="flex items-center space-x-4 bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50/60 border border-zinc-200 dark:border-zinc-800/80 rounded-xl py-3 px-5 min-w-[290px] shadow-sm">
           <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-blue-600 to-blue-400 flex items-center justify-center shadow-lg shadow-blue-500/20 text-white">
             <Activity className="w-6 h-6" />
           </div>

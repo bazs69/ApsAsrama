@@ -1,35 +1,29 @@
 import React from "react"
-import { DashboardProps, PriorityAction } from "../types"
+import { DashboardProps } from "../types"
 import WelcomeHeader from "../components/WelcomeHeader"
-import PriorityActions from "../components/PriorityActions"
-import QuickAccess from "../components/QuickAccess"
+import StatsSummary from "../components/StatsSummary"
 import RecentActivity from "../components/RecentActivity"
-import AnnouncementPanel from "../components/AnnouncementPanel"
+import BirthdayWidget from "../components/BirthdayWidget"
 import { mockRecentActivities } from "../data/recentActivityMockData"
-import { getAnnouncementsForRole } from "../data/announcementMockData"
 
 export default function AssignmentDashboard({ user }: DashboardProps) {
-  const priorityActions: PriorityAction[] = []
-  const activities = mockRecentActivities.filter(a => ["ASSIGNMENT", "MONITORING"].includes(a.category))
-  const announcements = getAnnouncementsForRole(user.role || "PENGURUS_PENUGASAN")
+  const activities = mockRecentActivities.filter(a => ["ASSIGNMENT"].includes(a.category))
 
   return (
     <div className="space-y-8">
       <WelcomeHeader user={user} />
-      <PriorityActions actions={priorityActions} />
+      
+      {/* 3 Statistik Utama: Total Santri, Tempat Penugasan, Kehadiran */}
+      <StatsSummary />
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        <div className="lg:col-span-8">
+      <div className="grid grid-cols-1 gap-8">
+        {/* Log Aktivitas */}
+        <div className="col-span-1">
           <RecentActivity activities={activities} />
         </div>
-        <div className="lg:col-span-4">
-          <QuickAccess role={user.role || "ASSIGNMENT"} />
-        </div>
-
-        <div className="lg:col-span-8">
-          <AnnouncementPanel announcements={announcements} />
-        </div>
       </div>
+
+      <BirthdayWidget />
     </div>
   )
 }

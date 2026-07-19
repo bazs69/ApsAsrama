@@ -54,7 +54,7 @@ export default function PriorityCard({ action }: PriorityCardProps) {
 
   return (
     <div
-      className={`relative overflow-hidden rounded-2xl p-6 border transition-all hover:-translate-y-1 hover:shadow-xl hover:shadow-${style.text.split('-')[1]}-500/10 duration-300 bg-gradient-to-br from-white to-zinc-50/50 dark:from-zinc-900/90 dark:to-zinc-800/60 shadow-md border-zinc-200/80 dark:border-zinc-700/60 hover:border-${style.text.split('-')[1]}-300 dark:hover:border-${style.text.split('-')[1]}-800/60 group`}
+      className={`relative overflow-hidden rounded-2xl p-6 border transition-all hover:-translate-y-1 hover:shadow-xl hover:shadow-${style.text.split('-')[1]}-500/10 duration-300 bg-gradient-to-br from-white to-success-50 dark:from-zinc-900 dark:to-zinc-800 text-zinc-900 dark:text-zinc-100 shadow-md border-success-100 dark:border-success-900/50 hover:shadow-xl hover:shadow-success-500/20 hover:border-success-300 dark:hover:border-success-700/80 shadow-md border-[#032e15]/20 hover:border-${style.text.split('-')[1]}-300 dark:hover:border-${style.text.split('-')[1]}-800/60 group`}
       tabIndex={0}
       aria-label={`Tugas Prioritas: ${action.title}`}
     >
@@ -74,8 +74,8 @@ export default function PriorityCard({ action }: PriorityCardProps) {
         </div>
 
         <div className="flex-1">
-          <h3 className={`font-extrabold text-lg mb-1.5 text-zinc-900 dark:text-white group-hover:${style.text.split(' ')[0]} transition-colors`}>{action.title}</h3>
-          <p className="text-sm text-zinc-500 dark:text-zinc-400 mb-4 line-clamp-2 leading-relaxed">{action.description}</p>
+          <h3 className={`font-extrabold text-lg mb-1.5 text-[#032e15]/80 dark:text-zinc-100 group-hover:${style.text.split(' ')[0]} transition-colors`}>{action.title}</h3>
+          <p className="text-sm text-[#032e15]/80 dark:text-zinc-400 mb-4 line-clamp-2 leading-relaxed">{action.description}</p>
 
           {(action.count !== undefined || action.dueAt) && (
             <div className="flex items-center gap-4 mb-5 p-3.5 rounded-xl bg-zinc-50/50 dark:bg-zinc-900/30 border border-zinc-100 dark:border-zinc-800/50">

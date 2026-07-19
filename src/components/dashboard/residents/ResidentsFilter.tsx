@@ -28,7 +28,7 @@ export default function ResidentsFilter({
   setFilterKamar
 }: ResidentsFilterProps) {
   return (
-    <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-5 shadow-sm space-y-4 animate-in slide-in-from-top-2 fade-in duration-200">
+    <div className="bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50 border border-zinc-200 dark:border-zinc-800 rounded-xl p-5 shadow-sm space-y-4 animate-in slide-in-from-top-2 fade-in duration-200">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <select
           value={filterWilayah}

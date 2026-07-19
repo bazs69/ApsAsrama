@@ -39,7 +39,7 @@ export default function RiwayatExport({ data }: {
   }
 
   return (
-    <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-sm overflow-hidden">
+    <div className="bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-sm overflow-hidden">
       <div className="p-5 border-b border-zinc-200 dark:border-zinc-800 flex items-center gap-2">
         <FileText className="w-5 h-5 text-primary-600 dark:text-primary-400" />
         <h2 className="font-bold text-zinc-900 dark:text-white text-lg">Riwayat Export Laporan</h2>

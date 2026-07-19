@@ -212,7 +212,7 @@ export default function NotificationDropdown() {
       {/* Dropdown panel */}
       {open && (
         <div
-          className="absolute right-0 top-full mt-2 w-80 sm:w-96 max-h-[500px] flex flex-col rounded-2xl border border-zinc-200 dark:border-zinc-700/80 bg-white dark:bg-zinc-900/95 dark:bg-zinc-900/95 backdrop-blur-md shadow-2xl z-50 overflow-hidden"
+          className="absolute right-0 top-full mt-2 w-80 sm:w-96 max-h-[500px] flex flex-col rounded-2xl border border-zinc-200 dark:border-zinc-700/80 bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50/95 dark:bg-zinc-900/95 backdrop-blur-md shadow-2xl z-50 overflow-hidden"
           role="dialog"
           aria-label="Panel Notifikasi"
         >

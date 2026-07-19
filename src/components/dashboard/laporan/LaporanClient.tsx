@@ -253,7 +253,7 @@ export default function LaporanClient({
       {/* Global Stat Cards */}
       {dashboardData && userRole !== "KEPALA_SATKER" && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 print:hidden">
-          <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-5 shadow-sm flex items-center gap-4">
+          <div className="bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-5 shadow-sm flex items-center gap-4">
             <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400">
               <Users className="w-6 h-6" />
             </div>
@@ -262,7 +262,7 @@ export default function LaporanClient({
               <h3 className="text-2xl font-black text-zinc-900 dark:text-white mt-1">{dashboardData.totalSantriDitugaskan}</h3>
             </div>
           </div>
-          <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-5 shadow-sm flex items-center gap-4">
+          <div className="bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-5 shadow-sm flex items-center gap-4">
             <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-purple-50 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400">
               <Briefcase className="w-6 h-6" />
             </div>
@@ -271,7 +271,7 @@ export default function LaporanClient({
               <h3 className="text-2xl font-black text-zinc-900 dark:text-white mt-1">{dashboardData.totalSatkerAktif}</h3>
             </div>
           </div>
-          <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-5 shadow-sm flex items-center gap-4">
+          <div className="bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-5 shadow-sm flex items-center gap-4">
             <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-emerald-50 dark:bg-emerald-50 dark:bg-emerald-900/200/10 text-emerald-600 dark:text-emerald-400">
               <CheckCircle2 className="w-6 h-6" />
             </div>
@@ -280,7 +280,7 @@ export default function LaporanClient({
               <h3 className="text-2xl font-black text-zinc-900 dark:text-white mt-1">{dashboardData.totalMonitoringBulanIni}</h3>
             </div>
           </div>
-          <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-5 shadow-sm flex items-center gap-4">
+          <div className="bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-5 shadow-sm flex items-center gap-4">
             <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-amber-50 dark:bg-amber-50 dark:bg-amber-900/100/10 text-amber-600 dark:text-amber-400">
               <TrendingUp className="w-6 h-6" />
             </div>
@@ -303,7 +303,7 @@ export default function LaporanClient({
               onClick={() => handleTabChange(tab.id)}
               className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-sm transition-all whitespace-nowrap ${
                 isActive
-                  ? "bg-white dark:bg-zinc-900 text-primary-600 dark:text-primary-400 shadow-sm border border-zinc-200 dark:border-zinc-700"
+                  ? "bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50 text-primary-600 dark:text-primary-400 shadow-sm border border-zinc-200 dark:border-zinc-700"
                   : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-200/50 dark:hover:bg-zinc-800"
               }`}
             >
@@ -316,7 +316,7 @@ export default function LaporanClient({
 
       {/* Global Filter */}
       {activeTab !== "export" && (
-        <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-5 shadow-sm print:hidden">
+        <div className="bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-5 shadow-sm print:hidden">
           <div className="flex items-center gap-2 mb-4">
             <Filter className="w-4 h-4 text-primary-600 dark:text-primary-400" />
             <h2 className="font-bold text-zinc-900 dark:text-white text-sm uppercase tracking-wider">Filter Laporan</h2>

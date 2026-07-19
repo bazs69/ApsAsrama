@@ -3,6 +3,7 @@
 import { useState, useTransition, useEffect, useRef } from "react"
 import { usePathname } from "next/navigation"
 import { updateProfile } from "@/app/actions/settings"
+import { useSession } from "next-auth/react"
 import Image from "next/image"
 import Pagination from "@/components/ui/Pagination"
 import TableSkeleton from "@/components/ui/TableSkeleton"
@@ -59,6 +60,7 @@ export default function SettingsClient({
 }) {
   const [activeTab, setActiveTab] = useState<"profile" | "users">("profile")
   const [isPending, startTransition] = useTransition()
+  const { update } = useSession()
 
   // Profile state
   const [profileName, setProfileName] = useState(currentUser.name || "")
@@ -178,7 +180,8 @@ export default function SettingsClient({
       if (res.error) {
         setProfileMsg({ type: "error", text: res.error })
       } else {
-        setProfileMsg({ type: "success", text: "Profil berhasil diperbarui!" })
+        await update({ photo: uploadedPhotoUrl, name: profileName })
+        setProfileMsg({ type: "success", text: "Profil berhasil diperbarui." })
         setCurrentPassword("")
         setNewPassword("")
         setConfirmPassword("")
@@ -522,7 +525,7 @@ export default function SettingsClient({
               onChange={(e) => setSearchInput(e.target.value)}
               placeholder="Cari nama atau email pengguna..."
               aria-label="Cari pengguna"
-              className="w-full bg-white dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800 rounded-xl py-2.5 pl-9 pr-4 text-sm text-zinc-800 dark:text-zinc-200 placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-primary-500/40 focus:border-primary-500 transition-all"
+              className="w-full bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50/60 border border-zinc-200 dark:border-zinc-800 rounded-xl py-2.5 pl-9 pr-4 text-sm text-zinc-800 dark:text-zinc-200 placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-primary-500/40 focus:border-primary-500 transition-all"
             />
             {searchInput && (
               <button
@@ -566,7 +569,7 @@ export default function SettingsClient({
                                 <span className="text-sm font-bold text-white">{u.name?.charAt(0)?.toUpperCase()}</span>
                               </div>
                               {u._isOptimistic && (
-                                <div className="absolute -bottom-1 -right-1 bg-white dark:bg-zinc-900 rounded-full p-0.5 shadow-sm">
+                                <div className="absolute -bottom-1 -right-1 bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50 rounded-full p-0.5 shadow-sm">
                                   <RefreshCw className="w-3 h-3 text-primary-500 animate-spin" />
                                 </div>
                               )}

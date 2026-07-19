@@ -196,7 +196,7 @@ export default function WilayahClient({
       </div>
 
       {/* Header */}
-      <div className="bg-white dark:bg-zinc-900 rounded-2xl p-6 border border-slate-200 dark:border-zinc-700 shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div className="bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50 rounded-2xl p-6 border border-slate-200 dark:border-zinc-700 shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div className="flex items-center gap-4">
           <div className="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center text-blue-600">
             <MapPin className="w-6 h-6" />
@@ -210,7 +210,7 @@ export default function WilayahClient({
         {canCreate && (
           <button 
             onClick={() => setIsImportOpen(true)}
-            className="w-full sm:w-auto bg-white dark:bg-zinc-900 border border-slate-300 dark:border-zinc-600 hover:bg-slate-50 dark:bg-zinc-800/80 text-slate-700 dark:text-zinc-200 px-5 py-2.5 rounded-lg text-sm font-bold flex items-center justify-center gap-2 transition-all shadow-sm"
+            className="w-full sm:w-auto bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50 border border-slate-300 dark:border-zinc-600 hover:bg-slate-50 dark:bg-zinc-800/80 text-slate-700 dark:text-zinc-200 px-5 py-2.5 rounded-lg text-sm font-bold flex items-center justify-center gap-2 transition-all shadow-sm"
           >
             <UploadCloud className="w-4 h-4 text-blue-600" />
             Import XLSX
@@ -219,7 +219,7 @@ export default function WilayahClient({
       </div>
 
       <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
-        <div className="bg-white dark:bg-zinc-900 p-2 rounded-xl border border-slate-200 dark:border-zinc-700 shadow-sm overflow-x-auto">
+        <div className="bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50 p-2 rounded-xl border border-slate-200 dark:border-zinc-700 shadow-sm overflow-x-auto">
           <TabsList className="bg-transparent h-auto p-0 flex space-x-2">
             <TabsTrigger value="negara" className="px-6 py-2.5 rounded-lg data-[state=active]:bg-blue-50 data-[state=active]:text-blue-600 data-[state=active]:font-bold transition-all border border-transparent data-[state=active]:border-blue-100">
               Negara
@@ -239,7 +239,7 @@ export default function WilayahClient({
           </TabsList>
         </div>
 
-        <div className="mt-6 bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200 dark:border-zinc-700 shadow-sm overflow-hidden flex flex-col">
+        <div className="mt-6 bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50 rounded-2xl border border-slate-200 dark:border-zinc-700 shadow-sm overflow-hidden flex flex-col">
           {/* Action Bar */}
           <div className="p-4 border-b border-slate-200 dark:border-zinc-700 flex flex-col lg:flex-row gap-4 justify-between items-center bg-slate-50 dark:bg-zinc-800/80/50">
             <div className="flex flex-col sm:flex-row w-full lg:w-auto gap-4">
@@ -251,7 +251,7 @@ export default function WilayahClient({
                   value={searchInput}
                   onChange={(e) => setSearchInput(e.target.value)}
                   placeholder="Cari nama atau kode wilayah..."
-                  className="w-full bg-white dark:bg-zinc-900 border border-slate-300 dark:border-zinc-600 rounded-lg pl-10 pr-4 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all shadow-sm"
+                  className="w-full bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50 border border-slate-300 dark:border-zinc-600 rounded-lg pl-10 pr-4 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all shadow-sm"
                 />
               </form>
               
@@ -260,7 +260,7 @@ export default function WilayahClient({
                 <select 
                   value={parentId}
                   onChange={handleParentFilterChange}
-                  className="w-full sm:w-64 bg-white dark:bg-zinc-900 border border-slate-300 dark:border-zinc-600 rounded-lg px-4 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all shadow-sm"
+                  className="w-full sm:w-64 bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50 border border-slate-300 dark:border-zinc-600 rounded-lg px-4 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all shadow-sm"
                 >
                   <option value="">-- Semua Induk Wilayah --</option>
                   {activeTab === "provinsi" && dropdowns.countries.map((d) => (
@@ -294,7 +294,7 @@ export default function WilayahClient({
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-white dark:bg-zinc-900 text-xs font-bold text-slate-500 dark:text-zinc-400 uppercase tracking-wider border-b border-slate-200 dark:border-zinc-700">
+                <tr className="bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50 text-xs font-bold text-slate-500 dark:text-zinc-400 uppercase tracking-wider border-b border-slate-200 dark:border-zinc-700">
                   <th className="py-4 px-6 text-center w-16">No</th>
                   <th className="py-4 px-6">Kode</th>
                   <th className="py-4 px-6">Nama Wilayah</th>
@@ -380,7 +380,7 @@ export default function WilayahClient({
                   <ChevronLeft className="w-4 h-4" />
                 </button>
                 
-                <span className="text-sm font-bold text-slate-700 dark:text-zinc-200 px-4 py-2 bg-white dark:bg-zinc-900 border border-slate-300 dark:border-zinc-600 rounded-lg shadow-sm">
+                <span className="text-sm font-bold text-slate-700 dark:text-zinc-200 px-4 py-2 bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50 border border-slate-300 dark:border-zinc-600 rounded-lg shadow-sm">
                   {page} / {totalPages}
                 </span>
 
@@ -400,7 +400,7 @@ export default function WilayahClient({
       {/* Modal CRUD */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm overflow-y-auto">
-          <div className="bg-white dark:bg-zinc-900 rounded-2xl shadow-xl w-full max-w-md my-8">
+          <div className="bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50 rounded-2xl shadow-xl w-full max-w-md my-8">
             <div className="flex items-center justify-between p-5 border-b border-slate-100 dark:border-zinc-800">
               <h3 className="text-lg font-bold text-slate-800 dark:text-zinc-100">
                 {modalMode === "create" ? "Tambah Data" : "Edit Data"} <span className="capitalize">{activeTab}</span>
@@ -420,7 +420,7 @@ export default function WilayahClient({
                   type="text" 
                   value={formCode}
                   onChange={(e) => setFormCode(e.target.value)}
-                  className="w-full bg-white dark:bg-zinc-900 border border-slate-300 dark:border-zinc-600 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all font-mono"
+                  className="w-full bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50 border border-slate-300 dark:border-zinc-600 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all font-mono"
                   placeholder="Misal: 35.12.01"
                   required
                 />
@@ -432,7 +432,7 @@ export default function WilayahClient({
                   type="text" 
                   value={formName}
                   onChange={(e) => setFormName(e.target.value)}
-                  className="w-full bg-white dark:bg-zinc-900 border border-slate-300 dark:border-zinc-600 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                  className="w-full bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50 border border-slate-300 dark:border-zinc-600 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                   placeholder="Masukkan nama wilayah..."
                   required
                 />
@@ -450,7 +450,7 @@ export default function WilayahClient({
                   <select 
                     value={formParentId}
                     onChange={(e) => setFormParentId(e.target.value)}
-                    className="w-full bg-white dark:bg-zinc-900 border border-slate-300 dark:border-zinc-600 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                    className="w-full bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50 border border-slate-300 dark:border-zinc-600 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                     required
                   >
                     <option value="">-- Pilih Induk Wilayah --</option>
@@ -474,7 +474,7 @@ export default function WilayahClient({
                 <button 
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="flex-1 px-4 py-2.5 border border-slate-300 dark:border-zinc-600 text-slate-700 dark:text-zinc-200 bg-white dark:bg-zinc-900 rounded-lg font-bold hover:bg-slate-50 dark:bg-zinc-800/80 transition-colors text-sm"
+                  className="flex-1 px-4 py-2.5 border border-slate-300 dark:border-zinc-600 text-slate-700 dark:text-zinc-200 bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50 rounded-lg font-bold hover:bg-slate-50 dark:bg-zinc-800/80 transition-colors text-sm"
                 >
                   Batal
                 </button>
@@ -520,7 +520,7 @@ function MetricCard({ title, value, icon: Icon, color }: MetricCardProps) {
   }
   
   return (
-    <div className="bg-white dark:bg-zinc-900 p-4 rounded-xl border border-slate-200 dark:border-zinc-700 shadow-sm flex items-center gap-4 hover:shadow-md transition-all">
+    <div className="bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50 p-4 rounded-xl border border-slate-200 dark:border-zinc-700 shadow-sm flex items-center gap-4 hover:shadow-md transition-all">
       <div className={`w-12 h-12 rounded-lg flex items-center justify-center border ${bgColors[color]}`}>
         <Icon className="w-6 h-6" />
       </div>

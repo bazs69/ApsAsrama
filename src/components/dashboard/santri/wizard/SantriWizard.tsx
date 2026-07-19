@@ -275,7 +275,7 @@ export default function SantriWizard({
       {showExitConfirm && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setShowExitConfirm(false)} />
-          <div className="bg-white dark:bg-zinc-900 rounded-xl shadow-xl border border-zinc-200 w-full max-w-sm relative z-10 p-6 space-y-4 animate-in zoom-in-95 duration-200">
+          <div className="bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50 rounded-xl shadow-xl border border-zinc-200 w-full max-w-sm relative z-10 p-6 space-y-4 animate-in zoom-in-95 duration-200">
             <h3 className="font-bold text-lg text-zinc-900">Perubahan belum disimpan</h3>
             <p className="text-zinc-500 text-sm">Keluar tanpa menyimpan?</p>
             <div className="flex justify-end gap-3 pt-4">
@@ -287,7 +287,7 @@ export default function SantriWizard({
       )}
 
       {/* Header & Progress */}
-      <div className="bg-white dark:bg-zinc-900 rounded-2xl p-6 border border-slate-200 dark:border-zinc-700/80 shadow-sm">
+      <div className="bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50 rounded-2xl p-6 border border-slate-200 dark:border-zinc-700/80 shadow-sm">
         <h1 className="text-2xl font-bold text-slate-800 dark:text-zinc-100 mb-2">
           {mode === "create" ? "Formulir Pendaftaran Santri" : "Edit Data Santri"}
         </h1>
@@ -336,7 +336,7 @@ export default function SantriWizard({
       )}
 
       {/* Step Content */}
-      <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200 dark:border-zinc-700/80 shadow-sm p-6 min-h-[400px]">
+      <div className="bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50 rounded-2xl border border-slate-200 dark:border-zinc-700/80 shadow-sm p-6 min-h-[400px]">
         {currentStep === 1 && <Step1Biodata formData={formData} setFormData={setFormData} photoFile={photoFile} setPhotoFile={setPhotoFile} />}
         {currentStep === 2 && <Step2Domisili formData={formData} setFormData={setFormData} />}
         {currentStep === 3 && <Step3Pendidikan formData={formData} setFormData={setFormData} fakultasOptions={fakultasOptions} prodiOptions={prodiOptions} angkatanOptions={angkatanOptions} />}
@@ -345,18 +345,18 @@ export default function SantriWizard({
       </div>
 
       {/* Navigation Footer */}
-      <div className="flex flex-wrap justify-between items-center gap-4 bg-white dark:bg-zinc-900 p-4 rounded-2xl border border-slate-200 dark:border-zinc-700/80 shadow-sm sticky bottom-4 z-40">
+      <div className="flex flex-wrap justify-between items-center gap-4 bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50 p-4 rounded-2xl border border-slate-200 dark:border-zinc-700/80 shadow-sm sticky bottom-4 z-40">
         
         <div className="flex gap-2">
           {mode === "edit" && onCancel && (
-            <button onClick={handleCancelClick} className="px-5 py-2.5 rounded-xl font-bold text-slate-600 dark:text-zinc-300 bg-white dark:bg-zinc-900 border border-slate-300 dark:border-zinc-600 hover:bg-slate-50 dark:bg-zinc-800/80 transition-all flex items-center gap-2">
+            <button onClick={handleCancelClick} className="px-5 py-2.5 rounded-xl font-bold text-slate-600 dark:text-zinc-300 bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50 border border-slate-300 dark:border-zinc-600 hover:bg-slate-50 dark:bg-zinc-800/80 transition-all flex items-center gap-2">
               <LogOut className="w-4 h-4" /> Batal
             </button>
           )}
           <button 
             onClick={prevStep}
             disabled={currentStep === 1 || isPending}
-            className="px-5 py-2.5 rounded-xl font-bold text-slate-600 dark:text-zinc-300 bg-white dark:bg-zinc-900 border border-slate-300 dark:border-zinc-600 hover:bg-slate-50 dark:bg-zinc-800/80 disabled:opacity-50 transition-all flex items-center gap-2"
+            className="px-5 py-2.5 rounded-xl font-bold text-slate-600 dark:text-zinc-300 bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50 border border-slate-300 dark:border-zinc-600 hover:bg-slate-50 dark:bg-zinc-800/80 disabled:opacity-50 transition-all flex items-center gap-2"
           >
             <ChevronLeft className="w-4 h-4" /> Prev
           </button>

@@ -6,6 +6,7 @@ import MobileSidebar from "@/components/dashboard/MobileSidebar"
 import Topbar from "@/components/dashboard/Topbar"
 import IdleTimeoutProvider from "@/components/providers/IdleTimeoutProvider"
 import { SidebarProvider } from "@/components/providers/SidebarProvider"
+import CommandPalette from "@/components/CommandPalette"
 
 export default async function DashboardLayout({
   children,
@@ -41,6 +42,7 @@ export default async function DashboardLayout({
             </main>
           </div>
         </div>
+        <CommandPalette userRole={session.user.role} />
       </SidebarProvider>
     </IdleTimeoutProvider>
   )

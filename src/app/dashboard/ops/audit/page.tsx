@@ -172,7 +172,7 @@ export default async function AuditDashboardPage({
       />
 
       {/* Controls */}
-      <div className="flex flex-col lg:flex-row gap-4 justify-between items-start lg:items-center bg-white dark:bg-zinc-900 p-4 rounded-2xl border border-zinc-200 dark:border-zinc-800">
+      <div className="flex flex-col lg:flex-row gap-4 justify-between items-start lg:items-center bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50 p-4 rounded-2xl border border-zinc-200 dark:border-zinc-800">
         <AuditSearch />
         <AuditFilter />
       </div>

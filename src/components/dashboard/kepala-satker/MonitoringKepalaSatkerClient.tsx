@@ -265,7 +265,7 @@ export default function MonitoringKepalaSatkerClient({
   return (
     <div className="space-y-6 print:space-y-4">
       {/* Screen Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-6 rounded-2xl shadow-sm print:hidden">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50 border border-zinc-200 dark:border-zinc-800 p-6 rounded-2xl shadow-sm print:hidden">
         <div>
           <h1 className="text-2xl font-bold text-zinc-900 dark:text-white mb-1">Monitoring Penugasan</h1>
           <div className="flex items-center space-x-4 text-sm font-medium text-zinc-500 dark:text-zinc-400">
@@ -299,12 +299,12 @@ export default function MonitoringKepalaSatkerClient({
           placeholder="Cari santri berdasarkan nama atau NIS..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full pl-10 pr-4 py-3 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-sm focus:ring-2 focus:ring-primary-500 outline-none transition-shadow"
+          className="w-full pl-10 pr-4 py-3 bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-sm focus:ring-2 focus:ring-primary-500 outline-none transition-shadow"
         />
       </div>
 
       {/* Table of Santri */}
-      <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-sm overflow-hidden print:hidden">
+      <div className="bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-sm overflow-hidden print:hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
@@ -393,7 +393,7 @@ export default function MonitoringKepalaSatkerClient({
           />
 
           {/* Modal Content */}
-          <div className="relative w-full max-w-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
+          <div className="relative w-full max-w-2xl bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50 border border-zinc-200 dark:border-zinc-800 rounded-3xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
 
             {/* Find selected data */}
             {(() => {
@@ -414,7 +414,7 @@ export default function MonitoringKepalaSatkerClient({
                         <p className="text-sm text-zinc-500 font-mono mt-1">NIS: {assignment.resident.nim || "-"}</p>
                       </div>
 
-                      <div className="text-right bg-white dark:bg-zinc-900/50 dark:bg-black/20 backdrop-blur rounded-2xl p-3 border border-zinc-200/50 dark:border-zinc-700/30">
+                      <div className="text-right bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50/50 dark:bg-black/20 backdrop-blur rounded-2xl p-3 border border-zinc-200/50 dark:border-zinc-700/30">
                         <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-1 flex items-center justify-end space-x-1">
                           <Star className="w-3 h-3" />
                           <span>Rata-Rata</span>
@@ -489,7 +489,7 @@ export default function MonitoringKepalaSatkerClient({
       )}
 
       {/* Kesimpulan */}
-      <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-sm p-6">
+      <div className="bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-sm p-6">
         <h3 className="font-bold text-zinc-900 dark:text-white mb-4">Kesimpulan & Evaluasi Bulanan</h3>
         <textarea
           value={kesimpulan}

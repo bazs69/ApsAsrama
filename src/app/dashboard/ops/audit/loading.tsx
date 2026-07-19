@@ -22,7 +22,7 @@ export default function AuditDashboardLoading() {
       </div>
 
       {/* Controls Skeleton */}
-      <div className="flex flex-col lg:flex-row gap-4 justify-between items-start lg:items-center bg-white dark:bg-zinc-900 p-4 rounded-2xl border border-zinc-200 dark:border-zinc-800">
+      <div className="flex flex-col lg:flex-row gap-4 justify-between items-start lg:items-center bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50 p-4 rounded-2xl border border-zinc-200 dark:border-zinc-800">
         <Skeleton className="h-10 w-full max-w-md rounded-xl" />
         <div className="flex gap-3">
           {[...Array(5)].map((_, i) => (
@@ -32,7 +32,7 @@ export default function AuditDashboardLoading() {
       </div>
 
       {/* Table Skeleton */}
-      <div className="w-full border border-zinc-200 dark:border-zinc-800 rounded-2xl overflow-hidden bg-white dark:bg-zinc-900 p-6">
+      <div className="w-full border border-zinc-200 dark:border-zinc-800 rounded-2xl overflow-hidden bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50 p-6">
         <table className="w-full">
           <tbody>
             <TableSkeleton rows={10} columns={7} />

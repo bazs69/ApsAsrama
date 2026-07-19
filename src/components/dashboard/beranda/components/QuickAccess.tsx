@@ -18,7 +18,7 @@ export default function QuickAccess({ role }: QuickAccessProps) {
   return (
     <div className="beranda-card animate-in slide-in-from-bottom-2 duration-300">
       <div>
-        <h2 className="text-base font-bold text-zinc-900 dark:text-white mb-5">Aksi Cepat</h2>
+        <h2 className="text-base font-bold text-[#032e15] dark:text-zinc-100 mb-5">Aksi Cepat</h2>
         <div className="grid grid-cols-2 gap-3" role="navigation" aria-label="Jalan pintas aksi cepat">
           {links.map((link) => {
             const Icon = link.icon
@@ -26,7 +26,7 @@ export default function QuickAccess({ role }: QuickAccessProps) {
               <Link
                 key={link.id}
                 href={link.href}
-                className="group relative bg-gradient-to-br from-white to-zinc-50 dark:from-zinc-900/90 dark:to-zinc-800/80 hover:to-primary-50/30 dark:hover:to-primary-900/20 border border-zinc-200/80 dark:border-zinc-700/60 rounded-2xl p-4 transition-all duration-300 text-left flex flex-col hover:-translate-y-1 hover:shadow-lg hover:shadow-primary-500/5 hover:border-primary-200 dark:hover:border-primary-800/60 focus:outline-none focus:ring-2 focus:ring-primary-500 overflow-hidden"
+                className="group relative bg-white dark:bg-primary-900/20 hover:bg-zinc-50 dark:hover:bg-primary-900/40 border border-zinc-200 dark:border-primary-800/30 rounded-2xl p-4 transition-all duration-300 text-left flex flex-col hover:-translate-y-1 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-primary-500 overflow-hidden"
               >
                 {/* Decorative background circle on hover */}
                 <div className={`absolute -right-4 -bottom-4 w-16 h-16 rounded-full opacity-0 group-hover:opacity-10 transition-all duration-500 scale-50 group-hover:scale-150 ${link.colorClass.split(' ')[2] || 'bg-zinc-500/10'}`}></div>

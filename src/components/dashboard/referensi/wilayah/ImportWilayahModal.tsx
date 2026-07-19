@@ -79,7 +79,7 @@ export default function ImportWilayahModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm overflow-y-auto">
-      <div className="bg-white dark:bg-zinc-900 rounded-2xl shadow-xl w-full max-w-2xl my-8">
+      <div className="bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50 rounded-2xl shadow-xl w-full max-w-2xl my-8">
         <div className="flex items-center justify-between p-5 border-b border-slate-100 dark:border-zinc-800">
           <h3 className="text-lg font-bold text-slate-800 dark:text-zinc-100 flex items-center gap-2">
             <Upload className="w-5 h-5 text-blue-600" />
@@ -118,7 +118,7 @@ export default function ImportWilayahModal({
               <select 
                 value={parentId}
                 onChange={(e) => setParentId(e.target.value)}
-                className="w-full bg-white dark:bg-zinc-900 border border-slate-300 dark:border-zinc-600 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                className="w-full bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50 border border-slate-300 dark:border-zinc-600 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
               >
                 <option value="">-- Pilih Induk Wilayah --</option>
                 {activeTab === "provinsi" && dropdowns.countries?.map((d) => (
@@ -190,7 +190,7 @@ export default function ImportWilayahModal({
           <button 
             type="button"
             onClick={onClose}
-            className="px-5 py-2.5 border border-slate-300 dark:border-zinc-600 text-slate-700 dark:text-zinc-200 bg-white dark:bg-zinc-900 rounded-lg font-bold hover:bg-slate-100 dark:bg-zinc-800 transition-colors text-sm"
+            className="px-5 py-2.5 border border-slate-300 dark:border-zinc-600 text-slate-700 dark:text-zinc-200 bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50 rounded-lg font-bold hover:bg-slate-100 dark:bg-zinc-800 transition-colors text-sm"
           >
             Batal
           </button>

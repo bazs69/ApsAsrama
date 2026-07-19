@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
 import { ToastProvider } from "@/components/ui/ToastProvider";
+import AuthProvider from "@/providers/AuthProvider";
 import QueryProvider from "@/providers/QueryProvider";
 import PwaProvider from "@/components/providers/PwaProvider";
 
@@ -45,11 +46,12 @@ export default function RootLayout({
         <Script src="/theme.js" strategy="afterInteractive" />
         <ToastProvider />
         <PwaProvider />
-        <QueryProvider>
-          {children}
-        </QueryProvider>
+        <AuthProvider>
+          <QueryProvider>
+            {children}
+          </QueryProvider>
+        </AuthProvider>
       </body>
     </html>
   );
 }
-

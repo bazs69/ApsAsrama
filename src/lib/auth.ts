@@ -116,20 +116,28 @@ export const authOptions: NextAuthOptions = {
           role: user.role?.name || "GUEST",
           permissions: user.role?.permissions.map(rp => rp.permission.code) || [],
           satkerId: user.satkerId,
+          photo: user.photo,
         }
       }
     })
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger, session }) {
       // ─── LOGIN: user object available from authorize() ───
       if (user) {
         token.role = user.role
         token.permissions = user.permissions
         token.id = user.id
         token.satkerId = (user as { satkerId?: string | null }).satkerId
+        token.photo = (user as { photo?: string | null }).photo
         token.permissionRefreshedAt = Date.now()
         return token
+      }
+
+      // ─── SESSION UPDATE ───
+      if (trigger === "update" && session) {
+        if (session.photo !== undefined) token.photo = session.photo
+        if (session.name !== undefined) token.name = session.name
       }
 
       // ─── SUBSEQUENT REQUESTS: refresh permissions on updateAge cycle ───
@@ -172,6 +180,7 @@ export const authOptions: NextAuthOptions = {
         session.user.permissions = (token.permissions as string[]) || []
         session.user.id = token.id as string
         session.user.satkerId = token.satkerId as string | undefined
+        session.user.photo = token.photo as string | undefined
       }
       return session
     }

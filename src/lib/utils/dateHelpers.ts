@@ -26,6 +26,13 @@ export function formatWIBTime(date: Date = new Date()): string {
   return `${hours}:${minutes}:${seconds} WIB`
 }
 
+export function formatTimeOnly(date: Date = new Date()): string {
+  const hours = String(date.getHours()).padStart(2, '0')
+  const minutes = String(date.getMinutes()).padStart(2, '0')
+  const seconds = String(date.getSeconds()).padStart(2, '0')
+  return `${hours}:${minutes}:${seconds}`
+}
+
 export function formatGregorianDate(date: Date = new Date()): string {
   return date.toLocaleDateString("id-ID", {
     weekday: "long",

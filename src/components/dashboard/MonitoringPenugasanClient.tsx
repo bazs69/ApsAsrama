@@ -138,7 +138,7 @@ export default function MonitoringPenugasanClient({ user, satkerList, initialDat
       {!isKepalaSatker && (
         <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
           {/* Total Santri KIP */}
-          <div className="bg-white dark:bg-zinc-900 rounded-xl p-5 border border-slate-200 dark:border-zinc-700 shadow-sm flex items-center gap-4">
+          <div className="bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50 rounded-xl p-5 border border-slate-200 dark:border-zinc-700 shadow-sm flex items-center gap-4">
             <div className="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center text-blue-600 flex-shrink-0">
               <Users className="w-6 h-6" />
             </div>
@@ -152,7 +152,7 @@ export default function MonitoringPenugasanClient({ user, satkerList, initialDat
           </div>
 
           {/* Total Satker */}
-          <div className="bg-white dark:bg-zinc-900 rounded-xl p-5 border border-slate-200 dark:border-zinc-700 shadow-sm flex items-center gap-4">
+          <div className="bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50 rounded-xl p-5 border border-slate-200 dark:border-zinc-700 shadow-sm flex items-center gap-4">
             <div className="w-12 h-12 rounded-xl bg-emerald-100 flex items-center justify-center text-emerald-600 flex-shrink-0">
               <Building2 className="w-6 h-6" />
             </div>
@@ -166,7 +166,7 @@ export default function MonitoringPenugasanClient({ user, satkerList, initialDat
           </div>
 
           {/* Total Kepala Satker */}
-          <div className="bg-white dark:bg-zinc-900 rounded-xl p-5 border border-slate-200 dark:border-zinc-700 shadow-sm flex items-center gap-4">
+          <div className="bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50 rounded-xl p-5 border border-slate-200 dark:border-zinc-700 shadow-sm flex items-center gap-4">
             <div className="w-12 h-12 rounded-xl bg-indigo-100 flex items-center justify-center text-indigo-600 flex-shrink-0">
               <UserSquare2 className="w-6 h-6" />
             </div>
@@ -180,7 +180,7 @@ export default function MonitoringPenugasanClient({ user, satkerList, initialDat
           </div>
 
           {/* Laporan Bulan Ini */}
-          <div className="bg-white dark:bg-zinc-900 rounded-xl p-5 border border-slate-200 dark:border-zinc-700 shadow-sm flex items-center gap-4">
+          <div className="bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50 rounded-xl p-5 border border-slate-200 dark:border-zinc-700 shadow-sm flex items-center gap-4">
             <div className="w-12 h-12 rounded-xl bg-amber-100 flex items-center justify-center text-amber-600 flex-shrink-0">
               <ClipboardList className="w-6 h-6" />
             </div>
@@ -194,7 +194,7 @@ export default function MonitoringPenugasanClient({ user, satkerList, initialDat
           </div>
 
           {/* Belum Melapor */}
-          <div className="bg-white dark:bg-zinc-900 rounded-xl p-5 border border-slate-200 dark:border-zinc-700 shadow-sm flex items-center gap-4">
+          <div className="bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50 rounded-xl p-5 border border-slate-200 dark:border-zinc-700 shadow-sm flex items-center gap-4">
             <div className="w-12 h-12 rounded-xl bg-red-100 flex items-center justify-center text-red-600 flex-shrink-0">
               <AlertTriangle className="w-6 h-6" />
             </div>
@@ -218,7 +218,7 @@ export default function MonitoringPenugasanClient({ user, satkerList, initialDat
             <select 
               value={bulan}
               onChange={(e) => setBulan(parseInt(e.target.value))}
-              className="w-full bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 rounded-lg pl-10 pr-10 py-2.5 text-sm font-semibold text-slate-700 dark:text-zinc-200 appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50 border border-slate-200 dark:border-zinc-700 rounded-lg pl-10 pr-10 py-2.5 text-sm font-semibold text-slate-700 dark:text-zinc-200 appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               {Array.from({ length: 12 }).map((_, i) => (
                 <option key={i+1} value={i+1}>{new Date(0, i).toLocaleString('id-ID', { month: 'long' })}</option>
@@ -235,7 +235,7 @@ export default function MonitoringPenugasanClient({ user, satkerList, initialDat
             <select 
               value={tahun}
               onChange={(e) => setTahun(parseInt(e.target.value))}
-              className="w-full bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 rounded-lg pl-10 pr-10 py-2.5 text-sm font-semibold text-slate-700 dark:text-zinc-200 appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50 border border-slate-200 dark:border-zinc-700 rounded-lg pl-10 pr-10 py-2.5 text-sm font-semibold text-slate-700 dark:text-zinc-200 appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               {[2024, 2025, 2026, 2027].map(y => (
                 <option key={y} value={y}>{y}</option>
@@ -253,7 +253,7 @@ export default function MonitoringPenugasanClient({ user, satkerList, initialDat
               <select 
                 value={satkerFilter}
                 onChange={(e) => setSatkerFilter(e.target.value)}
-                className="w-full bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 rounded-lg pl-10 pr-10 py-2.5 text-sm font-semibold text-slate-700 dark:text-zinc-200 appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50 border border-slate-200 dark:border-zinc-700 rounded-lg pl-10 pr-10 py-2.5 text-sm font-semibold text-slate-700 dark:text-zinc-200 appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="">Semua Satker</option>
                 {satkerList?.map((s: { id: string, name: string }) => (
@@ -271,7 +271,7 @@ export default function MonitoringPenugasanClient({ user, satkerList, initialDat
             <select 
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="w-full bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 rounded-lg px-4 py-2.5 text-sm font-semibold text-slate-700 dark:text-zinc-200 appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50 border border-slate-200 dark:border-zinc-700 rounded-lg px-4 py-2.5 text-sm font-semibold text-slate-700 dark:text-zinc-200 appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="ALL">Semua Status</option>
               <option value="Sangat Baik">Sangat Baik</option>
@@ -294,7 +294,7 @@ export default function MonitoringPenugasanClient({ user, satkerList, initialDat
           </button>
           <button 
             onClick={handleResetFilter}
-            className="bg-white dark:bg-zinc-900 hover:bg-slate-50 dark:bg-zinc-800/80 border border-slate-200 dark:border-zinc-700 text-slate-700 dark:text-zinc-200 px-5 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 transition-colors"
+            className="bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50 hover:bg-slate-50 dark:bg-zinc-800/80 border border-slate-200 dark:border-zinc-700 text-slate-700 dark:text-zinc-200 px-5 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 transition-colors"
           >
             <RefreshCw className="w-4 h-4" />
             Reset
@@ -307,7 +307,7 @@ export default function MonitoringPenugasanClient({ user, satkerList, initialDat
         
         {/* Left Column - Data Monitoring */}
         <div className={`${isKepalaSatker ? '' : 'lg:col-span-2'} space-y-4`}>
-          <div className="bg-white dark:bg-zinc-900 rounded-xl border border-slate-200 dark:border-zinc-700 shadow-sm overflow-hidden flex flex-col h-full">
+          <div className="bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50 rounded-xl border border-slate-200 dark:border-zinc-700 shadow-sm overflow-hidden flex flex-col h-full">
             <div className="p-5 border-b border-slate-200 dark:border-zinc-700">
               <h2 className="text-lg font-bold text-slate-800 dark:text-zinc-100">Data Monitoring Penugasan</h2>
             </div>
@@ -396,7 +396,7 @@ export default function MonitoringPenugasanClient({ user, satkerList, initialDat
         {!isKepalaSatker && (
           <div className="space-y-6">
             {/* Rekap Laporan Table */}
-            <div className="bg-white dark:bg-zinc-900 rounded-xl border border-slate-200 dark:border-zinc-700 shadow-sm overflow-hidden">
+            <div className="bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50 rounded-xl border border-slate-200 dark:border-zinc-700 shadow-sm overflow-hidden">
             <div className="p-4 border-b border-slate-200 dark:border-zinc-700">
               <h3 className="font-bold text-slate-800 dark:text-zinc-100">Rekap Laporan Per Satker ({new Date(0, bulan - 1).toLocaleString('id-ID', { month: 'long' })} {tahun})</h3>
             </div>
@@ -445,7 +445,7 @@ export default function MonitoringPenugasanClient({ user, satkerList, initialDat
           </div>
 
           {/* Persentase Keaktifan Chart */}
-          <div className="bg-white dark:bg-zinc-900 rounded-xl border border-slate-200 dark:border-zinc-700 shadow-sm p-5">
+          <div className="bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50 rounded-xl border border-slate-200 dark:border-zinc-700 shadow-sm p-5">
             <h3 className="font-bold text-slate-800 dark:text-zinc-100 mb-6">Persentase Keaktifan (Semua Satker)</h3>
             
             <div className="flex flex-col xl:flex-row items-center gap-6">

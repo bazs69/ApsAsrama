@@ -43,7 +43,7 @@ export default function RekapKeaktifan({ data, onOpenDetail }: {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 print:block">
         
         {/* Top 10 Teraktif */}
-        <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-5 shadow-sm print:mb-6">
+        <div className="bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-5 shadow-sm print:mb-6">
           <div className="flex items-center gap-2 mb-4">
             <Award className="w-5 h-5 text-amber-500" />
             <h3 className="font-bold text-zinc-900 dark:text-white text-lg">Top 10 Santri Teraktif</h3>
@@ -70,7 +70,7 @@ export default function RekapKeaktifan({ data, onOpenDetail }: {
         </div>
 
         {/* Top 10 Perlu Pembinaan */}
-        <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-5 shadow-sm">
+        <div className="bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-5 shadow-sm">
           <div className="flex items-center gap-2 mb-4">
             <AlertTriangle className="w-5 h-5 text-red-500" />
             <h3 className="font-bold text-zinc-900 dark:text-white text-lg">Perlu Pembinaan (Skor Terendah)</h3>
@@ -99,7 +99,7 @@ export default function RekapKeaktifan({ data, onOpenDetail }: {
       </div>
 
       {/* Full Table */}
-      <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-sm overflow-hidden mt-8">
+      <div className="bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-sm overflow-hidden mt-8">
         <div className="p-5 border-b border-zinc-200 dark:border-zinc-800 flex flex-col md:flex-row justify-between items-center gap-4">
           <h2 className="font-bold text-zinc-900 dark:text-white text-lg">Rekapitulasi Keaktifan Keseluruhan</h2>
           

@@ -73,7 +73,7 @@ export default function AnnouncementPanel({ announcements, viewAllHref = "/dashb
           return (
             <article
               key={ann.id}
-              className={`relative overflow-hidden rounded-xl border p-5 transition-all duration-200 hover:-translate-y-1 hover:shadow-md bg-white dark:bg-zinc-900/60 group ${style.border} ${ann.priority === 'urgent' ? 'shadow-[0_4px_20px_rgba(239,68,68,0.08)] dark:shadow-[0_4px_20px_rgba(239,68,68,0.05)]' : 'shadow-sm'}`}
+              className={`relative overflow-hidden rounded-xl border p-5 transition-all duration-200 hover:-translate-y-1 hover:shadow-md bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50/60 group ${style.border} ${ann.priority === 'urgent' ? 'shadow-[0_4px_20px_rgba(239,68,68,0.08)] dark:shadow-[0_4px_20px_rgba(239,68,68,0.05)]' : 'shadow-sm'}`}
               aria-label={`Pengumuman: ${ann.title}`}
             >
               {/* Decorative side accent for Urgent/Important */}

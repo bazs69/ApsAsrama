@@ -99,7 +99,7 @@ export default function MasterDataClient({
         <div className="flex flex-wrap items-center gap-3">
           <button
             onClick={openAddModal}
-            className="bg-zinc-900 hover:bg-zinc-800 dark:bg-white dark:bg-zinc-900 dark:hover:bg-zinc-200 text-white dark:text-zinc-900 rounded-xl py-2.5 px-5 font-semibold shadow-md flex items-center justify-center space-x-2 transition-all text-sm cursor-pointer"
+            className="bg-[#032e15] hover:bg-[#0a5c2f] dark:bg-primary-600 dark:hover:bg-primary-500 text-white rounded-xl py-2.5 px-4 font-semibold shadow-md flex items-center justify-center space-x-2 transition-all text-sm"
           >
             <Plus className="w-4 h-4" />
             <span className="hidden sm:inline">Tambah Data</span>
@@ -107,7 +107,7 @@ export default function MasterDataClient({
         </div>
       </div>
 
-      <div className="flex flex-col sm:flex-row gap-4 items-center justify-between bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-3 shadow-sm">
+      <div className="flex flex-col sm:flex-row gap-4 items-center justify-between bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50 border border-zinc-200 dark:border-zinc-800 rounded-xl p-3 shadow-sm">
         <div className="relative flex-1 max-w-md">
           <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-zinc-450 dark:text-zinc-500" />
           <input
@@ -210,7 +210,7 @@ export default function MasterDataClient({
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-5 py-2.5 rounded-xl font-semibold text-sm text-zinc-600 dark:text-zinc-300 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
+                  className="px-5 py-2.5 rounded-xl font-semibold text-sm text-zinc-600 dark:text-zinc-300 bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50 border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
                 >
                   Batal
                 </button>

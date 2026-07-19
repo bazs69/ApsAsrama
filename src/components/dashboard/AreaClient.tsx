@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useTransition } from "react"
+import { useRouter } from "next/navigation"
 import { Plus, Edit2, Trash2, Map, MapPin, DoorOpen, ChevronDown, ChevronRight, AlertCircle, Loader2, Users } from "lucide-react"
 import { createWilayah, updateWilayah, deleteWilayah, createDaerah, updateDaerah, deleteDaerah, createAreaRoom, updateAreaRoom, deleteAreaRoom } from "@/app/actions/area"
 import { RoomStatus } from "@prisma/client"
@@ -11,8 +12,9 @@ type Daerah = { id: string, name: string, wilayahId: string | null, rooms: Room[
 type Wilayah = { id: string, name: string, daerahs: Daerah[] }
 
 export default function AreaClient({ initialHierarchy }: { initialHierarchy: Wilayah[] }) {
+  const router = useRouter()
   const [hierarchy] = useState<Wilayah[]>(initialHierarchy)
-  
+
   // Expanded states
   const [expandedWilayahs, setExpandedWilayahs] = useState<Set<string>>(new Set())
   const [expandedDaerahs, setExpandedDaerahs] = useState<Set<string>>(new Set())
@@ -121,16 +123,16 @@ export default function AreaClient({ initialHierarchy }: { initialHierarchy: Wil
       if (modalType === "wilayah") {
         const res = modalMode === "create" ? await createWilayah(name) : await updateWilayah(id, name)
         if (res.error) setError(res.error)
-        else window.location.reload()
+        else router.refresh()
       } else if (modalType === "daerah") {
         const res = modalMode === "create" ? await createDaerah(name, wilayahId) : await updateDaerah(id, name, wilayahId)
         if (res.error) setError(res.error)
-        else window.location.reload()
+        else router.refresh()
       } else if (modalType === "room") {
         const data = { number: roomNumber, capacity: roomCapacity, floor: roomFloor, status: roomStatus, daerahId }
         const res = modalMode === "create" ? await createAreaRoom(data) : await updateAreaRoom(id, data)
         if (res.error) setError(res.error)
-        else window.location.reload()
+        else router.refresh()
       }
     })
   }
@@ -139,26 +141,26 @@ export default function AreaClient({ initialHierarchy }: { initialHierarchy: Wil
     if (!confirm("Hapus Wilayah ini? Semua data di dalamnya harus kosong terlebih dahulu.")) return
     const res = await deleteWilayah(id)
     if (res.error) alert(res.error)
-    else window.location.reload()
+    else router.refresh()
   }
 
   const handleDeleteDaerah = async (id: string) => {
     if (!confirm("Hapus Daerah ini? Semua kamar di dalamnya harus kosong terlebih dahulu.")) return
     const res = await deleteDaerah(id)
     if (res.error) alert(res.error)
-    else window.location.reload()
+    else router.refresh()
   }
 
   const handleDeleteRoom = async (id: string) => {
     if (!confirm("Hapus Kamar ini? Kamar harus kosong dari penghuni.")) return
     const res = await deleteAreaRoom(id)
     if (res.error) alert(res.error)
-    else window.location.reload()
+    else router.refresh()
   }
 
   return (
     <div className="space-y-6">
-      
+
       <div className="flex justify-end">
         <button
           onClick={openCreateWilayah}
@@ -180,8 +182,8 @@ export default function AreaClient({ initialHierarchy }: { initialHierarchy: Wil
             return (
               <div key={w.id} className="glass rounded-2xl border border-zinc-200/60 dark:border-zinc-800 overflow-hidden shadow-sm hover:shadow-md transition-all">
                 {/* Wilayah Header */}
-                <div 
-                  className="flex items-center justify-between p-4 bg-white dark:bg-zinc-900/50 dark:bg-zinc-900/50 cursor-pointer"
+                <div
+                  className="flex items-center justify-between p-4 bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50/50 dark:bg-zinc-900/50 cursor-pointer"
                 >
                   <div className="flex items-center space-x-3 flex-1" onClick={() => toggleWilayah(w.id)}>
                     <div className={`p-2 rounded-xl transition-colors ${isWExpanded ? 'bg-primary-500/10 text-primary-600 dark:text-primary-400' : 'bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400'}`}>
@@ -195,7 +197,7 @@ export default function AreaClient({ initialHierarchy }: { initialHierarchy: Wil
                       <p className="text-xs text-zinc-500">{w.daerahs.length} Daerah terdaftar</p>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center space-x-2">
                     <button onClick={(e) => { e.stopPropagation(); openCreateDaerah(w.id) }} className="p-2 text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-500/10 rounded-lg tooltip-trigger" title="Tambah Daerah">
                       <Plus className="w-4 h-4" />
@@ -242,7 +244,7 @@ export default function AreaClient({ initialHierarchy }: { initialHierarchy: Wil
 
                             {/* Rooms List */}
                             {isDExpanded && (
-                              <div className="p-3 border-t border-zinc-200/50 dark:border-zinc-700/50 bg-white dark:bg-zinc-900/40">
+                              <div className="p-3 border-t border-zinc-200/50 dark:border-zinc-700/50 bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50/40">
                                 {d.rooms.length === 0 ? (
                                   <p className="text-xs text-zinc-400 italic pl-4">Belum ada kamar.</p>
                                 ) : (
@@ -250,30 +252,31 @@ export default function AreaClient({ initialHierarchy }: { initialHierarchy: Wil
                                     {d.rooms.map((r) => {
                                       const isFull = r.residents.length >= r.capacity;
                                       return (
-                                      <div key={r.id} className="relative group bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg p-3 shadow-sm hover:border-primary-400 dark:hover:border-primary-500/50 transition-colors">
-                                        <div className="flex justify-between items-start mb-2">
-                                          <div className="flex items-center space-x-2">
-                                            <DoorOpen className="w-4 h-4 text-zinc-400" />
-                                            <span className="font-bold text-sm text-zinc-800 dark:text-zinc-100">{r.number}</span>
+                                        <div key={r.id} className="relative group bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg p-3 shadow-sm hover:border-primary-400 dark:hover:border-primary-500/50 transition-colors">
+                                          <div className="flex justify-between items-start mb-2">
+                                            <div className="flex items-center space-x-2">
+                                              <DoorOpen className="w-4 h-4 text-zinc-400" />
+                                              <span className="font-bold text-sm text-zinc-800 dark:text-zinc-100">{r.number}</span>
+                                            </div>
+                                            <div className="flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                              <button onClick={() => openEditRoom(r, d.id)} className="p-1 text-zinc-400 hover:text-primary-600">
+                                                <Edit2 className="w-3 h-3" />
+                                              </button>
+                                              <button onClick={() => handleDeleteRoom(r.id)} className="p-1 text-zinc-400 hover:text-red-500">
+                                                <Trash2 className="w-3 h-3" />
+                                              </button>
+                                            </div>
                                           </div>
-                                          <div className="flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <button onClick={() => openEditRoom(r, d.id)} className="p-1 text-zinc-400 hover:text-primary-600">
-                                              <Edit2 className="w-3 h-3" />
-                                            </button>
-                                            <button onClick={() => handleDeleteRoom(r.id)} className="p-1 text-zinc-400 hover:text-red-500">
-                                              <Trash2 className="w-3 h-3" />
-                                            </button>
+                                          <div className="flex items-center justify-between text-xs">
+                                            <div className="flex items-center space-x-1 text-zinc-500">
+                                              <Users className="w-3 h-3" />
+                                              <span className={isFull ? 'text-red-500 font-semibold' : ''}>{r.residents.length}/{r.capacity}</span>
+                                            </div>
+                                            <span className="text-zinc-400">Lt. {r.floor}</span>
                                           </div>
                                         </div>
-                                        <div className="flex items-center justify-between text-xs">
-                                          <div className="flex items-center space-x-1 text-zinc-500">
-                                            <Users className="w-3 h-3" />
-                                            <span className={isFull ? 'text-red-500 font-semibold' : ''}>{r.residents.length}/{r.capacity}</span>
-                                          </div>
-                                          <span className="text-zinc-400">Lt. {r.floor}</span>
-                                        </div>
-                                      </div>
-                                    )})}
+                                      )
+                                    })}
                                   </div>
                                 )}
                               </div>

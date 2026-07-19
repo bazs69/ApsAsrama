@@ -384,7 +384,7 @@ export default function AbsensiKegiatanClient({
           <p className="text-zinc-550 dark:text-zinc-400 text-sm">Kelola daftar kegiatan dan catat kehadiran santri secara massal.</p>
         </div>
         <div className="flex items-center gap-3">
-          <div className="flex items-center bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-1 shadow-sm">
+          <div className="flex items-center bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50 border border-zinc-200 dark:border-zinc-800 rounded-xl p-1 shadow-sm">
             <button
               onClick={handleExportDetail}
               className="p-2 text-zinc-500 hover:text-emerald-600 dark:text-zinc-400 dark:hover:text-emerald-400 hover:bg-emerald-50 dark:bg-emerald-900/20 dark:hover:bg-emerald-50 dark:bg-emerald-900/200/10 rounded-lg transition-all flex items-center justify-center"
@@ -403,7 +403,7 @@ export default function AbsensiKegiatanClient({
           </div>
           <button
             onClick={openCreateModal}
-            className="bg-zinc-900 hover:bg-zinc-800 dark:bg-white dark:bg-zinc-900 dark:hover:bg-zinc-200 text-white dark:text-zinc-900 rounded-xl py-2.5 px-4 font-semibold shadow-md flex items-center justify-center space-x-2 transition-all text-sm"
+            className="bg-[#032e15] hover:bg-[#0a5c2f] dark:bg-primary-600 dark:hover:bg-primary-500 text-white rounded-xl py-2.5 px-4 font-semibold shadow-md flex items-center justify-center space-x-2 transition-all text-sm"
           >
             <Plus className="w-4 h-4" />
             <span>Kegiatan Baru</span>
@@ -421,7 +421,7 @@ export default function AbsensiKegiatanClient({
           <select
             value={filterNama}
             onChange={(e) => setFilterNama(e.target.value)}
-            className="appearance-none bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl py-2.5 pl-10 pr-10 text-sm text-zinc-700 dark:text-zinc-300 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 shadow-sm cursor-pointer transition-all hover:border-zinc-300 dark:hover:border-zinc-700 min-w-[160px]"
+            className="appearance-none bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50 border border-zinc-200 dark:border-zinc-800 rounded-xl py-2.5 pl-10 pr-10 text-sm text-zinc-700 dark:text-zinc-300 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 shadow-sm cursor-pointer transition-all hover:border-zinc-300 dark:hover:border-zinc-700 min-w-[160px]"
           >
             <option value="">Semua KBM</option>
             {uniqueNamas.map(n => (
@@ -439,12 +439,12 @@ export default function AbsensiKegiatanClient({
             placeholder="Cari kata kunci..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl py-2.5 pl-10 pr-4 text-sm text-zinc-700 dark:text-zinc-300 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 shadow-sm transition-all hover:border-zinc-300 dark:hover:border-zinc-700"
+            className="w-full bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50 border border-zinc-200 dark:border-zinc-800 rounded-xl py-2.5 pl-10 pr-4 text-sm text-zinc-700 dark:text-zinc-300 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 shadow-sm transition-all hover:border-zinc-300 dark:hover:border-zinc-700"
           />
         </div>
 
         {/* Date Filters */}
-        <div className="flex items-center bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-1 shadow-sm transition-all hover:border-zinc-300 dark:hover:border-zinc-700">
+        <div className="flex items-center bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50 border border-zinc-200 dark:border-zinc-800 rounded-xl p-1 shadow-sm transition-all hover:border-zinc-300 dark:hover:border-zinc-700">
           <div className="pl-3 text-indigo-500 bg-indigo-50 dark:bg-indigo-500/10 p-1.5 rounded-lg ml-1 mr-2">
             <Calendar className="w-4 h-4" />
           </div>
@@ -607,7 +607,7 @@ export default function AbsensiKegiatanClient({
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setDetailModalOpen(false)} />
           <div className="w-full max-w-3xl glass rounded-2xl border border-zinc-200 dark:border-zinc-800 overflow-hidden relative z-10 flex flex-col max-h-[90vh]">
-            <div className="flex items-center justify-between p-6 border-b border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 dark:bg-zinc-900/50">
+            <div className="flex items-center justify-between p-6 border-b border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50/50 dark:bg-zinc-900/50">
               <div>
                 <h2 className="text-xl font-bold text-zinc-900 dark:text-white">{selectedKegiatanNama}</h2>
                 <p className="text-sm text-zinc-500">Klik status kehadiran untuk mengubahnya secara cepat.</p>
@@ -625,7 +625,7 @@ export default function AbsensiKegiatanClient({
                   placeholder="Cari nama santri..."
                   value={detailSearch}
                   onChange={(e) => setDetailSearch(e.target.value)}
-                  className="w-full bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl py-2 pl-9 pr-4 text-zinc-850 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500/50 text-sm shadow-sm"
+                  className="w-full bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50/50 border border-zinc-200 dark:border-zinc-800 rounded-xl py-2 pl-9 pr-4 text-zinc-850 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500/50 text-sm shadow-sm"
                 />
               </div>
             </div>
@@ -644,7 +644,7 @@ export default function AbsensiKegiatanClient({
                   {filteredAbsensi.map(a => (
                     <div 
                       key={a.id} 
-                      className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-4 flex items-center justify-between hover:border-primary-500/30 transition-colors shadow-sm"
+                      className="bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50 border border-zinc-200 dark:border-zinc-800 rounded-xl p-4 flex items-center justify-between hover:border-primary-500/30 transition-colors shadow-sm"
                     >
                       <span className="font-semibold text-zinc-800 dark:text-zinc-200 text-sm truncate pr-4">{a.resident.name}</span>
                       <button 
@@ -660,10 +660,10 @@ export default function AbsensiKegiatanClient({
               )}
             </div>
             
-            <div className="p-4 border-t border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 dark:bg-zinc-900/50 flex justify-end">
+            <div className="p-4 border-t border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50/50 dark:bg-zinc-900/50 flex justify-end">
               <button 
                 onClick={() => setDetailModalOpen(false)}
-                className="px-6 py-2 bg-zinc-900 dark:bg-white dark:bg-zinc-900 text-white dark:text-zinc-900 font-bold rounded-xl hover:opacity-90 transition-opacity"
+                className="px-6 py-2 bg-zinc-900 dark:bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50 text-white dark:text-zinc-900 font-bold rounded-xl hover:opacity-90 transition-opacity"
               >
                 Selesai
               </button>

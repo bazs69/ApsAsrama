@@ -21,7 +21,7 @@ export default function LoadingLaporan() {
       </div>
 
       {/* Filter Skeleton */}
-      <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-5 shadow-sm">
+      <div className="bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-5 shadow-sm">
         <div className="h-4 w-32 bg-zinc-200 dark:bg-zinc-800 rounded-lg mb-4"></div>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           {[1, 2, 3, 4].map(i => (
@@ -36,7 +36,7 @@ export default function LoadingLaporan() {
       {/* Global Stat Cards Skeleton */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {[1, 2, 3, 4].map(i => (
-          <div key={i} className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-5 shadow-sm flex items-center gap-4">
+          <div key={i} className="bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-5 shadow-sm flex items-center gap-4">
             <div className="w-12 h-12 rounded-xl bg-zinc-200 dark:bg-zinc-800"></div>
             <div>
               <div className="h-3 w-24 bg-zinc-200 dark:bg-zinc-800 rounded-md mb-2"></div>
@@ -49,7 +49,7 @@ export default function LoadingLaporan() {
       {/* Content Skeleton */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {[1, 2].map(i => (
-          <div key={i} className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-5 shadow-sm h-80">
+          <div key={i} className="bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-5 shadow-sm h-80">
             <div className="h-5 w-48 bg-zinc-200 dark:bg-zinc-800 rounded-lg mb-6"></div>
             <div className="h-56 w-full bg-zinc-100 dark:bg-zinc-800/50 rounded-xl"></div>
           </div>

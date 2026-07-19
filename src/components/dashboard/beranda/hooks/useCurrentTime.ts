@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react"
-import { getGreetingByTime, formatHijriDate, formatWIBTime, formatGregorianDate } from "@/lib/utils/dateHelpers"
+import { getGreetingByTime, formatHijriDate, formatWIBTime, formatTimeOnly, formatGregorianDate } from "@/lib/utils/dateHelpers"
 
 export function useCurrentTime() {
   const [liveTime, setLiveTime] = useState("")
+  const [liveTimeOnly, setLiveTimeOnly] = useState("")
   const [liveHijri, setLiveHijri] = useState("")
   const [liveGreeting, setLiveGreeting] = useState("")
   const [liveGregorian, setLiveGregorian] = useState("")
@@ -11,6 +12,7 @@ export function useCurrentTime() {
     const updateTime = () => {
       const now = new Date()
       setLiveTime(formatWIBTime(now))
+      setLiveTimeOnly(formatTimeOnly(now))
       setLiveHijri(formatHijriDate(now))
       setLiveGreeting(getGreetingByTime(now))
       setLiveGregorian(formatGregorianDate(now))
@@ -23,6 +25,7 @@ export function useCurrentTime() {
 
   return {
     liveTime,
+    liveTimeOnly,
     liveHijri,
     liveGreeting,
     liveGregorian

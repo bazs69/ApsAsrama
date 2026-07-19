@@ -11,9 +11,9 @@ export const metadata = {
 export default async function RoleUserPage() {
   const session = await getServerSession(authOptions)
   if (!session?.user) redirect("/login")
-  
+
   // Super admin bypass or check permission
-  if (session.user.role !== "SUPER_ADMIN" && !session.user.permissions.includes("Role.View")) {
+  if (session.user.role !== "SUPER_ADMIN" && !session.user.permissions.includes("role.view")) {
     redirect("/dashboard/forbidden")
   }
 

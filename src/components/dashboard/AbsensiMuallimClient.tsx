@@ -213,7 +213,7 @@ export default function AbsensiMuallimClient({
           <p className="text-zinc-550 dark:text-zinc-400 text-sm">Catat kehadiran muallim pada kegiatan belajar mengajar.</p>
         </div>
         <div className="flex items-center gap-3">
-          <div className="flex items-center bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-1 shadow-sm">
+          <div className="flex items-center bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50 border border-zinc-200 dark:border-zinc-800 rounded-xl p-1 shadow-sm">
             <button
               onClick={exportToCSV}
               className="p-2 text-zinc-500 hover:text-emerald-600 dark:text-zinc-400 dark:hover:text-emerald-400 hover:bg-emerald-50 dark:bg-emerald-900/20 dark:hover:bg-emerald-50 dark:bg-emerald-900/200/10 rounded-lg transition-all flex items-center justify-center tooltip-trigger relative"
@@ -232,7 +232,7 @@ export default function AbsensiMuallimClient({
           </div>
           <button
             onClick={openAddModal}
-            className="bg-zinc-900 hover:bg-zinc-800 dark:bg-white dark:bg-zinc-900 dark:hover:bg-zinc-200 text-white dark:text-zinc-900 rounded-xl py-2.5 px-4 font-semibold shadow-md flex items-center justify-center space-x-2 transition-all text-sm"
+            className="bg-[#032e15] hover:bg-[#0a5c2f] dark:bg-primary-600 dark:hover:bg-primary-500 text-white rounded-xl py-2.5 px-4 font-semibold shadow-md flex items-center justify-center space-x-2 transition-all text-sm"
           >
             <Plus className="w-4 h-4" />
             <span>Isi Absensi</span>
@@ -248,7 +248,7 @@ export default function AbsensiMuallimClient({
           placeholder="Cari nama muallim, KBM, atau hari..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl py-3 pl-10 pr-4 text-zinc-850 dark:text-white placeholder-zinc-450 dark:placeholder-zinc-550 focus:outline-none focus:ring-2 focus:ring-primary-500/50 transition-all text-sm shadow-sm"
+          className="w-full bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50/50 border border-zinc-200 dark:border-zinc-800 rounded-xl py-3 pl-10 pr-4 text-zinc-850 dark:text-white placeholder-zinc-450 dark:placeholder-zinc-550 focus:outline-none focus:ring-2 focus:ring-primary-500/50 transition-all text-sm shadow-sm"
         />
       </div>
 

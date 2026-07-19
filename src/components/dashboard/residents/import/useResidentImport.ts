@@ -1,10 +1,12 @@
 import { useRef, useState, useTransition } from "react"
+import { useRouter } from "next/navigation"
 import { bulkCreateResidents } from "@/app/actions/residents"
 import * as XLSX from "xlsx"
 import { formatImportedResidentRows, parseResidentImportWorksheet } from "./residentImportMapper"
 import { validateResidentImportRows } from "./residentImportValidation"
 
 export function useResidentImport() {
+  const router = useRouter()
   const [importing, setImporting] = useState(false)
   const [error, setError] = useState("")
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -42,7 +44,7 @@ export function useResidentImport() {
             setError(`Tidak ada santri yang berhasil diimpor. ${res.skippedCount} baris dilewati karena NIM/NIUP duplikat atau data tidak valid.`)
           } else {
             alert(`Berhasil impor ${res.successCount} santri. ${res.skippedCount} baris dilewati karena NIM/NIUP duplikat atau data tidak valid. Halaman akan dimuat ulang.`)
-            window.location.reload()
+            router.refresh()
           }
           setImporting(false)
         })

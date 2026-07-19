@@ -102,7 +102,7 @@ function RoomTransferModal({
   return (
     <div className="fixed inset-0 z-[70] flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative z-10 bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl border border-zinc-200 dark:border-zinc-800 w-full max-w-lg overflow-hidden animate-in zoom-in-95 duration-200">
+      <div className="relative z-10 bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50 rounded-2xl shadow-2xl border border-zinc-200 dark:border-zinc-800 w-full max-w-lg overflow-hidden animate-in zoom-in-95 duration-200">
 
         {/* Header */}
         <div className="p-5 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between bg-amber-50 dark:bg-amber-900/10">
@@ -174,7 +174,7 @@ function RoomTransferModal({
 
         {/* Footer */}
         <div className="p-4 border-t border-zinc-200 dark:border-zinc-800 flex justify-end gap-3 bg-zinc-50 dark:bg-zinc-900/50">
-          <button onClick={onClose} className="px-4 py-2 text-sm font-semibold text-zinc-600 bg-white dark:bg-zinc-900 border border-zinc-300 rounded-xl hover:bg-zinc-50 dark:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-300">
+          <button onClick={onClose} className="px-4 py-2 text-sm font-semibold text-zinc-600 bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50 border border-zinc-300 rounded-xl hover:bg-zinc-50 dark:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-300">
             Batal
           </button>
           <button
@@ -231,17 +231,28 @@ function printResidentCard(resident: Resident) {
       position: relative;
     }
     .header { 
-      background: linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%); 
+      background: linear-gradient(135deg, #064e3b 0%, #10b981 100%); 
       padding: 2.5mm; 
       color: white; 
-      text-align: center;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
       height: 9mm;
+    }
+    .header-logo {
+      height: 6mm;
+      width: 6mm;
+      object-fit: contain;
+    }
+    .header-text {
+      flex: 1;
+      text-align: center;
       display: flex;
       flex-direction: column;
       justify-content: center;
     }
-    .header h1 { font-size: 8px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
-    .header p { font-size: 5px; opacity: 0.9; margin-top: 0.5mm; }
+    .header h1 { font-size: 8px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin: 0; }
+    .header p { font-size: 5px; opacity: 0.9; margin: 0; margin-top: 0.5mm; }
     .body { 
       padding: 3mm; 
       display: flex; 
@@ -310,8 +321,12 @@ function printResidentCard(resident: Resident) {
   <div class="card-wrapper">
     <div class="card" id="santri-card">
       <div class="header">
-        <h1>KARTU TANDA SANTRI</h1>
-        <p>SISTEM INFORMASI ASRAMA</p>
+        <img src="${window.location.origin}/logo.png" alt="Logo" class="header-logo" />
+        <div class="header-text">
+          <h1>KARTU TANDA SANTRI</h1>
+          <p>SISTEM INFORMASI ASRAMA</p>
+        </div>
+        <div style="width: 6mm;"></div>
       </div>
       <div class="body">
         <div class="photo-container">
@@ -481,7 +496,7 @@ export default function ResidentDetailModal({
       {/* Main Modal */}
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
         <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
-        <div className="w-full max-w-6xl bg-white dark:bg-zinc-900 rounded-xl overflow-hidden relative z-10 flex flex-col shadow-2xl max-h-[85vh]">
+        <div className="w-full max-w-6xl bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50 rounded-xl overflow-hidden relative z-10 flex flex-col shadow-2xl max-h-[85vh]">
 
           {/* Close */}
           <button onClick={onClose} className="absolute top-4 right-4 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 p-1.5 rounded-full z-20 transition-colors">
@@ -545,7 +560,7 @@ export default function ResidentDetailModal({
           </div>
 
           {/* Tabs */}
-          <div className="px-6 border-b border-zinc-200 dark:border-zinc-800 flex overflow-x-auto gap-4 bg-white dark:bg-zinc-900">
+          <div className="px-6 border-b border-zinc-200 dark:border-zinc-800 flex overflow-x-auto gap-4 bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50">
             {tabs.map(tab => (
               <button key={tab} onClick={() => setActiveTab(tab)}
                 className={`px - 2 py - 4 text - sm font - semibold transition - colors relative whitespace - nowrap ${activeTab === tab ? "text-blue-600 dark:text-blue-400" : "text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300"} `}
@@ -557,7 +572,7 @@ export default function ResidentDetailModal({
           </div>
 
           {/* Tab Content */}
-          <div className="p-6 md:p-8 overflow-y-auto flex-1 bg-white dark:bg-zinc-900">
+          <div className="p-6 md:p-8 overflow-y-auto flex-1 bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50">
 
             {/* BIODATA */}
             {activeTab === "Biodata" && (
@@ -587,7 +602,7 @@ export default function ResidentDetailModal({
                   </div>
                 </div>
                 <div className="flex justify-center items-center">
-                  <div className="w-36 h-36 p-2 bg-white dark:bg-zinc-900 border border-zinc-200 rounded-xl shadow-sm">
+                  <div className="w-36 h-36 p-2 bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50 border border-zinc-200 rounded-xl shadow-sm">
                     <Image
                       src={`https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(identityValue)}&color=1e293b`}
                       alt="QR Code" width={160} height={160} unoptimized className="w-full h-full object-contain"
@@ -798,7 +813,7 @@ export default function ResidentDetailModal({
             <button
               type="button"
               onClick={() => printResidentCard(r)}
-              className="px-4 py-2.5 text-sm font-semibold text-zinc-700 bg-white dark:bg-zinc-900 border border-zinc-300 rounded-xl hover:bg-zinc-50 dark:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-700 transition-colors flex items-center gap-2"
+              className="px-4 py-2.5 text-sm font-semibold text-zinc-700 bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50 border border-zinc-300 rounded-xl hover:bg-zinc-50 dark:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-700 transition-colors flex items-center gap-2"
             >
               <Printer className="w-4 h-4" />
               <span className="hidden sm:inline">Cetak</span>

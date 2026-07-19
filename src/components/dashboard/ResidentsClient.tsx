@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useTransition } from "react"
+import { useRouter } from "next/navigation"
 import { bulkDeleteResidents, bulkMoveResidents } from "@/app/actions/residents"
 import { Resident, WilayahNode, RoomStatus } from "./residents/types"
 import { X, AlertCircle, Loader2, DoorOpen } from "lucide-react"
@@ -34,6 +35,7 @@ export default function ResidentsClient({
   permissions?: string[]
   isSatkerView?: boolean
 }) {
+  const router = useRouter()
   const rooms = areaHierarchy.flatMap(w => w.daerahs.flatMap(d => d.rooms))
   const [residents, setResidents] = useState<Resident[]>(initialResidents)
   const { search, setSearch } = useResidentSearch()
@@ -65,6 +67,7 @@ export default function ResidentsClient({
     toggleSelectionMode
   } = useResidentSelection()
 
+  const [viewMode, setViewMode] = useState<"list" | "grid">("list")
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isMoveModalOpen, setIsMoveModalOpen] = useState(false)
   const [editingResident, setEditingResident] = useState<Resident | null>(null)
@@ -105,7 +108,7 @@ export default function ResidentsClient({
         setIsMoveModalOpen(false)
         clearSelection()
         alert("Berhasil memindahkan santri.")
-        window.location.reload()
+        router.refresh()
       }
     })
   }
@@ -180,6 +183,8 @@ export default function ResidentsClient({
           resetFilters()
           setSearch("")
         }}
+        viewMode={viewMode}
+        onViewModeChange={setViewMode}
       />
 
       {/* Advanced Filters */}
@@ -208,6 +213,7 @@ export default function ResidentsClient({
         handleSelectAll={handleSelectAll}
         handleSelectToggle={handleSelectToggle}
         setViewingResident={setViewingResident}
+        viewMode={viewMode}
       />
 
       {/* Modal Pindah Asrama/Kamar */}
@@ -264,7 +270,7 @@ export default function ResidentsClient({
                 <button
                   type="button"
                   onClick={() => setIsMoveModalOpen(false)}
-                  className="px-5 py-2.5 rounded-xl font-semibold text-sm text-zinc-600 dark:text-zinc-300 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
+                  className="px-5 py-2.5 rounded-xl font-semibold text-sm text-zinc-600 dark:text-zinc-300 bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50 border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
                 >
                   Batal
                 </button>
@@ -292,7 +298,7 @@ export default function ResidentsClient({
             <div className="max-w-4xl mx-auto relative">
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="absolute -top-8 right-0 text-white/70 hover:text-white p-1.5 hover:bg-white dark:bg-zinc-900/10 rounded-full transition-colors z-10"
+                className="absolute -top-8 right-0 text-white/70 hover:text-white p-1.5 hover:bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50/10 rounded-full transition-colors z-10"
               >
                 <X className="w-5 h-5" />
               </button>
