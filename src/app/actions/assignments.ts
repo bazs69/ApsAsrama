@@ -478,3 +478,130 @@ export async function transferAssignment(data: {
     }
   })
 }
+
+export interface BulkImportData {
+  nim: string
+  satkerName: string
+  position?: string
+  startDate?: string
+}
+
+export async function bulkImportAssignments(data: BulkImportData[]) {
+  return secureAction({
+    module: "Assignment",
+    action: "createAssignment",
+    executor: async (context) => {
+      if (!await checkCrudRateLimit()) throw new Error(SECURITY_CONSTANTS.ERROR_CODES.RATE_001)
+
+      const results = {
+        success: 0,
+        failed: [] as { row: number; nim: string; reason: string }[],
+      }
+
+      if (data.length === 0) {
+        throw BusinessError.validation("File import kosong.")
+      }
+
+      const groupId = crypto.randomUUID()
+
+      const nims = data.map(d => String(d.nim).trim()).filter(Boolean)
+      const residents = await prisma.resident.findMany({
+        where: { nim: { in: nims } }
+      })
+      const residentMap = new Map(residents.map(r => [r.nim, r]))
+
+      const satkerNames = data.map(d => String(d.satkerName).trim()).filter(Boolean)
+      const satkers = await prisma.satker.findMany({
+        where: { name: { in: satkerNames } }
+      })
+      const satkerMap = new Map(satkers.map(s => [s.name.toLowerCase(), s]))
+
+      const activeAssignments = await prisma.assignment.findMany({
+        where: {
+          residentId: { in: residents.map(r => r.id) },
+          status: "ACTIVE"
+        },
+        include: { satker: true }
+      })
+      const activeMap = new Map(activeAssignments.map(a => [a.residentId, a]))
+
+      const validAssignments: any[] = []
+
+      // Assuming Excel rows start at 2 (1 for header)
+      for (let i = 0; i < data.length; i++) {
+        const row = data[i]
+        const nim = String(row.nim).trim()
+        const satkerName = String(row.satkerName).trim()
+
+        if (!nim || !satkerName) {
+          results.failed.push({ row: i + 2, nim: nim || "-", reason: "NIM atau Nama Satker kosong" })
+          continue
+        }
+
+        const resident = residentMap.get(nim)
+        if (!resident) {
+          results.failed.push({ row: i + 2, nim, reason: "NIM tidak ditemukan" })
+          continue
+        }
+
+        if (resident.status !== "ACTIVE") {
+          results.failed.push({ row: i + 2, nim, reason: "Status santri tidak aktif" })
+          continue
+        }
+
+        const active = activeMap.get(resident.id)
+        if (active) {
+          results.failed.push({ row: i + 2, nim, reason: `Santri sudah aktif di Satker ${active.satker.name}` })
+          continue
+        }
+
+        const satker = satkerMap.get(satkerName.toLowerCase())
+        if (!satker) {
+          results.failed.push({ row: i + 2, nim, reason: `Satker "${satkerName}" tidak ditemukan` })
+          continue
+        }
+
+        validAssignments.push({
+          residentId: resident.id,
+          satkerId: satker.id,
+          groupId: groupId,
+          position: row.position || "Anggota",
+          status: "ACTIVE",
+          startDate: row.startDate ? new Date(row.startDate) : new Date(),
+        })
+      }
+
+      if (validAssignments.length === 0) {
+        return { 
+          message: "Tidak ada baris yang valid untuk diimpor.", 
+          results 
+        }
+      }
+
+      try {
+        await prisma.$transaction(async (tx) => {
+          for (const item of validAssignments) {
+            await tx.assignment.create({ data: item })
+          }
+        })
+
+        results.success = validAssignments.length
+
+        await dispatchNotification({
+          userId: context.currentUserId,
+          title: "Impor Penugasan Santri Berhasil",
+          message: `${results.success} santri berhasil ditugaskan ke Satuan Kerja secara massal.`,
+          type: "SUCCESS",
+          metadata: { groupId, totalImported: results.success },
+        }).catch(e => logOperationalError({ action: "Notification failed:", error: e }))
+
+        revalidatePath("/dashboard/assignments")
+        revalidatePath("/dashboard/assignments/satkers")
+
+        return { message: "Berhasil diimpor.", results }
+      } catch (err) {
+        throw mapPrismaError(err, "Impor Penugasan")
+      }
+    }
+  })
+}

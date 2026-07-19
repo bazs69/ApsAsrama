@@ -1,6 +1,8 @@
 "use client"
 
-import { useState, useTransition } from "react"
+import { useState, useTransition, useEffect } from "react"
+import { useRouter } from "next/navigation"
+import * as XLSX from "xlsx"
 import {
   createSatker,
   updateSatker,
@@ -9,6 +11,7 @@ import {
   updateAssignment,
   deleteAssignment,
   transferAssignment,
+  bulkImportAssignments,
 } from "@/app/actions/assignments"
 import {
   Plus,
@@ -29,6 +32,8 @@ import {
   ArrowRightLeft,
   ArrowRight,
   CheckCircle,
+  Download,
+  Upload,
 } from "lucide-react"
 
 interface Resident {
@@ -83,6 +88,13 @@ export default function AssignmentsClient({
 
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState("")
+  const router = useRouter()
+
+  // Update local state when props change
+  useEffect(() => {
+    setAssignments(initialAssignments)
+    setSatkers(initialSatkers)
+  }, [initialAssignments, initialSatkers])
 
   // Modals state
   const [isSatkerModalOpen, setIsSatkerModalOpen] = useState(false)
@@ -98,6 +110,12 @@ export default function AssignmentsClient({
   const [transferError, setTransferError] = useState("")
   const [transferSuccess, setTransferSuccess] = useState(false)
   const [isTransferPending, startTransferTransition] = useTransition()
+
+  // Import Modal state
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false)
+  const [importFile, setImportFile] = useState<File | null>(null)
+  const [isImporting, setIsImporting] = useState(false)
+  const [importResults, setImportResults] = useState<{ success: number; failed: any[] } | null>(null)
 
   // Satker Form Fields
   const [satkerName, setSatkerName] = useState("")
@@ -131,6 +149,48 @@ export default function AssignmentsClient({
     s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     s.picName.toLowerCase().includes(searchQuery.toLowerCase())
   )
+
+  // Handlers for Import
+  const handleDownloadTemplate = () => {
+    const ws = XLSX.utils.json_to_sheet([
+      {
+        nim: "12345678",
+        satkerName: "Kebersihan",
+        position: "Anggota",
+        startDate: new Date().toISOString().split("T")[0]
+      }
+    ])
+    const wb = XLSX.utils.book_new()
+    XLSX.utils.book_append_sheet(wb, ws, "Template_Penugasan")
+    XLSX.writeFile(wb, "Template_Import_Penugasan.xlsx")
+  }
+
+  const handleImportSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!importFile) return
+    setError("")
+    setIsImporting(true)
+    setImportResults(null)
+
+    try {
+      const data = await importFile.arrayBuffer()
+      const wb = XLSX.read(data)
+      const ws = wb.Sheets[wb.SheetNames[0]]
+      const jsonData = XLSX.utils.sheet_to_json(ws) as any[]
+
+      const res = await bulkImportAssignments(jsonData)
+      if (res.error) {
+        setError(res.error)
+      } else if (res.success && res.results) {
+        setImportResults(res.results)
+        router.refresh()
+      }
+    } catch (err: any) {
+      setError(err.message || "Gagal memproses file")
+    } finally {
+      setIsImporting(false)
+    }
+  }
 
   // Handlers for Satker
   const openAddSatkerModal = () => {
@@ -427,13 +487,27 @@ export default function AssignmentsClient({
         </div>
         <div className="flex flex-wrap items-center gap-3">
           {activeTab === "assignments" ? (
-            <button
-              onClick={openAddAssignmentModal}
-              className="bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-500 hover:to-primary-400 text-white rounded-xl py-3 px-5 font-semibold shadow-lg shadow-primary-500/25 flex items-center justify-center space-x-2 transition-all cursor-pointer"
-            >
-              <Plus className="w-5 h-5" />
-              <span>Tambah Penugasan Santri</span>
-            </button>
+            <>
+              <button
+                onClick={() => {
+                  setError("")
+                  setImportFile(null)
+                  setImportResults(null)
+                  setIsImportModalOpen(true)
+                }}
+                className="bg-white dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-750 rounded-xl py-3 px-5 font-semibold shadow-sm flex items-center justify-center space-x-2 transition-all cursor-pointer"
+              >
+                <Upload className="w-5 h-5" />
+                <span>Impor Data</span>
+              </button>
+              <button
+                onClick={openAddAssignmentModal}
+                className="bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-500 hover:to-primary-400 text-white rounded-xl py-3 px-5 font-semibold shadow-lg shadow-primary-500/25 flex items-center justify-center space-x-2 transition-all cursor-pointer"
+              >
+                <Plus className="w-5 h-5" />
+                <span>Tambah Penugasan Santri</span>
+              </button>
+            </>
           ) : (
             <button
               onClick={openAddSatkerModal}
@@ -1159,6 +1233,110 @@ export default function AssignmentsClient({
                   )}
                 </button>
               </form>
+            )}
+          </div>
+        </div>
+      {/* Import Modal */}
+      {isImportModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setIsImportModalOpen(false)} />
+          <div className="w-full max-w-lg glass rounded-2xl border border-zinc-200 dark:border-zinc-800 overflow-hidden relative z-10 p-6 space-y-6">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-bold text-zinc-900 dark:text-white">
+                Impor Penugasan Santri Massal
+              </h2>
+              <button
+                onClick={() => setIsImportModalOpen(false)}
+                className="text-zinc-550 dark:text-zinc-400 hover:text-zinc-850 dark:hover:text-white p-1 cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {error && (
+              <div className="p-3 bg-red-50 dark:bg-red-900/200/10 border border-red-500/20 text-red-650 dark:text-red-400 text-xs rounded-xl flex items-center space-x-2">
+                <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                <span>{error}</span>
+              </div>
+            )}
+
+            <div className="space-y-4">
+              <div className="p-4 bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200 dark:border-zinc-800 rounded-xl space-y-3">
+                <h3 className="font-semibold text-zinc-800 dark:text-zinc-200 text-sm flex items-center space-x-2">
+                  <Download className="w-4 h-4 text-primary-500" />
+                  <span>1. Unduh Template</span>
+                </h3>
+                <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                  Gunakan template Excel yang disediakan agar format data sesuai dengan sistem.
+                </p>
+                <button
+                  onClick={handleDownloadTemplate}
+                  className="bg-primary-50 dark:bg-primary-900/10 text-primary-600 dark:text-primary-400 border border-primary-200 dark:border-primary-800 hover:bg-primary-100 dark:hover:bg-primary-900/20 rounded-lg py-2 px-4 text-xs font-semibold flex items-center space-x-2 transition-colors"
+                >
+                  <Download className="w-3.5 h-3.5" />
+                  <span>Unduh Template Excel</span>
+                </button>
+              </div>
+
+              <form onSubmit={handleImportSubmit} className="p-4 bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200 dark:border-zinc-800 rounded-xl space-y-3">
+                <h3 className="font-semibold text-zinc-800 dark:text-zinc-200 text-sm flex items-center space-x-2">
+                  <Upload className="w-4 h-4 text-primary-500" />
+                  <span>2. Unggah File</span>
+                </h3>
+                <p className="text-xs text-zinc-500 dark:text-zinc-400 mb-2">
+                  Pilih file Excel (.xlsx) atau CSV yang sudah diisi. Baris dengan NIM tidak valid akan diabaikan.
+                </p>
+                <input
+                  type="file"
+                  accept=".xlsx, .xls, .csv"
+                  required
+                  onChange={(e) => setImportFile(e.target.files?.[0] || null)}
+                  className="w-full text-sm text-zinc-500 dark:text-zinc-400
+                    file:mr-4 file:py-2 file:px-4
+                    file:rounded-lg file:border-0
+                    file:text-xs file:font-semibold
+                    file:bg-zinc-200 dark:file:bg-zinc-800 file:text-zinc-700 dark:file:text-zinc-300
+                    hover:file:bg-zinc-300 dark:hover:file:bg-zinc-700 transition-colors"
+                />
+
+                <button
+                  type="submit"
+                  disabled={!importFile || isImporting}
+                  className="w-full bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-500 hover:to-primary-400 text-white rounded-xl py-2.5 font-semibold shadow-md flex items-center justify-center space-x-2 transition-all disabled:opacity-50 cursor-pointer mt-2"
+                >
+                  {isImporting ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <>
+                      <Upload className="w-4 h-4" />
+                      <span>Proses Impor</span>
+                    </>
+                  )}
+                </button>
+              </form>
+            </div>
+
+            {importResults && (
+              <div className="p-4 border border-zinc-200 dark:border-zinc-800 rounded-xl space-y-3">
+                <div className="flex items-center space-x-2 text-emerald-600 dark:text-emerald-450 font-semibold text-sm">
+                  <CheckCircle className="w-4 h-4" />
+                  <span>Berhasil mengimpor {importResults.success} data.</span>
+                </div>
+                {importResults.failed.length > 0 && (
+                  <div className="space-y-2">
+                    <p className="text-xs font-semibold text-amber-600 dark:text-amber-450">
+                      Terdapat {importResults.failed.length} data tidak valid (diabaikan):
+                    </p>
+                    <div className="max-h-32 overflow-y-auto text-xs space-y-1 bg-zinc-50 dark:bg-zinc-900/40 p-2 rounded-lg border border-zinc-200 dark:border-zinc-800">
+                      {importResults.failed.map((f, i) => (
+                        <div key={i} className="text-zinc-600 dark:text-zinc-400">
+                          Baris {f.row} (NIM: {f.nim}): <span className="text-red-500 dark:text-red-400">{f.reason}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
             )}
           </div>
         </div>
