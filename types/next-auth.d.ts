@@ -7,6 +7,7 @@ declare module "next-auth" {
       role: string
       permissions: string[]
       satkerId?: string
+      photo?: string | null
     } & DefaultSession["user"]
   }
 
@@ -14,6 +15,7 @@ declare module "next-auth" {
     role: string
     permissions: string[]
     satkerId?: string | null
+    photo?: string | null
   }
 }
 
@@ -23,6 +25,7 @@ declare module "next-auth/jwt" {
     permissions: string[]
     id: string
     satkerId?: string | null
+    photo?: string | null
     permissionRefreshedAt?: number
   }
 }
