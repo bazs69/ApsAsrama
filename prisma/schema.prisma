@@ -20,7 +20,6 @@ model User {
   updatedAt      DateTime        @updatedAt
   exportHistory  ExportHistory[]
   securityEvents SecurityEvent[]
-  notifications  Notification[]
   role           Role?           @relation(fields: [roleId], references: [id])
   satker         Satker?         @relation(fields: [satkerId], references: [id])
 }
@@ -441,26 +440,6 @@ model Village {
   @@unique([name, districtId])
   @@index([name])
   @@index([districtId])
-}
-
-model Notification {
-  id        String   @id @default(uuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  title     String
-  message   String   @db.Text
-  type      String   @default("INFO") // INFO | SUCCESS | WARNING | ERROR
-  link      String? // (Optional) URL navigasi saat notifikasi diklik
-  isRead    Boolean  @default(false)
-  metadata  Json? // Payload tambahan (e.g. groupId, satkerId, dll.)
-  createdAt DateTime @default(now())
-
-  // Index primer: query notifikasi milik satu user
-  @@index([userId])
-  // Index komposit: query unread per-user (query paling sering dieksekusi)
-  @@index([userId, isRead])
-  // Index untuk sorting/pagination by time
-  @@index([createdAt])
 }
 
 model AuditLog {

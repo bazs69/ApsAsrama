@@ -64,14 +64,14 @@ function AbsensiDropdown({ pathname }: { pathname: string }) {
     <div>
       <button
         onClick={() => setIsOpen((prev) => !prev)}
-        className={`w-full flex items-center justify-between px-4 py-3.5 rounded-xl transition-all cursor-pointer ${isAbsensiActive
+        className={`w-full flex items-center justify-between px-4 py-2.5 text-sm rounded-xl transition-all cursor-pointer ${isAbsensiActive
           ? "bg-gradient-to-r from-primary-500/15 to-transparent border-l-4 border-l-primary-500 border-y border-r border-transparent text-primary-700 dark:text-primary-400 font-bold"
           : "text-zinc-500 dark:text-zinc-400 hover:bg-primary-50 dark:hover:bg-zinc-800/50 hover:text-zinc-900 dark:hover:text-zinc-200 border-l-4 border-transparent"
           }`}
       >
         <div className="flex items-center space-x-3">
           <CalendarCheck
-            className={`w-5 h-5 ${isAbsensiActive ? "text-primary-700 dark:text-primary-400" : ""}`}
+            className={`w-4 h-4 ${isAbsensiActive ? "text-primary-700 dark:text-primary-400" : ""}`}
           />
           <span className="font-semibold">Absensi</span>
         </div>
@@ -92,7 +92,7 @@ function AbsensiDropdown({ pathname }: { pathname: string }) {
               <Link
                 key={link.href}
                 href={link.href}
-                className={`flex items-center space-x-2.5 px-4 py-3 rounded-xl transition-all text-sm ${isActive
+                className={`flex items-center space-x-2.5 px-4 py-2 rounded-xl transition-all text-sm ${isActive
                   ? "bg-primary-500/10 text-primary-700 dark:text-primary-400 font-semibold border border-primary-500/20"
                   : "text-zinc-500 dark:text-zinc-400 hover:bg-primary-50 dark:hover:bg-zinc-800/50 hover:text-zinc-900 dark:hover:text-zinc-200 border-l-4 border-transparent font-medium"
                   }`}
@@ -118,14 +118,14 @@ function DataMasterDropdown({ pathname }: { pathname: string }) {
     <div>
       <button
         onClick={() => setIsOpen((prev) => !prev)}
-        className={`w-full flex items-center justify-between px-4 py-3.5 rounded-xl transition-all cursor-pointer ${isDataMasterActive
+        className={`w-full flex items-center justify-between px-4 py-2.5 text-sm rounded-xl transition-all cursor-pointer ${isDataMasterActive
           ? "bg-gradient-to-r from-primary-500/15 to-transparent border-l-4 border-l-primary-500 border-y border-r border-transparent text-primary-700 dark:text-primary-400 font-bold"
           : "text-zinc-500 dark:text-zinc-400 hover:bg-primary-50 dark:hover:bg-zinc-800/50 hover:text-zinc-900 dark:hover:text-zinc-200 border-l-4 border-transparent"
           }`}
       >
         <div className="flex items-center space-x-3">
           <Database
-            className={`w-5 h-5 ${isDataMasterActive ? "text-primary-700 dark:text-primary-400" : ""}`}
+            className={`w-4 h-4 ${isDataMasterActive ? "text-primary-700 dark:text-primary-400" : ""}`}
           />
           <span className="font-semibold">Data Master</span>
         </div>
@@ -146,7 +146,7 @@ function DataMasterDropdown({ pathname }: { pathname: string }) {
               <Link
                 key={link.href}
                 href={link.href}
-                className={`flex items-center space-x-2.5 px-4 py-3 rounded-xl transition-all text-sm ${isActive
+                className={`flex items-center space-x-2.5 px-4 py-2 rounded-xl transition-all text-sm ${isActive
                   ? "bg-primary-500/10 text-primary-700 dark:text-primary-400 font-semibold border border-primary-500/20"
                   : "text-zinc-500 dark:text-zinc-400 hover:bg-primary-50 dark:hover:bg-zinc-800/50 hover:text-zinc-900 dark:hover:text-zinc-200 border-l-4 border-transparent font-medium"
                   }`}
@@ -173,14 +173,14 @@ function ReferensiDropdown({ pathname, permissions }: { pathname: string, permis
     <div>
       <button
         onClick={() => setIsOpen((prev) => !prev)}
-        className={`w-full flex items-center justify-between px-4 py-3.5 rounded-xl transition-all cursor-pointer ${isReferensiActive
+        className={`w-full flex items-center justify-between px-4 py-2.5 text-sm rounded-xl transition-all cursor-pointer ${isReferensiActive
           ? "bg-gradient-to-r from-primary-500/15 to-transparent border-l-4 border-l-primary-500 border-y border-r border-transparent text-primary-700 dark:text-primary-400 font-bold"
           : "text-zinc-500 dark:text-zinc-400 hover:bg-primary-50 dark:hover:bg-zinc-800/50 hover:text-zinc-900 dark:hover:text-zinc-200 border-l-4 border-transparent"
           }`}
       >
         <div className="flex items-center space-x-3">
           <Database
-            className={`w-5 h-5 ${isReferensiActive ? "text-primary-700 dark:text-primary-400" : ""}`}
+            className={`w-4 h-4 ${isReferensiActive ? "text-primary-700 dark:text-primary-400" : ""}`}
           />
           <span className="font-semibold">Referensi</span>
         </div>
@@ -201,7 +201,7 @@ function ReferensiDropdown({ pathname, permissions }: { pathname: string, permis
               <Link
                 key={link.href}
                 href={link.href}
-                className={`flex items-center space-x-2.5 px-4 py-3 rounded-xl transition-all text-sm ${isActive
+                className={`flex items-center space-x-2.5 px-4 py-2 rounded-xl transition-all text-sm ${isActive
                   ? "bg-primary-500/10 text-primary-700 dark:text-primary-400 font-semibold border border-primary-500/20"
                   : "text-zinc-500 dark:text-zinc-400 hover:bg-primary-50 dark:hover:bg-zinc-800/50 hover:text-zinc-900 dark:hover:text-zinc-200 border-l-4 border-transparent font-medium"
                   }`}
@@ -237,14 +237,14 @@ function OpsDropdown({ pathname }: { pathname: string }) {
     <div>
       <button
         onClick={() => setIsOpen((prev) => !prev)}
-        className={`w-full flex items-center justify-between px-4 py-3.5 rounded-xl transition-all cursor-pointer ${isActive
+        className={`w-full flex items-center justify-between px-4 py-2.5 text-sm rounded-xl transition-all cursor-pointer ${isActive
           ? "bg-gradient-to-r from-primary-500/15 to-transparent border-l-4 border-l-primary-500 border-y border-r border-transparent text-primary-700 dark:text-primary-400 font-bold"
           : "text-zinc-500 dark:text-zinc-400 hover:bg-primary-50 dark:hover:bg-zinc-800/50 hover:text-zinc-900 dark:hover:text-zinc-200 border-l-4 border-transparent"
           }`}
       >
         <div className="flex items-center space-x-3">
           <Activity
-            className={`w-5 h-5 ${isActive ? "text-primary-700 dark:text-primary-400" : ""}`}
+            className={`w-4 h-4 ${isActive ? "text-primary-700 dark:text-primary-400" : ""}`}
           />
           <span className="font-semibold">Operational Center</span>
         </div>
@@ -265,7 +265,7 @@ function OpsDropdown({ pathname }: { pathname: string }) {
               <Link
                 key={link.href}
                 href={link.href}
-                className={`flex items-center space-x-2.5 px-4 py-3 rounded-xl transition-all text-sm ${isLinkActive
+                className={`flex items-center space-x-2.5 px-4 py-2 rounded-xl transition-all text-sm ${isLinkActive
                   ? "bg-primary-500/10 text-primary-700 dark:text-primary-400 font-semibold border border-primary-500/20"
                   : "text-zinc-500 dark:text-zinc-400 hover:bg-primary-50 dark:hover:bg-zinc-800/50 hover:text-zinc-900 dark:hover:text-zinc-200 border-l-4 border-transparent font-medium"
                   }`}
@@ -314,15 +314,15 @@ export default function Sidebar({ userRole, permissions = [] }: { userRole?: str
 
   return (
     <div className="flex flex-col h-full py-6">
-      <div className="flex items-center space-x-4 px-6 mb-8">
-        <div className="w-20 h-20 flex-shrink-0 flex items-center justify-center drop-shadow-md">
-          <Image src="/logo.png" alt="SPThree Connect Logo" width={80} height={80} className="w-full h-full object-contain" />
+      <div className="flex items-center space-x-3 px-6 mb-6">
+        <div className="w-12 h-12 flex-shrink-0 flex items-center justify-center drop-shadow-md">
+          <Image src="/logo.png" alt="SPThree Connect Logo" width={48} height={48} className="w-full h-full object-contain" />
         </div>
         <div className="flex flex-col justify-center leading-tight">
-          <span className="text-2xl font-black bg-clip-text text-transparent bg-gradient-to-br from-emerald-600 to-teal-500 dark:from-emerald-400 dark:to-teal-300">
+          <span className="text-xl font-black bg-clip-text text-transparent bg-gradient-to-br from-emerald-600 to-teal-500 dark:from-emerald-400 dark:to-teal-300">
             SPThree
           </span>
-          <span className="text-xs font-black tracking-[0.25em] text-zinc-500 dark:text-zinc-400 uppercase mt-0.5">
+          <span className="text-[10px] font-black tracking-[0.2em] text-zinc-500 dark:text-zinc-400 uppercase mt-0.5">
             Connect
           </span>
         </div>
@@ -336,12 +336,12 @@ export default function Sidebar({ userRole, permissions = [] }: { userRole?: str
             <Link
               key={link.href}
               href={link.href}
-              className={`flex items-center space-x-3 px-4 py-3.5 rounded-xl transition-all ${isActive
+              className={`flex items-center space-x-3 px-4 py-2.5 text-sm rounded-xl transition-all ${isActive
                 ? "bg-gradient-to-r from-primary-500/15 to-transparent border-l-4 border-l-primary-500 border-y border-r border-transparent text-primary-700 dark:text-primary-400 font-bold"
                 : "text-zinc-500 dark:text-zinc-400 hover:bg-primary-50 dark:hover:bg-zinc-800/50 hover:text-zinc-900 dark:hover:text-zinc-200 border-l-4 border-transparent"
                 }`}
             >
-              <Icon className={`w-5 h-5 ${isActive ? "text-primary-700 dark:text-primary-400" : ""}`} />
+              <Icon className={`w-4 h-4 ${isActive ? "text-primary-700 dark:text-primary-400" : ""}`} />
               <span className="font-semibold">{link.label}</span>
             </Link>
           )
@@ -352,12 +352,12 @@ export default function Sidebar({ userRole, permissions = [] }: { userRole?: str
         {showSatkerSantri && (
           <Link
             href="/dashboard/satker-santri"
-            className={`flex items-center space-x-3 px-4 py-3.5 rounded-xl transition-all ${pathname === "/dashboard/satker-santri"
+            className={`flex items-center space-x-3 px-4 py-2.5 text-sm rounded-xl transition-all ${pathname === "/dashboard/satker-santri"
               ? "bg-gradient-to-r from-primary-500/15 to-transparent border-l-4 border-l-primary-500 border-y border-r border-transparent text-primary-700 dark:text-primary-400 font-bold"
               : "text-zinc-500 dark:text-zinc-400 hover:bg-primary-50 dark:hover:bg-zinc-800/50 hover:text-zinc-900 dark:hover:text-zinc-200 border-l-4 border-transparent"
               }`}
           >
-            <Users className={`w-5 h-5 ${pathname === "/dashboard/satker-santri" ? "text-primary-700 dark:text-primary-400" : ""}`} />
+            <Users className={`w-4 h-4 ${pathname === "/dashboard/satker-santri" ? "text-primary-700 dark:text-primary-400" : ""}`} />
             <span className="font-semibold">Data Santri Satker</span>
           </Link>
         )}
@@ -365,14 +365,14 @@ export default function Sidebar({ userRole, permissions = [] }: { userRole?: str
         <div>
           <button
             onClick={() => setIsUnitPenugasanOpen((prev) => !prev)}
-            className={`w-full flex items-center justify-between px-4 py-3.5 rounded-xl transition-all cursor-pointer ${isAssignmentActive
+            className={`w-full flex items-center justify-between px-4 py-2.5 text-sm rounded-xl transition-all cursor-pointer ${isAssignmentActive
               ? "bg-gradient-to-r from-primary-500/15 to-transparent border-l-4 border-l-primary-500 border-y border-r border-transparent text-primary-700 dark:text-primary-400 font-bold"
               : "text-zinc-500 dark:text-zinc-400 hover:bg-primary-50 dark:hover:bg-zinc-800/50 hover:text-zinc-900 dark:hover:text-zinc-200 border-l-4 border-transparent"
               }`}
           >
             <div className="flex items-center space-x-3">
               <ClipboardList
-                className={`w-5 h-5 ${isAssignmentActive ? "text-primary-700 dark:text-primary-400" : ""}`}
+                className={`w-4 h-4 ${isAssignmentActive ? "text-primary-700 dark:text-primary-400" : ""}`}
               />
               <span className="font-semibold">Unit Penugasan</span>
             </div>
@@ -389,7 +389,7 @@ export default function Sidebar({ userRole, permissions = [] }: { userRole?: str
               {showPenugasanSantri && (
                 <Link
                   href="/dashboard/assignments"
-                  className={`flex items-center space-x-2.5 px-4 py-3 rounded-xl transition-all text-sm ${pathname === "/dashboard/assignments"
+                  className={`flex items-center space-x-2.5 px-4 py-2 rounded-xl transition-all text-sm ${pathname === "/dashboard/assignments"
                     ? "bg-primary-500/10 text-primary-700 dark:text-primary-400 font-semibold border border-primary-500/20"
                     : "text-zinc-500 dark:text-zinc-400 hover:bg-primary-50 dark:hover:bg-zinc-800/50 hover:text-zinc-900 dark:hover:text-zinc-200 border-l-4 border-transparent font-medium"
                     }`}
@@ -401,7 +401,7 @@ export default function Sidebar({ userRole, permissions = [] }: { userRole?: str
               {showMonitoringPenugasan && (
                 <Link
                   href="/dashboard/monitoring-penugasan"
-                  className={`flex items-center space-x-2.5 px-4 py-3 rounded-xl transition-all text-sm ${pathname === "/dashboard/monitoring-penugasan"
+                  className={`flex items-center space-x-2.5 px-4 py-2 rounded-xl transition-all text-sm ${pathname === "/dashboard/monitoring-penugasan"
                     ? "bg-primary-500/10 text-primary-700 dark:text-primary-400 font-semibold border border-primary-500/20"
                     : "text-zinc-500 dark:text-zinc-400 hover:bg-primary-50 dark:hover:bg-zinc-800/50 hover:text-zinc-900 dark:hover:text-zinc-200 border-l-4 border-transparent font-medium"
                     }`}
@@ -421,12 +421,12 @@ export default function Sidebar({ userRole, permissions = [] }: { userRole?: str
         {showAuditLog && (
           <Link
             href="/dashboard/audit-logs"
-            className={`flex items-center space-x-3 px-4 py-3.5 rounded-xl transition-all ${pathname === "/dashboard/audit-logs"
+            className={`flex items-center space-x-3 px-4 py-2.5 text-sm rounded-xl transition-all ${pathname === "/dashboard/audit-logs"
               ? "bg-violet-500/10 text-violet-600 dark:text-violet-400 border border-violet-500/25"
               : "text-zinc-500 dark:text-zinc-400 hover:bg-primary-50 dark:hover:bg-zinc-800/50 hover:text-zinc-900 dark:hover:text-zinc-200 border-l-4 border-transparent"
               }`}
           >
-            <ShieldCheck className={`w-5 h-5 ${pathname === "/dashboard/audit-logs" ? "text-violet-600 dark:text-violet-400" : ""}`} />
+            <ShieldCheck className={`w-4 h-4 ${pathname === "/dashboard/audit-logs" ? "text-violet-600 dark:text-violet-400" : ""}`} />
             <span className="font-semibold">Audit Log</span>
           </Link>
         )}
@@ -438,12 +438,12 @@ export default function Sidebar({ userRole, permissions = [] }: { userRole?: str
             <Link
               key={link.href}
               href={link.href}
-              className={`flex items-center space-x-3 px-4 py-3.5 rounded-xl transition-all ${isActive
+              className={`flex items-center space-x-3 px-4 py-2.5 text-sm rounded-xl transition-all ${isActive
                 ? "bg-gradient-to-r from-primary-500/15 to-transparent border-l-4 border-l-primary-500 border-y border-r border-transparent text-primary-700 dark:text-primary-400 font-bold"
                 : "text-zinc-500 dark:text-zinc-400 hover:bg-primary-50 dark:hover:bg-zinc-800/50 hover:text-zinc-900 dark:hover:text-zinc-200 border-l-4 border-transparent"
                 }`}
             >
-              <Icon className={`w-5 h-5 ${isActive ? "text-primary-700 dark:text-primary-400" : ""}`} />
+              <Icon className={`w-4 h-4 ${isActive ? "text-primary-700 dark:text-primary-400" : ""}`} />
               <span className="font-semibold">{link.label}</span>
             </Link>
           )
@@ -453,9 +453,9 @@ export default function Sidebar({ userRole, permissions = [] }: { userRole?: str
       <div className="px-4 mt-auto pt-4 pb-6">
         <button
           onClick={() => signOut({ callbackUrl: "/login" })}
-          className="w-full flex items-center space-x-3 px-4 py-3.5 text-zinc-500 dark:text-zinc-400 hover:bg-red-50 dark:bg-red-900/200/10 hover:text-red-600 dark:hover:text-red-400 rounded-xl transition-all border border-transparent"
+          className="w-full flex items-center space-x-3 px-4 py-2.5 text-sm text-zinc-500 dark:text-zinc-400 hover:bg-red-50 dark:bg-red-900/200/10 hover:text-red-600 dark:hover:text-red-400 rounded-xl transition-all border border-transparent"
         >
-          <LogOut className="w-5 h-5" />
+          <LogOut className="w-4 h-4" />
           <span className="font-semibold">Keluar (Sign Out)</span>
         </button>
       </div>

@@ -3,7 +3,6 @@
 import { useSyncExternalStore } from "react"
 import { useState, useEffect } from "react"
 import { Menu, User as UserIcon, Sun, Moon } from "lucide-react"
-import NotificationDropdown from "@/components/dashboard/NotificationDropdown"
 import { useSidebar } from "@/components/providers/SidebarProvider"
 
 function getInitialTheme(): "light" | "dark" {
@@ -79,8 +78,7 @@ export default function Topbar({ user }: { user?: { name?: string | null; role?:
           )}
         </button>
 
-        {/* Notification Bell */}
-        <NotificationDropdown />
+
 
         {/* User Profile */}
         <div className="flex items-center gap-3 border-l border-zinc-200 dark:border-zinc-800 pl-3 md:pl-4">

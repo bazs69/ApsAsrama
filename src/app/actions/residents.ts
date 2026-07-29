@@ -25,6 +25,15 @@ function normalizeGender(value: unknown) {
   return cleanText(value)
 }
 
+async function triggerPresensiSync() {
+  try {
+    await fetch("http://localhost:8080/api/v1/sync/asrama", { method: "POST" })
+  } catch (e) {
+    console.error("Failed to trigger sync to Presensi:", e)
+  }
+}
+
+
 export async function getResidents() {
   try {
     return await prisma.resident.findMany({
@@ -280,6 +289,7 @@ export async function createResident(formData: {
 
     revalidatePath("/dashboard/residents")
     revalidatePath("/dashboard/rooms")
+    triggerPresensiSync()
     return { success: true, resident }
   } catch (error) {
     const businessErr = mapPrismaError(error, "Santri")
@@ -464,6 +474,7 @@ export async function updateResident(
 
     revalidatePath("/dashboard/residents")
     revalidatePath("/dashboard/rooms")
+    triggerPresensiSync()
     return { success: true, resident }
   } catch (error) {
     const businessErr = mapPrismaError(error, "Santri")
@@ -516,6 +527,7 @@ export async function deleteResident(id: string) {
 
     revalidatePath("/dashboard/residents")
     revalidatePath("/dashboard/rooms")
+    triggerPresensiSync()
     return { success: true }
   } catch (error) {
     const businessErr = mapPrismaError(error, "Santri")
@@ -624,6 +636,7 @@ export async function bulkCreateResidents(data: {
 
     revalidatePath("/dashboard/residents")
     revalidatePath("/dashboard/rooms")
+    triggerPresensiSync()
     return { success: true, successCount: result, skippedCount: 0 }
   } catch (error) {
     const businessErr = mapPrismaError(error, "Import Santri")
@@ -675,6 +688,7 @@ export async function bulkDeleteResidents(ids: string[]) {
 
     revalidatePath("/dashboard/residents")
     revalidatePath("/dashboard/rooms")
+    triggerPresensiSync()
     return { success: true }
   } catch (error) {
     const businessErr = mapPrismaError(error, "Hapus Santri")
@@ -771,6 +785,7 @@ export async function bulkMoveResidents(ids: string[], data: { roomId?: string }
 
     revalidatePath("/dashboard/residents")
     revalidatePath("/dashboard/rooms")
+    triggerPresensiSync()
     return { success: true }
   } catch (error) {
     const businessErr = mapPrismaError(error, "Pindah Kamar")

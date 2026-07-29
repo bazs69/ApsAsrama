@@ -66,12 +66,12 @@ export default function WelcomeHeader({
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
       {/* Hero Section */}
-      <div className="lg:col-span-8 relative overflow-hidden flex flex-col justify-center p-8 rounded-[2rem] bg-gradient-to-br from-primary-50/60 via-white to-white dark:from-primary-950/40 dark:via-zinc-950 dark:to-zinc-900/80 border border-primary-100/50 dark:border-zinc-800 shadow-sm transition-all duration-300 group animate-in fade-in zoom-in-95 duration-500 h-full min-h-[140px]">
+      <div className="lg:col-span-8 relative overflow-hidden flex flex-col justify-center p-6 rounded-2xl bg-gradient-to-br from-primary-50/60 via-white to-white dark:from-primary-950/40 dark:via-zinc-950 dark:to-zinc-900/80 border border-primary-100/50 dark:border-zinc-800 shadow-sm transition-all duration-300 group animate-in fade-in zoom-in-95 duration-500 h-full min-h-[120px]">
         {/* Subtle Ambient Glow */}
         <div className="absolute top-0 right-0 -mt-20 -mr-20 w-72 h-72 bg-primary-500/5 dark:bg-primary-500/5 rounded-full blur-3xl pointer-events-none transition-all duration-700 group-hover:scale-110 group-hover:bg-primary-500/10"></div>
 
-        <div className="relative z-10 flex items-center gap-6">
-          <div className="w-24 h-24 rounded-[2rem] bg-gradient-to-br from-zinc-900 to-zinc-800 text-white flex items-center justify-center text-3xl font-bold shadow-lg">
+        <div className="relative z-10 flex items-center gap-5">
+          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-zinc-900 to-zinc-800 text-white flex items-center justify-center text-2xl font-bold shadow-lg">
             {displayName.substring(0, 2).toUpperCase()}
           </div>
           <div>
@@ -79,7 +79,7 @@ export default function WelcomeHeader({
               <span className="w-2 h-2 rounded-full bg-primary-500"></span>
               <span className="text-xs font-bold text-primary-600 dark:text-primary-400 uppercase tracking-widest">Selamat Datang</span>
             </div>
-            <h1 className="text-3xl font-extrabold text-zinc-900 dark:text-white tracking-tight leading-snug mb-1">
+            <h1 className="text-2xl font-extrabold text-zinc-900 dark:text-white tracking-tight leading-snug mb-1">
               {displayName.toUpperCase()}
             </h1>
             <p className="text-zinc-500 dark:text-zinc-400 text-sm font-medium">
@@ -95,7 +95,7 @@ export default function WelcomeHeader({
       </div>
 
       {/* Clock & Prayer Times Section */}
-      <div className="lg:col-span-4 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-[2rem] overflow-hidden shadow-sm animate-in fade-in zoom-in-95 duration-500 flex flex-col h-full">
+      <div className="lg:col-span-4 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl overflow-hidden shadow-sm animate-in fade-in zoom-in-95 duration-500 flex flex-col h-full">
         {/* Top Header Section - Dark Green */}
         <div className="bg-gradient-to-r from-[#032e15] to-[#0a5c2f] px-5 py-4 flex items-center justify-between shadow-inner">
           <div className="flex items-center gap-3">
@@ -124,12 +124,12 @@ export default function WelcomeHeader({
         </div>
 
         {/* Clock Section */}
-        <div className="flex flex-col items-center justify-center pt-5 pb-4 flex-1 bg-gradient-to-b from-sky-50/50 via-white to-orange-50/30 dark:from-zinc-950 dark:to-zinc-950">
-          <h2 className="text-3xl md:text-4xl font-black text-[#1e293b] dark:text-zinc-100 tracking-tight leading-none mb-3 font-mono">
+        <div className="flex flex-col items-center justify-center pt-4 pb-3 flex-1 bg-gradient-to-b from-sky-50/50 via-white to-orange-50/30 dark:from-zinc-950 dark:to-zinc-950">
+          <h2 className="text-2xl md:text-3xl font-black text-[#1e293b] dark:text-zinc-100 tracking-tight leading-none mb-2 font-mono">
             {liveTimeOnly || "00:00:00"}
           </h2>
           
-          <div className="bg-[#1e293b] dark:bg-zinc-800 text-white dark:text-zinc-100 px-4 py-1 rounded-full font-bold text-[10px] tracking-widest uppercase mb-2.5 shadow-sm">
+          <div className="bg-[#1e293b] dark:bg-zinc-800 text-white dark:text-zinc-100 px-3 py-1 rounded-full font-bold text-[9px] tracking-widest uppercase mb-2 shadow-sm">
             {liveGregorian}
           </div>
           
@@ -182,7 +182,7 @@ export default function WelcomeHeader({
                   <span className={`text-[9px] font-bold uppercase tracking-wider mb-0.5 ${isActive ? "text-white/80" : "text-zinc-400 dark:text-zinc-500"}`}>
                     {prayer.label}
                   </span>
-                  <span className={`text-sm font-black leading-none ${isActive ? "text-white" : "text-zinc-800 dark:text-zinc-300"}`}>
+                  <span className={`text-xs font-black leading-none ${isActive ? "text-white" : "text-zinc-800 dark:text-zinc-300"}`}>
                     {prayer.time}
                   </span>
                 </div>

@@ -33,32 +33,9 @@ export interface CreateNotificationInput {
 export async function createNotification(
   input: CreateNotificationInput
 ): Promise<string | null> {
-  try {
-    if (!input.userId || !input.title || !input.message) {
-      console.warn("[createNotification] Missing required fields, skipping.")
-      return null
-    }
-
-    const notification = await prisma.notification.create({
-      data: {
-        userId:   input.userId,
-        title:    input.title,
-        message:  input.message,
-        type:     input.type ?? "INFO",
-        link:     input.link ?? null,
-        // Serialize via JSON.parse/stringify to satisfy Prisma's InputJsonValue constraint
-        metadata: input.metadata
-          ? JSON.parse(JSON.stringify(input.metadata))
-          : undefined,
-      },
-    })
-
-    return notification.id
-  } catch (error) {
-    // Fail-open: log error but never throw — caller must not be affected
-    logOperationalError({ action: "[createNotification] Failed to create notification:", error: error })
-    return null
-  }
+  // Notifikasi dinonaktifkan untuk menghemat ruang database.
+  // Jika diinginkan, fitur ini dapat diubah menjadi toast client-side saja.
+  return "mock-notification-id"
 }
 
 // ─── Client-Facing Actions ───────────────────────────────────────────────────
@@ -75,33 +52,8 @@ export async function getUnreadNotifications() {
     module: "Notification",
     action: "getUnreadNotifications",
     executor: async (context) => {
-      const notifications = await prisma.notification.findMany({
-        where: {
-          userId: context.currentUserId,
-          isRead: false,
-        },
-        orderBy: { createdAt: "desc" },
-        take: 20,
-        select: {
-          id:        true,
-          title:     true,
-          message:   true,
-          type:      true,
-          link:      true,
-          isRead:    true,
-          metadata:  true,
-          createdAt: true,
-        },
-      })
-
-      const unreadCount = await prisma.notification.count({
-        where: {
-          userId: context.currentUserId,
-          isRead: false,
-        },
-      })
-
-      return { notifications, unreadCount }
+      // Fitur notifikasi telah dinonaktifkan
+      return { notifications: [], unreadCount: 0 }
     }
   })
 }
@@ -112,44 +64,15 @@ export async function getNotificationsPaginated(options: { page: number; pageSiz
     action: "getNotificationsPaginated",
     executor: async (context) => {
       const { page, pageSize } = options
-      const skip = (page - 1) * pageSize
-      const take = pageSize
-
-      const where = {
-        userId: context.currentUserId,
-      }
-
-      const [total, data] = await prisma.$transaction([
-        prisma.notification.count({ where }),
-        prisma.notification.findMany({
-          where,
-          orderBy: { createdAt: "desc" },
-          skip,
-          take,
-          select: {
-            id:        true,
-            title:     true,
-            message:   true,
-            type:      true,
-            link:      true,
-            isRead:    true,
-            metadata:  true,
-            createdAt: true,
-          },
-        })
-      ])
-
-      const totalPages = Math.ceil(total / pageSize)
-
       return {
-        data,
+        data: [],
         pagination: {
           page,
           pageSize,
-          total,
-          totalPages,
-          hasNextPage: page < totalPages,
-          hasPreviousPage: page > 1
+          total: 0,
+          totalPages: 0,
+          hasNextPage: false,
+          hasPreviousPage: false
         }
       }
     }
@@ -175,26 +98,7 @@ export async function markAsRead(notificationId: string) {
         throw new Error("Notification ID is required.")
       }
 
-      // ── Ownership verification (IDOR prevention) ──
-      const notification = await prisma.notification.findUnique({
-        where: { id: notificationId },
-        select: { userId: true },
-      })
-
-      if (!notification) {
-        throw new Error("Notification not found.")
-      }
-
-      if (notification.userId !== context.currentUserId) {
-        throw new Error(SECURITY_CONSTANTS.ERROR_CODES.AUTHZ_001)
-      }
-
-      await prisma.notification.update({
-        where: { id: notificationId },
-        data:  { isRead: true },
-      })
-
-      revalidatePath("/dashboard")
+      // Dinonaktifkan
       return {}
     }
   })
@@ -214,17 +118,7 @@ export async function markAllAsRead() {
     action: "markAllAsRead",
     executor: async (context) => {
       if (!await checkCrudRateLimit()) throw new Error(SECURITY_CONSTANTS.ERROR_CODES.RATE_001)
-
-      const result = await prisma.notification.updateMany({
-        where: {
-          userId: context.currentUserId,
-          isRead: false,
-        },
-        data: { isRead: true },
-      })
-
-      revalidatePath("/dashboard")
-      return { updated: result.count }
+      return { updated: 0 }
     }
   })
 }
@@ -247,25 +141,7 @@ export async function deleteNotification(notificationId: string) {
         throw new Error("Notification ID is required.")
       }
 
-      // ── Ownership verification (IDOR prevention) ──
-      const notification = await prisma.notification.findUnique({
-        where: { id: notificationId },
-        select: { userId: true },
-      })
-
-      if (!notification) {
-        throw new Error("Notification not found.")
-      }
-
-      if (notification.userId !== context.currentUserId) {
-        throw new Error(SECURITY_CONSTANTS.ERROR_CODES.AUTHZ_001)
-      }
-
-      await prisma.notification.delete({
-        where: { id: notificationId },
-      })
-
-      revalidatePath("/dashboard")
+      // Dinonaktifkan
       return {}
     }
   })

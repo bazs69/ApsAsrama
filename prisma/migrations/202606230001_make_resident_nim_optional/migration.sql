@@ -1,1 +1,0 @@
-ALTER TABLE "residents" ALTER COLUMN "nim" DROP NOT NULL;
