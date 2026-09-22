@@ -274,7 +274,7 @@ export async function createAssignment(formData: AssignmentFormData) {
             results.push(created)
           }
           return results
-        })
+        }, { maxWait: 15000, timeout: 30000 })
 
         // 6. Notification (Fail-open)
         await dispatchNotification({
@@ -458,7 +458,7 @@ export async function transferAssignment(data: {
           })
 
           return { updatedOld, newAssignment }
-        })
+        }, { maxWait: 15000, timeout: 30000 })
 
         await dispatchNotification({
           userId: context.currentUserId,
@@ -583,7 +583,7 @@ export async function bulkImportAssignments(data: BulkImportData[]) {
           for (const item of validAssignments) {
             await tx.assignment.create({ data: item })
           }
-        })
+        }, { maxWait: 15000, timeout: 30000 })
 
         results.success = validAssignments.length
 

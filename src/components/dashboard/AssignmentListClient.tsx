@@ -436,27 +436,27 @@ export default function AssignmentListClient({
                         className="w-full bg-white dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 border border-success-100 dark:border-success-900/30 hover:border-success-300 dark:hover:border-success-700/50/50 border border-zinc-250 dark:border-zinc-800 rounded-xl py-2.5 pl-9 pr-4 text-zinc-850 dark:text-white placeholder-zinc-450 focus:outline-none focus:ring-2 focus:ring-primary-500/50 text-sm shadow-sm"
                       />
                     </div>
-                    <select
-                      size={4}
-                      value={assignResidentId}
-                      onChange={(e) => setAssignResidentId(e.target.value)}
-                      className="w-full bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-250 dark:border-zinc-800 rounded-xl py-2 px-3 text-zinc-850 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500/50 overflow-y-auto custom-scrollbar"
-                    >
+                    <div className="max-h-48 overflow-y-auto space-y-1 p-2 border border-zinc-250 dark:border-zinc-800 rounded-xl bg-zinc-50 dark:bg-zinc-900/50 custom-scrollbar">
                       {filteredUnassignedResidents.map((r) => (
-                        <option
+                        <div
                           key={r.id}
-                          value={r.id}
-                          className="py-2 px-2 my-0.5 border-b border-zinc-100 dark:border-zinc-800/50 last:border-0 hover:bg-primary-500/10 hover:text-primary-600 dark:hover:text-primary-400 hover:font-medium checked:bg-primary-500/20 checked:text-primary-600 checked:font-bold cursor-pointer rounded-lg transition-colors text-sm"
+                          onClick={() => setAssignResidentId(r.id)}
+                          className={`py-2 px-3 rounded-lg text-sm cursor-pointer transition-colors flex items-center justify-between ${
+                            assignResidentId === r.id
+                              ? "bg-primary-500/20 text-primary-600 dark:text-primary-400 font-bold border border-primary-500/30"
+                              : "hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-800 dark:text-zinc-200"
+                          }`}
                         >
-                          {r.name} ({r.nim || "-"})
-                        </option>
+                          <span>{r.name}</span>
+                          <span className="text-xs font-mono opacity-80">{r.nim ? `(${r.nim})` : "-"}</span>
+                        </div>
                       ))}
                       {filteredUnassignedResidents.length === 0 && (
-                        <option disabled className="py-3 px-2 text-zinc-500 dark:text-zinc-400 italic text-sm text-center">
+                        <div className="py-3 px-2 text-zinc-500 dark:text-zinc-400 italic text-sm text-center">
                           Tidak ada santri yang tersedia / cocok
-                        </option>
+                        </div>
                       )}
-                    </select>
+                    </div>
                   </div>
                 )}
               </div>
